@@ -15,3 +15,5 @@
 
 ## Provided Packages <a name="provided-packages"/>
 This repository provides the following packages:
+
+- Board Supported Package (BSP) - it is composed of a reference design, a MSS configuration, an HSS configuration, an Aldec meta layer for Yocto Project and a baremetal application. All of them can be used to build a custom design.
