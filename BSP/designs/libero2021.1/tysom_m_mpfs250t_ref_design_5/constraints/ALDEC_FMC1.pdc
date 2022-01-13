@@ -1,0 +1,146 @@
+# Microsemi I/O Physical Design Constraints file
+
+# User I/O Constraints file 
+
+# Version: v12.5 12.900.10.16
+
+# Family: PolarFireSoC , Die: MPFS250T_ES , Package: FCG1152
+
+# Date generated: Thu Oct  1 13:47:28 2020 
+
+
+# 
+# User Locked I/O Bank Settings
+# 
+
+
+# 
+# Unlocked I/O Bank Settings
+# The I/O Bank Settings can be locked by directly editing this file
+# or by making changes in the I/O Attribute Editor
+# 
+
+#set_iobank -bank_name Bank0   \
+    -auto_calib true          \
+    -auto_calib_ramp_time 50  \
+    -fixed false
+set_iobank -bank_name Bank0 -vcci 1.20 -vref 0.60 -fixed false -auto_calib true -auto_calib_ramp_time 50
+set_iobank -bank_name Bank1   \
+    -auto_calib true          \
+    -auto_calib_ramp_time 50
+
+set_iobank -bank_name Bank7   \
+    -auto_calib true          \
+    -auto_calib_ramp_time 50  \
+    -fixed false
+
+#set_iobank -bank_name Bank7   \
+    -auto_calib true          \
+    -auto_calib_ramp_time 50  \
+    -fixed false
+set_iobank -bank_name Bank7 -vcci 3.30 -fixed false -auto_calib true -auto_calib_ramp_time 50
+set_iobank -bank_name Bank8   \
+    -auto_calib true          \
+    -auto_calib_ramp_time 50
+
+set_iobank -bank_name Bank9   \
+    -auto_calib true          \
+    -auto_calib_ramp_time 50
+
+
+# 
+# User Locked I/O settings
+# 
+
+
+# 
+# Dedicated Peripheral I/O Settings
+# 
+
+
+# 
+# Unlocked I/O settings
+# The I/Os in this section are unplaced or placed but are not locked
+# the other listed attributes have been applied
+# 
+
+
+set_io -port_name CAN_0_RXBUS_F2M  -pin_name E7    -fixed true -DIRECTION INPUT
+
+
+set_io -port_name CAN_0_TXBUS_M2F  -pin_name G14    -fixed true -DIRECTION OUTPUT
+
+
+set_io -port_name CAN_FMC_ON  -pin_name J14  -fixed true -DIRECTION OUTPUT
+
+
+set_io -port_name CAN_FMC_RE_N -pin_name F7 -fixed true -DIRECTION OUTPUT
+
+
+set_io -port_name CAN_FMC_S  -pin_name F13   -fixed true  -DIRECTION OUTPUT
+
+
+set_io -port_name GATE1_EN -pin_name G11    -fixed true  -DIRECTION OUTPUT
+
+
+set_io -port_name GATE1_INA  -pin_name D11  -fixed true  -DIRECTION OUTPUT
+
+
+set_io -port_name GATE1_INB  -pin_name G10  -fixed true  -DIRECTION OUTPUT
+
+
+
+set_io -port_name PMOD1_0  -pin_name D4  -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name PMOD1_1  -pin_name E5  -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name PMOD1_2  -pin_name G6  -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name PMOD1_3  -pin_name F5  -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name PMOD1_4  -pin_name L15  -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name PMOD1_5  -pin_name B6  -fixed true  -DIRECTION INOUT
+
+
+
+set_io -port_name PMOD1_6  -pin_name L14  -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name PMOD1_7 -pin_name A5   -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name RS485A_DE -pin_name C11  -fixed true -DIRECTION INOUT
+
+
+set_io -port_name RS485A_RE_N -pin_name F8 -fixed true -DIRECTION INOUT
+
+
+set_io -port_name RS485B_DE  -pin_name K18  -fixed true   -DIRECTION INOUT
+
+
+set_io -port_name RS485B_DOUT -pin_name K17  -fixed true  -DIRECTION INOUT
+
+
+set_io -port_name RS485B_ON  -pin_name F10  -fixed true   -DIRECTION INOUT
+
+
+set_io -port_name RS485B_RE_N  -pin_name F9  -fixed true -DIRECTION INOUT
+
+
+set_io -port_name RS485B_TE  -pin_name L17  -fixed true    -DIRECTION INOUT
+
+
+set_io -port_name RS485A_TXD  -pin_name E11  -fixed true    -DIRECTION OUTPUT
+
+set_io -port_name RS485B_TXD  -pin_name L18  -fixed true    -DIRECTION OUTPUT
+
+set_io -port_name RS485A_RXD  -pin_name E8  -fixed true    -DIRECTION INPUT
+
+set_io -port_name RS485B_RXD  -pin_name B11  -fixed true    -DIRECTION INPUT
+   

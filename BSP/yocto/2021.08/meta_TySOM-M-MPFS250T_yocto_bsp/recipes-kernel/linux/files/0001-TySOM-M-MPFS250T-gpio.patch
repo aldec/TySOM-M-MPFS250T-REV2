@@ -1,0 +1,31 @@
+From 81b0a087cda241cad7d799e57aff46afca60abb7 Mon Sep 17 00:00:00 2001
+From: OpenEmbedded <oe.patch@oe>
+Date: Fri, 10 Sep 2021 12:56:34 +0200
+Subject: [PATCH] TySOM-M-MPFS250T-gpio
+
+---
+ drivers/gpio/gpio-microsemi.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpio/gpio-microsemi.c b/drivers/gpio/gpio-microsemi.c
+index 24bb9a8..7650181 100644
+--- a/drivers/gpio/gpio-microsemi.c
++++ b/drivers/gpio/gpio-microsemi.c
+@@ -200,9 +200,13 @@ static int microsemi_mss_gpio_get_value(struct gpio_chip *gc,
+ 	if (gpio_index >= gc->ngpio)
+ 		return -EINVAL;
+ 
+-	if (!microsemi_mss_gpio_get_direction(gc, gpio_index))
++	if (!microsemi_mss_gpio_get_direction(gc, gpio_index)) {
+ 	result = MSS_GPIO_IOREAD(mss_gpio->gpio_out_base) &
+ 			BIT(gpio_index);
++	} else {
++		result = MSS_GPIO_IOREAD(mss_gpio->gpio_in_base) &
++				BIT(gpio_index);
++	}
+ 
+ 	return result;
+ }
+-- 
+1.8.3.1
+
