@@ -29,9 +29,8 @@ Aldec Yocto Project layer that needs to be added to the PolarFire SoC Yocto Proj
 
 ### Hardware <a name="requirements-hardware"/>
 - TySOM-M-MPFS250T
-- PMOD/UART extension is needed only for revision 1 boards.
 - FlashPro 5 programmer
-- 2 x micro USB Cable
+- 2 x Micro USB Cable
 
 ### Software <a name="requirements-software"/>
 - Libero 2021.1
