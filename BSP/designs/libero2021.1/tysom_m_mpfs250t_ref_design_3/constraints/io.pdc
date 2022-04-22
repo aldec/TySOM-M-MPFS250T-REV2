@@ -16,21 +16,26 @@ set_iobank -bank_name Bank1  \
 # bank 1 3.3V
 set_io -port_name USB_ULPI_RESET -pin_name B1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS18
  
+
+# uart dedicated
+set_io -port_name MMUART_1_TXD_M2F -pin_name U2 -DIRECTION OUTPUT -io_std LVCMOS33 
+set_io -port_name MMUART_1_RXD_F2M -pin_name U4 -DIRECTION INPUT -io_std LVCMOS33
+set_io -port_name MMUART_2_TXD_M2F -pin_name T4 -DIRECTION OUTPUT -io_std LVCMOS33 
+set_io -port_name MMUART_2_RXD_F2M -pin_name P1 -DIRECTION INPUT -io_std LVCMOS33 
+set_io -port_name MMUART_3_TXD_M2F -pin_name R2 -DIRECTION OUTPUT -io_std LVCMOS33 
+set_io -port_name MMUART_3_RXD_F2M -pin_name R3 -DIRECTION INPUT -io_std LVCMOS33
+
 # bank 7 3.3V (PMOD)
- set_io -port_name MMUART_0_TXD_M2F -pin_name G2 -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_0_RXD_F2M -pin_name E1 -DIRECTION INPUT -io_std LVCMOS33 
-set_io -port_name MMUART_1_TXD_M2F -pin_name H1 -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_1_RXD_F2M -pin_name G1 -DIRECTION INPUT -io_std LVCMOS33
-set_io -port_name MMUART_2_TXD_M2F -pin_name H2 -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_2_RXD_F2M -pin_name K2 -DIRECTION INPUT -io_std LVCMOS33 
-set_io -port_name MMUART_3_TXD_M2F -pin_name K1 -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_3_RXD_F2M -pin_name J1 -DIRECTION INPUT -io_std LVCMOS33
+#set_io -port_name MMUART_0_TXD_M2F -pin_name G2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_0_RXD_F2M -pin_name E1  -fixed true -DIRECTION INPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_1_TXD_M2F -pin_name H1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_1_RXD_F2M -pin_name G1 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_2_TXD_M2F -pin_name H2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_2_RXD_F2M -pin_name K2 -fixed true -DIRECTION INPUT -io_std LVCMOS33
+#set_io -port_name MMUART_3_TXD_M2F -pin_name K1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_3_RXD_F2M -pin_name J1 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
 
 # bank 7 3.3V
-set_io -port_name VSC_8662_CMODE3 -pin_name T4 -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name VSC_8662_CMODE4 -pin_name U4 -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name VSC_8662_CMODE5 -pin_name U2 -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name VSC_8662_CMODE6 -pin_name V1 -DIRECTION OUTPUT -io_std LVCMOS33 
 set_io -port_name VSC_8662_CMODE7 -pin_name V2 -DIRECTION OUTPUT -io_std LVCMOS33 
 set_io -port_name VSC_8662_RESETN -pin_name J6 -DIRECTION OUTPUT -io_std LVCMOS33 
 set_io -port_name VSC_8662_SRESET -pin_name J3 -DIRECTION OUTPUT -io_std LVCMOS33

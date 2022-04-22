@@ -56,23 +56,18 @@ sd_create_scalar_port -sd_name ${sd_name} -port_name {RAS_N} -port_direction {OU
 sd_create_scalar_port -sd_name ${sd_name} -port_name {WE_N} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {CAS_N} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {ACT_N} -port_direction {OUT} -port_is_pad {1}
-sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_0_TXD_M2F} -port_direction {OUT}
+#sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_0_TXD_M2F} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_1_TXD_M2F} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_2_TXD_M2F} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_3_TXD_M2F} -port_direction {OUT}
+#sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_0_RXD_F2M} -port_direction {IN}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_2_RXD_F2M} -port_direction {IN}
-sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_0_RXD_F2M} -port_direction {IN}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_1_RXD_F2M} -port_direction {IN}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_3_RXD_F2M} -port_direction {IN}
-sd_create_scalar_port -sd_name ${sd_name} -port_name {VSC_8662_CMODE6} -port_direction {OUT}
-sd_create_scalar_port -sd_name ${sd_name} -port_name {VSC_8662_CMODE5} -port_direction {OUT}
-sd_create_scalar_port -sd_name ${sd_name} -port_name {VSC_8662_CMODE4} -port_direction {OUT}
-sd_create_scalar_port -sd_name ${sd_name} -port_name {VSC_8662_CMODE3} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {VSC_8662_CMODE7} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {VSC_8662_RESETN} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {VSC_8662_SRESET} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_SEL} -port_direction {OUT}
-sd_create_scalar_port -sd_name ${sd_name} -port_name {PLL_SGMII_LOCK_M2F} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {USB_ULPI_RESET} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {I2C_0_SCL} -port_direction {INOUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {I2C_0_SDA} -port_direction {INOUT} -port_is_pad {1}
@@ -87,10 +82,7 @@ sd_create_bus_port -sd_name ${sd_name} -port_name {DQS_N} -port_direction {INOUT
 sd_create_bus_port -sd_name ${sd_name} -port_name {A} -port_direction {OUT} -port_range {[13:0]} -port_is_pad {1}
 sd_create_bus_port -sd_name ${sd_name} -port_name {BG} -port_direction {OUT} -port_range {[1:0]} -port_is_pad {1}
 
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {VSC_8662_CMODE6} -value {VCC}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {VSC_8662_CMODE5} -value {GND}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {VSC_8662_CMODE4} -value {GND}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {VSC_8662_CMODE3} -value {GND}
+
 sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {VSC_8662_CMODE7} -value {GND}
 sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {VSC_8662_SRESET} -value {VCC}
 sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {SD_SEL} -value {VCC}
@@ -99,7 +91,6 @@ sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {CAN_0_STANDBY} -valu
 # Add Aldec_MSSv2_0 instance
 sd_instantiate_component -sd_name ${sd_name} -component_name {Aldec_MSSv2} -instance_name {Aldec_MSSv2_0}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:CAN_0_TX_EBL_M2F}
-sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:MMUART_0_TXD_OE_M2F}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:MMUART_1_TXD_OE_M2F}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:PLL_CPU_LOCK_M2F}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:PLL_DDR_LOCK_M2F}
@@ -208,14 +199,15 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"I2C_1_SCL" "Aldec_MSSv2_0:I2C_1
 sd_connect_pins -sd_name ${sd_name} -pin_names {"I2C_1_SDA" "Aldec_MSSv2_0:I2C_1_SDA" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MAC_1_MDC" "Aldec_MSSv2_0:MAC_1_MDC" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MAC_1_MDIO" "Aldec_MSSv2_0:MAC_1_MDIO" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_0_RXD_F2M" "Aldec_MSSv2_0:MMUART_0_RXD_F2M" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_0_TXD_M2F" "Aldec_MSSv2_0:MMUART_0_TXD_M2F" }
+#sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_0_RXD_F2M" "Aldec_MSSv2_0:MMUART_0_RXD_F2M" }
+#sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_0_TXD_M2F" "Aldec_MSSv2_0:MMUART_0_TXD_M2F" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_1_RXD_F2M" "Aldec_MSSv2_0:MMUART_1_RXD_F2M" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_1_TXD_M2F" "Aldec_MSSv2_0:MMUART_1_TXD_M2F" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_2_RXD_F2M" "Aldec_MSSv2_0:MMUART_2_RXD_F2M" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_2_TXD_M2F" "Aldec_MSSv2_0:MMUART_2_TXD_M2F" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_3_RXD_F2M" "Aldec_MSSv2_0:MMUART_3_RXD_F2M" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"MMUART_3_TXD_M2F" "Aldec_MSSv2_0:MMUART_3_TXD_M2F" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Aldec_MSSv2_0:MMUART_4_TXD_M2F" "Aldec_MSSv2_0:MMUART_4_RXD_F2M"} 
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ODT0" "Aldec_MSSv2_0:ODT0" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_0:CLK" "PF_CCC_C0_0:OUT0_FABCLK_0" "Aldec_MSSv2_0:FIC_0_ACLK" "Aldec_MSSv2_0:FIC_3_PCLK" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_0:PLL_LOCK" "PF_CCC_C0_0:PLL_LOCK_0" }
@@ -223,7 +215,6 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"PF_OSC_C0_0:RCOSC_160MHZ_GL" "P
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_0:BANK_x_VDDI_STATUS" "PFSOC_INIT_MONITOR_C0_0:BANK_0_VDDI_STATUS" "CORERESET_PF_C0_0:BANK_y_VDDI_STATUS" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"PFSOC_INIT_MONITOR_C0_0:DEVICE_INIT_DONE" "CORERESET_PF_C0_0:INIT_DONE" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"PFSOC_INIT_MONITOR_C0_0:FABRIC_POR_N" "CORERESET_PF_C0_0:FPGA_POR_N" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"PLL_SGMII_LOCK_M2F" "Aldec_MSSv2_0:PLL_SGMII_LOCK_M2F" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"RAS_N" "Aldec_MSSv2_0:RAS_N" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"REFCLK" "Aldec_MSSv2_0:REFCLK" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"REFCLK_N" "Aldec_MSSv2_0:REFCLK_N" }
@@ -262,6 +253,17 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"BG" "Aldec_MSSv2_0:BG" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"DQ" "Aldec_MSSv2_0:DQ" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"DQS" "Aldec_MSSv2_0:DQS" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"DQS_N" "Aldec_MSSv2_0:DQS_N" }
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:QSPI_DATA_M2F} 
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:QSPI_DATA_OE_M2F} 
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:QSPI_SEL_M2F} 
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:QSPI_SEL_OE_M2F} 
+sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:QSPI_DATA_F2M} -value {GND} 
+sd_connect_pin_to_port -sd_name ${sd_name} -pin_name {Aldec_MSSv2_0:MMUART_0} -port_name {} 
+sd_connect_pin_to_port -sd_name ${sd_name} -pin_name {Aldec_MSSv2_0:MMUART_0_IN} -port_name {} 
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:PLL_SGMII_LOCK_M2F} 
+sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:CAN_1_IN} -value {GND} 
+#sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:CAN_1_TXBUS_M2F}
+#sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Aldec_MSSv2_0:CAN_1_TX_EBL_M2F}
 
 
 # Re-enable auto promotion of pins of type 'pad'

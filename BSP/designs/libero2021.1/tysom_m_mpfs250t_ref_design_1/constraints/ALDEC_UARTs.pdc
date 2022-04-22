@@ -2,12 +2,23 @@ set_iobank -bank_name Bank7  \
     -vcci 3.30               \
     -fixed true             \
     -update_iostd true
+#REV1
+#set_io -port_name MMUART_0_TXD_M2F -pin_name G2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_0_RXD_F2M -pin_name E1  -fixed true -DIRECTION INPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_1_TXD_M2F -pin_name H1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_1_RXD_F2M -pin_name G1 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_2_TXD_M2F -pin_name H2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_2_RXD_F2M -pin_name K2 -fixed true -DIRECTION INPUT -io_std LVCMOS33
+#set_io -port_name MMUART_3_TXD_M2F -pin_name K1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_3_RXD_F2M -pin_name J1 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
 
-set_io -port_name MMUART_0_TXD_M2F -pin_name G2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_0_RXD_F2M -pin_name E1  -fixed true -DIRECTION INPUT -io_std LVCMOS33 
-set_io -port_name MMUART_1_TXD_M2F -pin_name H1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_1_RXD_F2M -pin_name G1 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
-set_io -port_name MMUART_2_TXD_M2F -pin_name H2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_2_RXD_F2M -pin_name K2 -fixed true -DIRECTION INPUT -io_std LVCMOS33
-set_io -port_name MMUART_3_TXD_M2F -pin_name K1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
-set_io -port_name MMUART_3_RXD_F2M -pin_name J1 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
+#REV2
+set_io -port_name MMUART_1_TXD_M2F -pin_name U2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+set_io -port_name MMUART_1_RXD_F2M -pin_name U4 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
+set_io -port_name MMUART_2_TXD_M2F -pin_name T4 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+set_io -port_name MMUART_2_RXD_F2M -pin_name P1 -fixed true -DIRECTION INPUT -io_std LVCMOS33
+set_io -port_name MMUART_3_TXD_M2F -pin_name R2 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33 
+set_io -port_name MMUART_3_RXD_F2M -pin_name R3 -fixed true -DIRECTION INPUT -io_std LVCMOS33 
+#set_io -port_name MMUART_3_TXD_M2F -pin_name AN9 -fixed true -DIRECTION OUTPUT -io_std LVCMOS18 
+#set_io -port_name MMUART_3_RXD_F2M -pin_name AN8 -fixed true -DIRECTION INPUT -io_std LVCMOS18 
+

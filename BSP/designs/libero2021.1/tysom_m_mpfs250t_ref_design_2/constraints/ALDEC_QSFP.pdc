@@ -76,8 +76,8 @@ set_io -port_name LANE1_TXD_P  -pin_name M34  -DIRECTION OUTPUT
 #set_io -port_name LANE3_TXD_P  -pin_name P34  -DIRECTION OUTPUT
 
 
-set_io -port_name REF_CLK_PAD_N -pin_name H30 -DIRECTION INPUT
+set_io -port_name REF_CLK_PAD_N -pin_name L28 -DIRECTION INPUT
 
-set_io -port_name REF_CLK_PAD_P -pin_name H29 -DIRECTION INPUT
+set_io -port_name REF_CLK_PAD_P -pin_name L27 -DIRECTION INPUT
 
 

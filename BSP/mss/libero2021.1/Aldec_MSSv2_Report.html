@@ -54,7 +54,7 @@
 </tr>
 <tr>
  <td>Date</td>
- <td>Wed Jun  9 11:03:52 2021
+ <td>Wed Dec  8 12:04:05 2021
 </td>
 </tr>
 </table>
@@ -127,7 +127,7 @@
 </tr>
 <tr>
  <td>QSPI</td>
- <td>UNUSED</td>
+ <td>FABRIC</td>
 </tr>
 <tr>
  <td>SPI_0</td>
@@ -139,7 +139,7 @@
 </tr>
 <tr>
  <td>MMUART_0</td>
- <td>FABRIC</td>
+ <td>MSSIO_B2_C</td>
 </tr>
 <tr>
  <td>MMUART_1</td>
@@ -155,7 +155,7 @@
 </tr>
 <tr>
  <td>MMUART_4</td>
- <td>UNUSED</td>
+ <td>FABRIC</td>
 </tr>
 <tr>
  <td>I2C_0</td>
@@ -171,7 +171,7 @@
 </tr>
 <tr>
  <td>CAN_1</td>
- <td>UNUSED</td>
+ <td>FABRIC</td>
 </tr>
 <tr>
  <td>GPIO_0_0</td>
@@ -538,10 +538,6 @@
  <td>INPUT</td>
 </tr>
 <tr>
- <td>MMUART_0_RXD_F2M</td>
- <td>INPUT</td>
-</tr>
-<tr>
  <td>MMUART_1_RXD_F2M</td>
  <td>INPUT</td>
 </tr>
@@ -554,7 +550,19 @@
  <td>INPUT</td>
 </tr>
 <tr>
+ <td>MMUART_4_RXD_F2M</td>
+ <td>INPUT</td>
+</tr>
+<tr>
  <td>CAN_0_RXBUS_F2M</td>
+ <td>INPUT</td>
+</tr>
+<tr>
+ <td>CAN_1_RXBUS_F2M</td>
+ <td>INPUT</td>
+</tr>
+<tr>
+ <td>QSPI_DATA_F2M[3:0]</td>
  <td>INPUT</td>
 </tr>
 <tr>
@@ -706,14 +714,6 @@
  <td>OUTPUT</td>
 </tr>
 <tr>
- <td>MMUART_0_TXD_M2F</td>
- <td>OUTPUT</td>
-</tr>
-<tr>
- <td>MMUART_0_TXD_OE_M2F</td>
- <td>OUTPUT</td>
-</tr>
-<tr>
  <td>MMUART_1_TXD_M2F</td>
  <td>OUTPUT</td>
 </tr>
@@ -730,11 +730,39 @@
  <td>OUTPUT</td>
 </tr>
 <tr>
+ <td>MMUART_4_TXD_M2F</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
  <td>CAN_0_TX_EBL_M2F</td>
  <td>OUTPUT</td>
 </tr>
 <tr>
  <td>CAN_0_TXBUS_M2F</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
+ <td>CAN_1_TX_EBL_M2F</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
+ <td>CAN_1_TXBUS_M2F</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
+ <td>QSPI_SEL_M2F</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
+ <td>QSPI_SEL_OE_M2F</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
+ <td>QSPI_DATA_M2F[3:0]</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
+ <td>QSPI_DATA_OE_M2F[3:0]</td>
  <td>OUTPUT</td>
 </tr>
 <tr>
@@ -839,6 +867,14 @@
 </tr>
 <tr>
  <td>MAC_1_TSU_PDELAY_RESP_RX_M2F</td>
+ <td>OUTPUT</td>
+</tr>
+<tr>
+ <td>MMUART_0_RXD</td>
+ <td>INPUT</td>
+</tr>
+<tr>
+ <td>MMUART_0_TXD</td>
  <td>OUTPUT</td>
 </tr>
 <tr>
@@ -1510,6 +1546,34 @@
  <td>OFF</td>
  <td>--</td>
  <td>--</td>
+</tr>
+<tr>
+ <td>MMUART_0_RXD</td>
+ <td>MSSIO35</td>
+ <td>U10</td>
+ <td>INPUT</td>
+ <td>UP</td>
+ <td>OFF</td>
+ <td>OFF</td>
+ <td>OFF</td>
+ <td>OFF</td>
+ <td>OFF</td>
+ <td>--</td>
+ <td>--</td>
+</tr>
+<tr>
+ <td>MMUART_0_TXD</td>
+ <td>MSSIO36</td>
+ <td>U14</td>
+ <td>OUTPUT</td>
+ <td>UP</td>
+ <td>OFF</td>
+ <td>OFF</td>
+ <td>OFF</td>
+ <td>--</td>
+ <td>--</td>
+ <td>8</td>
+ <td>OFF</td>
 </tr>
 <tr>
  <td>GPIO_1_23_OUT</td>
