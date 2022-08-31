@@ -80,12 +80,12 @@ a) Preparing SD Card  (Host PC with Linux OS)
 ```bash
 zcat ./tmp-glibc/deploy/images/tysom-m-mpfs250t/mpfs-dev-cli-tysom-m-mpfs250t.wic.gz | sudo dd of=/dev/sdX bs=4096 iflag=fullblock oflag=direct conv=fsync status=progress
 ```
-- when the command is complete plug the SD card into the TySOM-M-MPFS250T board, connect PMOD-UART and power on the board. The Linux console should be visible on the UART1, while the HSS is on the UART0
+- when the command is complete plug the SD card into the TySOM-M-MPFS250T board, connect micro USB cable to board J6 and power on the board. The Linux console should be visible on the UART1, while the HSS is on the UART0
 
 b) Programming eMMC memory (Host PC with Linux OS)
 In order to program eMMC the board should be programmed with bitfile and HSS and the UARTs should be connected.
-- connect the TySOM-M-MPFS250T (J5 mini USB connector) to the Host PC using micro USB cable.
-- connect J6 micro UART cable to board and start terminal on the UART0 (On the Linux OS it should be /dev/ttyXRUSB0)
+- connect the TySOM-M-MPFS250T (J5 micro USB connector) to the Host PC using micro USB cable.
+- connect micro UART cable to board J6 and start terminal on the UART0 (On the Linux OS it should be /dev/ttyXRUSB0)
 - power up the board and wait for the HSS. When you see the message below, press a key to enter the HSS console.
 ```bash
 [2.03609] HSS_MMCInit(): Attempting to select SDCARD ... [3.14030] mmc_init_common(): MSS_MMC_init() returned unexpected 0
