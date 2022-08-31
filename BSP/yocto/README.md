@@ -85,7 +85,7 @@ zcat ./tmp-glibc/deploy/images/tysom-m-mpfs250t/mpfs-dev-cli-tysom-m-mpfs250t.wi
 b) Programming eMMC memory (Host PC with Linux OS)
 In order to program eMMC the board should be programmed with bitfile and HSS and the UARTs should be connected.
 - connect the TySOM-M-MPFS250T (J5 mini USB connector) to the Host PC using micro USB cable.
-- connect micro UART cable to board and start terminal on the UART0 (On the Linux OS it should be /dev/ttyXRUSB0)
+- connect J6 micro UART cable to board and start terminal on the UART0 (On the Linux OS it should be /dev/ttyXRUSB0)
 - power up the board and wait for the HSS. When you see the message below, press a key to enter the HSS console.
 ```bash
 [2.03609] HSS_MMCInit(): Attempting to select SDCARD ... [3.14030] mmc_init_common(): MSS_MMC_init() returned unexpected 0
