@@ -12,7 +12,7 @@ This directory contains the Libero design for TySOM-M-MPFS250T board.
   - [tysom_m_mpfs250t_ref_design_2](#ref-desing-2)
   - [tysom_m_mpfs250t_ref_design_4](#ref-desing-4)
   - [tysom_m_mpfs250t_ref_design_5](#ref-desing-5)
-
+- [Extras](#ref-extras)
 ## List of reference designs <a name="ref-desing-list"/>
 
 Here is a list of all provided reference desings for TySOM-M-MPFS250T board.
@@ -35,7 +35,7 @@ All the reference desings support the following MSS interfaces:
 
 A reference design folder contains a comprehensive instruction on building and using a reference design.
 
-### [tysom_m_mpfs250t_ref_design_1](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_1) <a name="ref-desing-1"/>
+### [tysom_m_mpfs250t_ref_design_1](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_1) <a name="ref-desing-1"/>
 
 Supported Fabric Interfaces:
 
@@ -44,7 +44,7 @@ Supported Fabric Interfaces:
 | CAN                   | 2022.2  |   2022.09   |
 | I2C0                  | 2022.2  |   2022.09   |
 
-### [tysom_m_mpfs250t_ref_design_3](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_3) <a name="ref-desing-2"/>
+### [tysom_m_mpfs250t_ref_design_2](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_2) <a name="ref-desing-2"/>
 
 Supported Fabric Interfaces:
 
@@ -53,7 +53,7 @@ Supported Fabric Interfaces:
 | DDR                   | 2022.2  |   2022.09   |
 | PCIe                  | 2022.2  |   2022.09   |
 
-### [tysom_m_mpfs250t_ref_design_4](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_4) <a name="ref-desing-4"/>
+### [tysom_m_mpfs250t_ref_design_4](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_4) <a name="ref-desing-4"/>
 
 Supported Fabric Interfaces:
 
@@ -62,7 +62,7 @@ Supported Fabric Interfaces:
 | DDR                   | 2022.2  |   2022.09   |
 | HDMI                  | 2022.2  |   2022.09   |
 
-### [tysom_m_mpfs250t_ref_design_5](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_5) <a name="ref-desing-5"/>
+### [tysom_m_mpfs250t_ref_design_5](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_5) <a name="ref-desing-5"/>
 
 Supported Fabric Interfaces:
 
@@ -80,3 +80,7 @@ a. FMC-INDUSTRIAL
 | Digilent Pmod Header  |
 | RS485                 |
 | CAN                   |
+
+## Extras <a name="ref-extras"/>
+
+In Extras subdirectory are located prepared bitfiles dedicated for FlashPro Express that can be used instead of generating designs from TCL scripts. There is also included precompilated HSS.hex file that can be attached in Libero design instead of building .hex file in SoftConsole.

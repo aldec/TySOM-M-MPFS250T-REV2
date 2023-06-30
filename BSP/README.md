@@ -19,7 +19,7 @@ This repository provides all necessary files for building and running Linux OS o
 ## Introduction <a name="introduction"/>
 [TySOM-M-MPFS250T](https://www.aldec.com/en/products/emulation/tysom_boards/polarfire_microchip/tysom_m) is Aldec board based on PolarFire SoC MPFS250T-ES, the first SoC FPGA with 64-bit RISC-V multi-core microprocessor subsystem. There are a few steps that needs to be done to boot Linux on the board:
 1. Bitfile generation using Libero SoC with FPGA and microprocessor subsystem configuration.
-In the designs/libero2021.1/reference_design directory there are files to generate reference design for TySOM-M-MPFS250T using Libero ( with SD Card ).
+In the designs/libero2022.2/reference_design directory there are files to generate reference design for TySOM-M-MPFS250T using Libero ( with SD Card ).
 2. Building Hart Software Services baremetal application for TySOM-M-MPFS250T.
 Aldec delivers a patch for official HSS repository which adds TySOM-M-MPFS250T support. HSS is the baremetal application which is zero stage boot loader (ZSBL) in this flow.
 3. Linux OS
@@ -35,7 +35,6 @@ Aldec Yocto Project layer that needs to be added to the PolarFire SoC Yocto Proj
 ### Software <a name="requirements-software"/>
 - Libero 2022.2
 - SoftConsole 2021.3
-
 ## BSP structure <a name="bsp-structure"/>
 
 Aldec TySOM-M-MPFS250T BSP is composed of the following components:
@@ -75,7 +74,7 @@ Aldec TySOM-M-MPFS250T BSP is composed of the following components:
 | CAN            | 2022.2  |   2022.09   |
 
 ## Reference design <a name="reference-design"/>
-The BSP package contains as well a set of [reference designs](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/master/BSP/designs) which can be used by customers.
+The BSP package contains as well a set of [reference designs](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs) which can be used by customers.
 
 ## Limitations <a name="limitations"/>
 - The Aldec TySOM-M-MPFS250T-rev2 require Linux / Windows USB driver XR21V link (https://www.maxlinear.com/support/technical-documentation?doctypeid=14)
