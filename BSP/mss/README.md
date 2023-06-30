@@ -2,8 +2,8 @@
 This folder contains the PolarFire SOC MSS Configurator project for Aldec TySOM-M-MPFS250T.
 
 ## Tools
-PolarFireSOC MSS Configurator (Pre-production). Version 2021.1 from Libero 2021.1
+PolarFireSOC MSS Configurator (Pre-production). Version 2022.2 from Libero 2022.2
 
 ## Customization
-In order to enable more peripherals or customize the MSS for TySOM-M-MPFS250T board please load the Aldec_MSSv2.cfg or Aldec_MSSv2_sd.cfg file from specific version directory into the PolarFire MSS Configurator and customize.
+In order to enable more peripherals or customize the MSS for TySOM-M-MPFS250T board please load the Aldec_MSS_2022_2.cfg  file from specific version directory into the PolarFire MSS Configurator and customize.
 It is not recommended to change the DDR configuration.

@@ -16,7 +16,7 @@
 
 Hart Software Services, commonly referred as “HSS”, is a collection of services that run on the E51 monitor core. HSS is used for the following:
 - Program memory using USB mass storage.
-- Copy a program (Linux or Bare Metal) from a non-volatile storage (for example, eMMC or SD card) to the LIM or DDR.
+- Copy a program (Linux or Bare Metal) from a non-volatile storage (for example SD card) to the LIM or DDR.
 - Create a payload containing multiple applications to be booted and run.
 - Pass messages between cores in the MSS.
 
@@ -40,7 +40,7 @@ This software is released under an MIT license. It also uses other open source t
 Aldec has patched [HSS](https://github.com/polarfire-soc/hart-software-services) repository with necessery changes for TySOM-M-MPFS250T board.  
 - Patch version : 1.0
 - HSS original repository fork commit: 58b03943834fe34991dc5fa924436b3620e07aa5
-- SoftConsole v6.4
+- SoftConsole v2021.3
 
 ### Building <a name="building"/>
 
@@ -54,7 +54,7 @@ Both Linux and Windows are supported by Kconfiglib. Kconfiglib is easily install
 $ pip install kconfiglib
 ```
 
-This step requires RISC-V cross compiler. It for example can be found inside the SoftConsole tool (SoftConsole-v2021.1/riscv-unknown-elf-gcc/bin). The cross compller should be added to system PATH (export PATH=<path to your cross compiller>:$PATH)
+This step requires RISC-V cross compiler. It for example can be found inside the SoftConsole tool (SoftConsole-v2021.3/riscv-unknown-elf-gcc/bin). The cross compller should be added to system PATH (export PATH=<path to your cross compiller>:$PATH)
 1. Change directory to version directory (v1_0), and execute ./hss.sh script. It will download HSS repo, checkout the specified commit, and patch it with Aldec HSS patch.
 2. Change directory to hart-software-services and copy config file for TySOM-M-MPFS250T board
 
@@ -72,12 +72,12 @@ $ cp boards/tysom-m-mpfs250t/def_config ./.config
 $ make BOARD=tysom-m-mpfs250t
 ```
 
-After this step the hss.hex and hss.elf can be found within Default directory
+After this step the .hex and .elf can be found within Default directory
 
 ### Rebuilding <a name="rebuilding"/>
 
 HSS should be recompiled each time the PolarFire SoC MSS Configuration changed.
-1. Replace the boards/tysom-m-mpfs250t/soc_fpga_design/xml/Aldec_MSSv2_mss_cfg.xml file with new configuration xml file generated using PolarFire SoC MSS Configurator.
+1. Replace the boards/tysom-m-mpfs250t/soc_fpga_design/xml/Aldec_2022_2_mss_cfg.xml file with new configuration xml file generated using PolarFire SoC MSS Configurator.
 2. Remove boards/tysom-m-mpfs250t/soc_config directory
 3. Clean and make:
 
@@ -91,16 +91,16 @@ $ make BOARD=tysom-m-mpfs250t
 
 ### Programming <a name="programming"/>
 
-In order to program the board the FlashPro5 cable must be connected to the JTAG connector of TySOM-M MPFS250T board, and the board should be powered on.
+In order to program the board the FlashPro5 or FlashPro6 cable must be connected to the JTAG connector of TySOM-M MPFS250T board, and the board should be powered on.
 
 Programming the board with HSS can be done in two ways:
-1. Libero 2021.1 - hss.hex file can be added as a Boot Mode Client 1 to the eNVM memory during bitfile creation.
+1. Libero 2022.2 - hss.hex file can be added as a Boot Mode Client 1 to the eNVM memory during bitfile creation.
 - In Libero Design Flow tab, after Generating FPGA Array Data of the design, click on the "Configure Design Initialization Data and Memories
 - select eNVM tab add click Add Boot Mode Client 1, and select the hss.hex file.
 
 The HSS will be inside the bitfile, and will run after board programming.
 
-2. SoftConsole 6.4
+2. SoftConsole 2021.3
 - Start SoftConsole in its workspace (<SoftConsole>/extras/workspace.examples)
 - Select File->Import, then existing project into workspace, and navigate to the previously downloaded HSS repo
 - In order to program the board press Run->External Tools -> PolarFire SoC non-secure boot mode 1.

@@ -9,7 +9,7 @@ This directory contains the Libero design for TySOM-M-MPFS250T board.
 ## Table of Content
 - [List of reference designs](#ref-desing-list)
   - [tysom_m_mpfs250t_ref_design_1](#ref-desing-1)
-  - [tysom_m_mpfs250t_ref_design_3](#ref-desing-3)
+  - [tysom_m_mpfs250t_ref_design_2](#ref-desing-2)
   - [tysom_m_mpfs250t_ref_design_4](#ref-desing-4)
   - [tysom_m_mpfs250t_ref_design_5](#ref-desing-5)
 
@@ -20,56 +20,55 @@ The designs differ in the supported interface in the FPGA Fabric.
 
 All the reference desings support the following MSS interfaces:
 
-| Interface/Module Name | Version | HSS version |
-| --------------------- |:-------:|:-----------:|
-| DDR                   | 2021.1  | Patch v1.0  |
-| USB                   | 2021.1  | Patch v1.0  |
-| I2C1                  | 2021.1  | Patch v1.0  |
-| ETH1                  | 2021.1  | Patch v1.0  |
-| ETH2                  | 2021.1  | Patch v1.0  |
-| ETH MDIO              | 2021.1  | Patch v1.0  |
-| UART                  | 2021.1  | Patch v1.0  |
-| uSD/eMMC              | 2021.1  | Patch v1.0  |
-| GPIO LED0             | 2021.1  | Patch v1.0  |
-| GPIO PUSHBUTTON       | 2021.1  | Patch v1.0  |
-| eMMC                  | 2021.1  | Patch v1.0  |
+| Interface Name  | Version | HSS version |
+| --------------- |:-------:|:-----------:|
+| DDR             | 2022.2  |   2022.09   |
+| USB             | 2022.2  |   2022.09   |
+| I2C1            | 2022.2  |   2022.09   |
+| ETH1            | 2022.2  |   2022.09   |
+| ETH2            | 2022.2  |   2022.09   |
+| ETH MDIO        | 2022.2  |   2022.09   |
+| UART            | 2022.2  |   2022.09   |
+| uSD             | 2022.2  |   2022.09   |
+| GPIO LED0       | 2022.2  |   2022.09   |
+| GPIO PUSHBUTTON | 2022.2  |   2022.09   |
 
 A reference design folder contains a comprehensive instruction on building and using a reference design.
 
-### [tysom_m_mpfs250t_ref_design_1](https://github.com/aldec/TySOM-M-MPFS250T/tree/master/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_1) <a name="ref-desing-1"/>
+### [tysom_m_mpfs250t_ref_design_1](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_1) <a name="ref-desing-1"/>
 
 Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| CAN                   | 2021.1  | Patch v1.0  |
-| I2C0                  | 2021.1  | Patch v1.0  |
+| CAN                   | 2022.2  |   2022.09   |
+| I2C0                  | 2022.2  |   2022.09   |
 
-### [tysom_m_mpfs250t_ref_design_3](https://github.com/aldec/TySOM-M-MPFS250T/tree/master/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_3) <a name="ref-desing-3"/>
-
-Supported Fabric Interfaces:
-
-| Interface/Module Name | Version | HSS version |
-| --------------------- |:-------:|:-----------:|
-| DDR                   | 2021.1  | Patch v1.0  |
-| PCIe                  | 2021.1  | Patch v1.0  |
-
-### [tysom_m_mpfs250t_ref_design_4](https://github.com/aldec/TySOM-M-MPFS250T/tree/master/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_4) <a name="ref-desing-4"/>
+### [tysom_m_mpfs250t_ref_design_3](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_3) <a name="ref-desing-2"/>
 
 Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| DDR                   | 2021.1  | Patch v1.0  |
-| HDMI                  | 2021.1  | Patch v1.0  |
+| DDR                   | 2022.2  |   2022.09   |
+| PCIe                  | 2022.2  |   2022.09   |
 
-### [tysom_m_mpfs250t_ref_design_5](https://github.com/aldec/TySOM-M-MPFS250T/tree/master/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_5) <a name="ref-desing-5"/>
+### [tysom_m_mpfs250t_ref_design_4](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_4) <a name="ref-desing-4"/>
 
 Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| DDR                   | 2021.1  | Patch v1.0  |
+| DDR                   | 2022.2  |   2022.09   |
+| HDMI                  | 2022.2  |   2022.09   |
+
+### [tysom_m_mpfs250t_ref_design_5](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/main/BSP/designs/libero2021.1/tysom_m_mpfs250t_ref_design_5) <a name="ref-desing-5"/>
+
+Supported Fabric Interfaces:
+
+| Interface/Module Name | Version | HSS version |
+| --------------------- |:-------:|:-----------:|
+| DDR                   | 2022.2  |   2022.09   |
 | FMC2                  |         |             |
 
 FMC Cards and interfaces
