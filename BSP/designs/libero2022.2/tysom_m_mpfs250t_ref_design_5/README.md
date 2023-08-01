@@ -29,7 +29,7 @@ The following interfaces and modules are supported in this reference design.
 | ETH2            | 2022.2  |   2022.09   |
 | ETH MDIO        | 2022.2  |   2022.09   |
 | UART            | 2022.2  |   2022.09   |
-| uSD             | 2022.2  |   2022.09   |
+| uSD/eMMC        | 2022.2  |   2022.09   |
 | GPIO LED0       | 2022.2  |   2022.09   |
 | GPIO PUSHBUTTON | 2022.2  |   2022.09   |
 
@@ -53,7 +53,7 @@ The following interfaces and modules are supported in this reference design.
 
 ## Generating the design <a name="generating-design"/>
 - open Libero and press Project->Execute Script
-- select the desired TCL script. The TySOM-M-MPFS250T_SD.tcl will generate the design which will use the SD card
+- select the TySOM-M-MPFS250T.tcl script
 - wait few seconds for the design generation
 - in the Design Flow tab double click on the Generate FPGA Array Data and wait until finish
 - double click on Configure Design Initialization Data and Memories and select the eNVM tab

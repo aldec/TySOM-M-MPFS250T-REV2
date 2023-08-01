@@ -103,7 +103,7 @@ sd_mark_pins_unused -sd_name ${sd_name} -pin_names {LiteFast_C3_0:block_aligned_
 
 # Add scalar net connections
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C1_0:RCLOCK" "COREFIFO_C4_0:RCLOCK" "RCLOCK" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C1_0:RESET" "COREFIFO_C2_0:RESET" "COREFIFO_C3_0:RESET" "COREFIFO_C4_0:RESET" "Count_Checker_0:reset_n_i" "Count_Checker_0:rx_val_in" "LiteFast_C3_0:rst_n_rx_i" "LiteFast_C3_0:serdes_rx_val_i" "RESET" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C1_0:RRESET_N" "COREFIFO_C1_0:WRESET_N" "COREFIFO_C2_0:RRESET_N" "COREFIFO_C2_0:WRESET_N" "COREFIFO_C3_0:RRESET_N" "COREFIFO_C3_0:WRESET_N" "COREFIFO_C4_0:RRESET_N" "COREFIFO_C4_0:WRESET_N" "Count_Checker_0:reset_n_i" "Count_Checker_0:rx_val_in" "LiteFast_C3_0:rst_n_rx_i" "LiteFast_C3_0:serdes_rx_val_i" "RESET" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C1_0:WCLOCK" "COREFIFO_C2_0:RCLOCK" "COREFIFO_C3_0:WCLOCK" "COREFIFO_C4_0:WCLOCK" "Count_Checker_0:clk_i" "LiteFast_C3_0:clk_rx_i" "WCLOCK" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C2_0:DATA[0:0]" "DATA" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C2_0:DATA[1:1]" "DATA_0" }

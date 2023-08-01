@@ -29,7 +29,7 @@ The following interfaces and modules are supported in this reference design.
 | ETH2            | 2022.2  |   2022.09   |
 | ETH MDIO        | 2022.2  |   2022.09   |
 | UART            | 2022.2  |   2022.09   |
-| uSD             | 2022.2  |   2022.09   |
+| uSD/eMMC        | 2022.2  |   2022.09   |
 | GPIO LED0       | 2022.2  |   2022.09   |
 | GPIO PUSHBUTTON | 2022.2  |   2022.09   |
 
@@ -44,8 +44,7 @@ The following interfaces and modules are supported in this reference design.
 
 The following steps needs to be performed to generate the reference design:
 - start Libero and press **Project->Execute Script**
-- select the desired TCL script:
-  - TySOM-M-MPFS250T_SD.tcl will generate the design which will use the SD card,
+- select TySOM-M-MPFS250T.tcl script:
 - wait a few seconds for the design generation
 - in the **Design Flow** tab double click on the **Generate FPGA Array Data** and wait until finish
 - double click on **Configure Design Initialization Data and Memories** and select the eNVM tab
@@ -59,4 +58,4 @@ In order to run Linux using the reference design on the TySOM-M-MPFS250T:
 - build Linux image using the instruction provided in the yocto directory
 - connect the board using the documentation and power it up
 - program the board with bitfile (instruction is in the designs directory)
-- copy the Linux files to the SDcard (instruction is inside the yocto directory)
+- copy the Linux files to the eMMC or SDcard (instruction is inside the yocto directory)

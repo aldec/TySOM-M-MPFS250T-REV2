@@ -64,7 +64,7 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C0_0:Q[0:0]" "Counter_
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C0_0:Q[1:1]" "LiteFast_C2_0:crc_err_en_tx_i" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C0_0:Q[2:2]" "Counter_0:payload_error_i" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C0_0:RCLOCK" "Counter_0:clk_i" "LiteFast_C2_0:clk_tx_i" "clk_i" "synchronizer_0:clk_i" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C0_0:RESET" "Counter_0:reset_n_i" "LiteFast_C2_0:rst_n_tx_i" "start_i" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C0_0:RRESET_N" "COREFIFO_C0_0:WRESET_N" "Counter_0:reset_n_i" "LiteFast_C2_0:rst_n_tx_i" "start_i" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"COREFIFO_C0_0:WCLOCK" "WCLOCK" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"LiteFast_C2_0:local_rece_rdy_tx_i" "local_rece_rdy_tx_i" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"LiteFast_C2_0:req_usr_data_tx_o" "synchronizer_0:req_user_data_tx_i" }

@@ -29,7 +29,7 @@ All the reference desings support the following MSS interfaces:
 | ETH2            | 2022.2  |   2022.09   |
 | ETH MDIO        | 2022.2  |   2022.09   |
 | UART            | 2022.2  |   2022.09   |
-| uSD             | 2022.2  |   2022.09   |
+| uSD/eMMC        | 2022.2  |   2022.09   |
 | GPIO LED0       | 2022.2  |   2022.09   |
 | GPIO PUSHBUTTON | 2022.2  |   2022.09   |
 
@@ -51,7 +51,7 @@ Supported Fabric Interfaces:
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
 | DDR                   | 2022.2  |   2022.09   |
-| PCIe                  | 2022.2  |   2022.09   |
+| QSFP                  | 2022.2  |   2022.09   |
 
 ### [tysom_m_mpfs250t_ref_design_4](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_4) <a name="ref-desing-4"/>
 

@@ -29,7 +29,7 @@ The following interfaces and modules are supported in this reference design.
 | ETH2            | 2022.2  |   2022.09   |
 | ETH MDIO        | 2022.2  |   2022.09   |
 | UART            | 2022.2  |   2022.09   |
-| uSD             | 2022.2  |   2022.09   |
+| uSD/eMMC        | 2022.2  |   2022.09   |
 | GPIO LED0       | 2022.2  |   2022.09   |
 | GPIO PUSHBUTTON | 2022.2  |   2022.09   |
 
@@ -43,8 +43,7 @@ The following interfaces and modules are supported in this reference design.
 ## Generating the design <a name="generating-design"/>
 
 - open Libero and press Project->Execute Script
-- select the desired TCL script:
-  - TySOM-M-MPFS250T_SD.tcl will generate the design which will use the SD card,
+- select TySOM-M-MPFS250T.tcl script:
 - wait few seconds for the design generation
 - in the Design Flow tab double click on the Generate FPGA Array Data and wait until finish
 - double click on Configure Design Initialization Data and Memories and select the eNVM tab
@@ -78,4 +77,6 @@ set QSFP transmision
 Read transmision status value - 221 is as expected 221
 Test passed
 ```
+## Known issues <a name="known-issues" />
 
+It is possible to get an error with the illegal value for parameter "Die number". This error doesn't affect generating Libero design and can be ignored.

@@ -46,7 +46,7 @@ create_and_configure_core -core_vlnv {Actel:SgCore:PF_CCC:2.2.214} -component_na
 "GL0_0_FABCLK_GATED_USED:false"  \
 "GL0_0_FABCLK_USED:true"  \
 "GL0_0_FREQ_SEL:false"  \
-"GL0_0_IS_USED:true"  \
+"GL0_0_IS_USED:false"  \
 "GL0_0_OUT_FREQ:100"  \
 "GL0_0_PHASE_INDEX:0"  \
 "GL0_0_PHASE_SEL:false"  \
@@ -132,15 +132,15 @@ create_and_configure_core -core_vlnv {Actel:SgCore:PF_CCC:2.2.214} -component_na
 "GL3_0_BYPASS:0"  \
 "GL3_0_BYPASS_EN:false"  \
 "GL3_0_DEDICATED_USED:false"  \
-"GL3_0_DIV:1"  \
+"GL3_0_DIV:25"  \
 "GL3_0_DIVSTART:0"  \
 "GL3_0_DYNAMIC_PH:false"  \
 "GL3_0_EXPOSE_EN:false"  \
 "GL3_0_FABCLK_GATED_USED:false"  \
 "GL3_0_FABCLK_USED:true"  \
 "GL3_0_FREQ_SEL:false"  \
-"GL3_0_IS_USED:false"  \
-"GL3_0_OUT_FREQ:100"  \
+"GL3_0_IS_USED:true"  \
+"GL3_0_OUT_FREQ:62.5"  \
 "GL3_0_PHASE_INDEX:0"  \
 "GL3_0_PHASE_SEL:false"  \
 "GL3_0_PLL_PHASE:0"  \
@@ -160,7 +160,7 @@ create_and_configure_core -core_vlnv {Actel:SgCore:PF_CCC:2.2.214} -component_na
 "GL3_1_PHASE_SEL:false"  \
 "GL3_1_PLL_PHASE:0"  \
 "PLL_ALLOW_CCC_EXT_FB:false"  \
-"PLL_BANDWIDTH_0:2"  \
+"PLL_BANDWIDTH_0:0"  \
 "PLL_BANDWIDTH_1:1"  \
 "PLL_BYPASS_GO_B_0:false"  \
 "PLL_BYPASS_GO_B_1:false"  \
@@ -227,8 +227,9 @@ create_and_configure_core -core_vlnv {Actel:SgCore:PF_CCC:2.2.214} -component_na
 "PLL_POSTDIVIDERADDSOFTLOGIC_0:true"  \
 "PLL_REF_CLK_SEL_0:false"  \
 "PLL_REF_CLK_SEL_1:false"  \
-"PLL_REFDIV_0:1"  \
+"PLL_REFDIV_0:4"  \
 "PLL_REFDIV_1:1"  \
+"PLL_RESET_ON_LOCK_0:true"  \
 "PLL_SPREAD_MODE_0:false"  \
 "PLL_SPREAD_MODE_1:false"  \
 "PLL_SSM_DEPTH_0:5"  \

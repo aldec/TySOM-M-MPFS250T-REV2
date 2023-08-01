@@ -19,7 +19,7 @@ This repository provides all necessary files for building and running Linux OS o
 ## Introduction <a name="introduction"/>
 [TySOM-M-MPFS250T](https://www.aldec.com/en/products/emulation/tysom_boards/polarfire_microchip/tysom_m) is Aldec board based on PolarFire SoC MPFS250T-ES, the first SoC FPGA with 64-bit RISC-V multi-core microprocessor subsystem. There are a few steps that needs to be done to boot Linux on the board:
 1. Bitfile generation using Libero SoC with FPGA and microprocessor subsystem configuration.
-In the designs/libero2022.2/reference_design directory there are files to generate reference design for TySOM-M-MPFS250T using Libero ( with SD Card ).
+In the designs/libero2022.2/reference_design directory there are files to generate reference design for TySOM-M-MPFS250T using Libero.
 2. Building Hart Software Services baremetal application for TySOM-M-MPFS250T.
 Aldec delivers a patch for official HSS repository which adds TySOM-M-MPFS250T support. HSS is the baremetal application which is zero stage boot loader (ZSBL) in this flow.
 3. Linux OS
@@ -38,8 +38,9 @@ Aldec Yocto Project layer that needs to be added to the PolarFire SoC Yocto Proj
 ## BSP structure <a name="bsp-structure"/>
 
 Aldec TySOM-M-MPFS250T BSP is composed of the following components:
+- baremetal - A set of baremetal applications to use with the board.
 - designs - A set of reference designs to demonstrate how to use different interfaces on the board.
-- doc - Foder with documentations.
+- doc - Folder with documentations.
 - hss - An Aldec patch for Hart Software Services for TySOM-M-MPFS250T board.
 - mss - PolarFire SoC MSS Configuration project for TySOM-M-MPFS250T.
 - yocto - Yocto Project layer for Aldec TySOM-M-MPFS250T board.
@@ -57,7 +58,7 @@ Aldec TySOM-M-MPFS250T BSP is composed of the following components:
 | ETH2            | 2022.2  |   2022.09   |
 | ETH MDIO        | 2022.2  |   2022.09   |
 | UART            | 2022.2  |   2022.09   |
-| uSD             | 2022.2  |   2022.09   |
+| uSD/eMMC        | 2022.2  |   2022.09   |
 | GPIO LED0       | 2022.2  |   2022.09   |
 | GPIO PUSHBUTTON | 2022.2  |   2022.09   |
 

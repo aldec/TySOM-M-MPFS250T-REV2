@@ -46,8 +46,8 @@ sd_instantiate_component -sd_name ${sd_name} -component_name {LiteFast_receiver}
 # Add LiteFast_receiver_1 instance
 sd_instantiate_component -sd_name ${sd_name} -component_name {LiteFast_receiver} -instance_name {LiteFast_receiver_1}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {LiteFast_receiver_1:crc_error_o}
-sd_mark_pins_unused -sd_name ${sd_name} -pin_names {LiteFast_receiver_1:data_tx_o}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {LiteFast_receiver_1:data_rx_o}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {LiteFast_receiver_1:data_tx_o}
 
 
 
