@@ -10,6 +10,7 @@ This directory contains the Libero design for TySOM-M-MPFS250T board.
 - [List of reference designs](#ref-desing-list)
   - [tysom_m_mpfs250t_ref_design_1](#ref-desing-1)
   - [tysom_m_mpfs250t_ref_design_2](#ref-desing-2)
+  - [tysom_m_mpfs250t_ref_design_3](#ref-desing-3)
   - [tysom_m_mpfs250t_ref_design_4](#ref-desing-4)
   - [tysom_m_mpfs250t_ref_design_5](#ref-desing-5)
 - [Extras](#ref-extras)
@@ -32,6 +33,7 @@ All the reference desings support the following MSS interfaces:
 | uSD/eMMC        | 2022.2  |   2022.09   |
 | GPIO LED0       | 2022.2  |   2022.09   |
 | GPIO PUSHBUTTON | 2022.2  |   2022.09   |
+| PCIe            | 2022.2  |   2022.09   |
 
 A reference design folder contains a comprehensive instruction on building and using a reference design.
 
@@ -52,6 +54,15 @@ Supported Fabric Interfaces:
 | --------------------- |:-------:|:-----------:|
 | DDR                   | 2022.2  |   2022.09   |
 | QSFP                  | 2022.2  |   2022.09   |
+
+### [tysom_m_mpfs250t_ref_design_3](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_3) <a name="ref-desing-3"/>
+
+Supported Fabric Interfaces:
+
+| Interface/Module Name | Version | HSS version |
+| --------------------- |:-------:|:-----------:|
+| DDR                   | 2022.2  |   2022.09   |
+| PCIe                  | 2022.2  |   2022.09   |
 
 ### [tysom_m_mpfs250t_ref_design_4](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_4) <a name="ref-desing-4"/>
 

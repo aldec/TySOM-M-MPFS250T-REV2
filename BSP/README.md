@@ -73,6 +73,7 @@ Aldec TySOM-M-MPFS250T BSP is composed of the following components:
 | USER SWITCH    | 2022.2  |   2022.09   |
 | CoreUartapb    | 2022.2  |   2022.09   |
 | CAN            | 2022.2  |   2022.09   |
+| PCIe           | 2022.2  |   2022.09   |
 
 ## Reference design <a name="reference-design"/>
 The BSP package contains as well a set of [reference designs](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs) which can be used by customers.

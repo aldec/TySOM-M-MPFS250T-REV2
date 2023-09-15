@@ -7,5 +7,8 @@ EXAMPLE_FILES:append:tysom-m-mpfs250t-amp = "\
 SYSTEMD_SERVICE:${PN}:append:tysom-m-mpfs250t = "collectdiio.service"
 SYSTEMD_AUTO_ENABLE:${PN}:append:tysom-m-mpfs250t = "disable"
 
+SYSTEMD_SERVICE:${PN}:append:tysom-m-mpfs250t-pcie = "collectdiio.service"
+SYSTEMD_AUTO_ENABLE:${PN}:append:tysom-m-mpfs250t-pcie = "disable"
+
 SYSTEMD_SERVICE:${PN}:append:tysom-m-mpfs250t-amp = "collectdiio.service"
 SYSTEMD_AUTO_ENABLE:${PN}:append:tysom-m-mpfs250t-amp = "disable"
