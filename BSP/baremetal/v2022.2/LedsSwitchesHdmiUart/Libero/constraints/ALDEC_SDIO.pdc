@@ -1,0 +1,7 @@
+set_iobank -bank_name Bank1  \
+    -vcci 1.80               \
+    -fixed false             \
+    -update_iostd true
+    
+set_io -port_name SD_SEL -pin_name AM10 -fixed true -io_std LVCMOS18 -DIRECTION OUTPUT
+

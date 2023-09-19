@@ -1,0 +1,9 @@
+set_iobank -bank_name Bank8  \
+    -vcci 1.80               \
+    -fixed false             \
+    -update_iostd true
+    
+set_io -port_name LED1 -pin_name AD16 -fixed true -io_std LVCMOS18 -DIRECTION OUTPUT
+set_io -port_name LED2 -pin_name AG11 -fixed true -io_std LVCMOS18 -DIRECTION OUTPUT
+set_io -port_name LED3 -pin_name AE16 -fixed true -io_std LVCMOS18 -DIRECTION OUTPUT
+
