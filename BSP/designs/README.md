@@ -4,9 +4,9 @@
 
 # Reference designs for Aldec TySOM-M-MPFS250T board
 
-This directory contains the Libero design for TySOM-M-MPFS250T board.
+This directory contains the Libero reference designs for TySOM-M-MPFS250T board.
 
-## Table of Content
+## Table of Contents
 - [List of reference designs](#ref-desing-list)
   - [tysom_m_mpfs250t_ref_design_1](#ref-desing-1)
   - [tysom_m_mpfs250t_ref_design_2](#ref-desing-2)
@@ -16,8 +16,7 @@ This directory contains the Libero design for TySOM-M-MPFS250T board.
 - [Extras](#ref-extras)
 ## List of reference designs <a name="ref-desing-list"/>
 
-Here is a list of all provided reference desings for TySOM-M-MPFS250T board.
-The designs differ in the supported interface in the FPGA Fabric.
+Below is a list of all provided reference desings for TySOM-M-MPFS250T board. The designs vary based on the FPGA fabric-supported interfaces.
 
 All the reference desings support the following MSS interfaces:
 
