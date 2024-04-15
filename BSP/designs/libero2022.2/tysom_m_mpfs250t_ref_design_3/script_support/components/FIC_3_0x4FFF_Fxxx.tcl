@@ -1,6 +1,6 @@
 # Exporting Component Description of FIC_3_0x4FFF_Fxxx to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component FIC_3_0x4FFF_Fxxx
 create_and_configure_core -core_vlnv {Actel:DirectCore:CoreAPB3:4.2.100} -component_name {FIC_3_0x4FFF_Fxxx} -params {\
 "APB_DWIDTH:32"  \

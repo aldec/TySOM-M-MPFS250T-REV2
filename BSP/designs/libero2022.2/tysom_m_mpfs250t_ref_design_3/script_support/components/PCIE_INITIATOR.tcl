@@ -1,6 +1,6 @@
 # Exporting Component Description of PCIE_INITIATOR to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component PCIE_INITIATOR
 create_and_configure_core -core_vlnv {Actel:DirectCore:COREAXI4INTERCONNECT:2.8.103} -component_name {PCIE_INITIATOR} -params {\
 "ADDR_WIDTH:38"  \

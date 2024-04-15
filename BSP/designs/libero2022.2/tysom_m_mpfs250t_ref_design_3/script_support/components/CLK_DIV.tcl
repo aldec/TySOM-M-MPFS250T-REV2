@@ -1,6 +1,6 @@
 # Exporting Component Description of CLK_DIV to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component CLK_DIV
 create_and_configure_core -core_vlnv {Actel:SgCore:PF_CLK_DIV:1.0.103} -component_name {CLK_DIV} -params {\
 "DIVIDER:2"  \

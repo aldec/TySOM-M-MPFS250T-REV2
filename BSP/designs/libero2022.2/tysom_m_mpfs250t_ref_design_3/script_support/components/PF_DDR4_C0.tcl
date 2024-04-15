@@ -1,6 +1,6 @@
 # Exporting Component Description of PF_DDR4_C0 to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component PF_DDR4_C0
 create_and_configure_core -core_vlnv {Actel:SystemBuilder:PF_DDR4:2.5.108} -component_name {PF_DDR4_C0} -params {\
 "ADDRESS_MIRROR:false" \
@@ -116,7 +116,7 @@ create_and_configure_core -core_vlnv {Actel:SystemBuilder:PF_DDR4:2.5.108} -comp
 "WRITE_PREAMBLE:0" \
 "ZQ_CALIB_PERIOD:200" \
 "ZQ_CALIB_TYPE:0" \
-"ZQ_CALIB_TYPE_TEMP:false" \
+"ZQ_CALIB_TYPE_TEMP:0" \
 "ZQ_CAL_INIT_TIME:1024" \
 "ZQ_CAL_L_TIME:512" \
 "ZQ_CAL_S_TIME:128" }

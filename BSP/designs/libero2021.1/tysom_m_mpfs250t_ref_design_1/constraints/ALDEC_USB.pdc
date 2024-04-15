@@ -1,0 +1,2 @@
+set_io -port_name USB_ULPI_RESET -pin_name B1 -fixed true -DIRECTION OUTPUT -io_std LVCMOS18 
+

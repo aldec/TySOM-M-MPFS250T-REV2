@@ -1,0 +1,83 @@
+# Microsemi I/O Physical Design Constraints file
+
+# User I/O Constraints file 
+
+# Version: v12.5 12.900.10.16
+
+# Family: PolarFireSoC , Die: MPFS250T_ES , Package: FCG1152
+
+# Date generated: Wed Oct 21 13:03:29 2020 
+
+
+# 
+# User Locked I/O Bank Settings
+# 
+
+
+# 
+# Unlocked I/O Bank Settings
+# The I/O Bank Settings can be locked by directly editing this file
+# or by making changes in the I/O Attribute Editor
+# 
+
+
+# 
+# User Locked I/O settings
+# 
+
+
+# 
+# Dedicated Peripheral I/O Settings
+# 
+
+
+# 
+# Unlocked I/O settings
+# The I/Os in this section are unplaced or placed but are not locked
+# the other listed attributes have been applied
+# 
+
+
+#
+#Ports using Dedicated Pins
+
+#
+
+set_io -port_name LANE0_RXD_N  -pin_name K29  -DIRECTION INPUT
+
+set_io -port_name LANE0_RXD_P  -pin_name K30  -DIRECTION INPUT
+
+set_io -port_name LANE0_TXD_N  -pin_name K33  -DIRECTION OUTPUT
+
+set_io -port_name LANE0_TXD_P  -pin_name K34  -DIRECTION OUTPUT
+	
+set_io -port_name LANE1_RXD_N  -pin_name L31  -DIRECTION INPUT
+
+set_io -port_name LANE1_RXD_P  -pin_name L32  -DIRECTION INPUT
+
+set_io -port_name LANE1_TXD_N  -pin_name M33  -DIRECTION OUTPUT
+
+set_io -port_name LANE1_TXD_P  -pin_name M34  -DIRECTION OUTPUT
+
+#set_io -port_name LANE2_RXD_N  -pin_name M29  -DIRECTION INPUT
+
+#set_io -port_name LANE2_RXD_P  -pin_name M30  -DIRECTION INPUT
+
+#set_io -port_name LANE2_TXD_N  -pin_name N31  -DIRECTION OUTPUT
+
+#set_io -port_name LANE2_TXD_P  -pin_name N32  -DIRECTION OUTPUT
+
+#set_io -port_name LANE3_RXD_N  -pin_name P29  -DIRECTION INPUT
+
+#set_io -port_name LANE3_RXD_P  -pin_name P30  -DIRECTION INPUT
+
+#set_io -port_name LANE3_TXD_N  -pin_name P33  -DIRECTION OUTPUT
+
+#set_io -port_name LANE3_TXD_P  -pin_name P34  -DIRECTION OUTPUT
+
+
+set_io -port_name REF_CLK_PAD_N -pin_name H30 -DIRECTION INPUT
+
+set_io -port_name REF_CLK_PAD_P -pin_name H29 -DIRECTION INPUT
+
+

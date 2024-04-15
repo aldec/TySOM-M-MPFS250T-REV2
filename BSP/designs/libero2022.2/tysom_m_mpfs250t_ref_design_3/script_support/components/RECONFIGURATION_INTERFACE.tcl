@@ -1,6 +1,6 @@
 # Exporting Component Description of RECONFIGURATION_INTERFACE to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component RECONFIGURATION_INTERFACE
 create_and_configure_core -core_vlnv {Actel:SgCore:PF_DRI:1.1.104} -component_name {RECONFIGURATION_INTERFACE} -params {\
 "CRYPTO:false"  \

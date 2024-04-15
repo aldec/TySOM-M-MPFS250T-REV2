@@ -1,6 +1,6 @@
 # Exporting Component Description of OSCILLATOR_160MHz to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component OSCILLATOR_160MHz
 create_and_configure_core -core_vlnv {Actel:SgCore:PF_OSC:1.0.102} -component_name {OSCILLATOR_160MHz} -params {\
 "RCOSC_2MHZ_CLK_DIV_EN:false"  \

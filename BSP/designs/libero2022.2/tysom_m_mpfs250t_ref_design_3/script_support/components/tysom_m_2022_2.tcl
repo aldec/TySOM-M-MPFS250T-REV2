@@ -26,6 +26,10 @@ sd_create_scalar_port -sd_name ${sd_name} -port_name {REF_CLK_PAD_N} -port_direc
 sd_create_scalar_port -sd_name ${sd_name} -port_name {REF_CLK_PAD_P} -port_direction {IN} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_CD_EMMC_STRB} -port_direction {IN} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_WP_EMMC_RSTN} -port_direction {IN} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_RX0_N} -port_direction {IN} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_RX0_P} -port_direction {IN} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_RX1_N} -port_direction {IN} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_RX1_P} -port_direction {IN} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SPI_1_DI} -port_direction {IN} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {USB_CLK} -port_direction {IN} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {USB_DIR} -port_direction {IN} -port_is_pad {1}
@@ -44,6 +48,7 @@ sd_create_scalar_port -sd_name ${sd_name} -port_name {CKE} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {CS0_N} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {CS_N} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {GPIO_1_23_OUT} -port_direction {OUT} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {MAC_1_MDC} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_0_TXD} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_1_TXD_M2F} -port_direction {OUT}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {MMUART_2_TXD_M2F} -port_direction {OUT}
@@ -71,6 +76,10 @@ sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_VOLT_DIR_0_EMMC_UNUSED}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_VOLT_DIR_1_3_EMMC_UNUSED} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_VOLT_EN_EMMC_DATA6} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_VOLT_SEL_EMMC_DATA5} -port_direction {OUT} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_TX0_N} -port_direction {OUT} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_TX0_P} -port_direction {OUT} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_TX1_N} -port_direction {OUT} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {SGMII_TX1_P} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SHIELD0} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SHIELD1} -port_direction {OUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SHIELD2} -port_direction {OUT} -port_is_pad {1}
@@ -88,6 +97,7 @@ sd_create_scalar_port -sd_name ${sd_name} -port_name {I2C0_SCL} -port_direction 
 sd_create_scalar_port -sd_name ${sd_name} -port_name {I2C0_SDA} -port_direction {INOUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {I2C_1_SCL} -port_direction {INOUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {I2C_1_SDA} -port_direction {INOUT} -port_is_pad {1}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {MAC_1_MDIO} -port_direction {INOUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_CMD_EMMC_CMD} -port_direction {INOUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_DATA0_EMMC_DATA0} -port_direction {INOUT} -port_is_pad {1}
 sd_create_scalar_port -sd_name ${sd_name} -port_name {SD_DATA1_EMMC_DATA1} -port_direction {INOUT} -port_is_pad {1}
@@ -144,8 +154,39 @@ sd_create_pin_slices -sd_name ${sd_name} -pin_name {ALDEC_MSS_2022_2:MSS_INT_F2M
 sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MSS_INT_F2M[62:62]} -value {GND}
 sd_create_pin_slices -sd_name ${sd_name} -pin_name {ALDEC_MSS_2022_2:MSS_INT_F2M} -pin_slices {[63:63]}
 sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MSS_INT_F2M[63:63]} -value {GND}
+sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:CAN_0_RXBUS_F2M} -value {GND}
+sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:CAN_1_RXBUS_F2M} -value {GND}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:CAN_0_TX_EBL_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:CAN_0_TXBUS_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:CAN_1_TX_EBL_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:CAN_1_TXBUS_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:QSPI_SEL_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:QSPI_SEL_OE_M2F}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:PLL_CPU_LOCK_M2F}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:PLL_DDR_LOCK_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_SOF_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_SYNC_FRAME_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_DELAY_REQ_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_PDELAY_REQ_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_PDELAY_RESP_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_SOF_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_SYNC_FRAME_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_DELAY_REQ_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_PDELAY_REQ_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_0_TSU_PDELAY_RESP_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_SOF_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_SYNC_FRAME_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_DELAY_REQ_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_PDELAY_REQ_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_PDELAY_RESP_TX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_SOF_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_SYNC_FRAME_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_DELAY_REQ_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_PDELAY_REQ_RX_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:MAC_1_TSU_PDELAY_RESP_RX_M2F}
+sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:QSPI_DATA_F2M} -value {GND}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:QSPI_DATA_M2F}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {ALDEC_MSS_2022_2:QSPI_DATA_OE_M2F}
 
 
 
@@ -222,6 +263,8 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:I2C_0_SDA_F2M"
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:I2C_0_SDA_OE_M2F" "BIBUF_I2C0_SDA:E" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:I2C_1_SCL" "I2C_1_SCL" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:I2C_1_SDA" "I2C_1_SDA" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:MAC_1_MDC" "MAC_1_MDC" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:MAC_1_MDIO" "MAC_1_MDIO" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:MMUART_0_RXD" "MMUART_0_RXD" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:MMUART_0_TXD" "MMUART_0_TXD" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:MMUART_1_RXD_F2M" "MMUART_1_RXD_F2M" }
@@ -253,6 +296,14 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SD_VOLT_DIR_1_
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SD_VOLT_EN_EMMC_DATA6" "SD_VOLT_EN_EMMC_DATA6" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SD_VOLT_SEL_EMMC_DATA5" "SD_VOLT_SEL_EMMC_DATA5" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SD_WP_EMMC_RSTN" "SD_WP_EMMC_RSTN" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_RX0_N" "SGMII_RX0_N" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_RX0_P" "SGMII_RX0_P" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_RX1_N" "SGMII_RX1_N" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_RX1_P" "SGMII_RX1_P" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_TX0_N" "SGMII_TX0_N" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_TX0_P" "SGMII_TX0_P" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_TX1_N" "SGMII_TX1_N" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SGMII_TX1_P" "SGMII_TX1_P" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SPI_1_CLK" "SPI_1_CLK" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SPI_1_DI" "SPI_1_DI" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ALDEC_MSS_2022_2:SPI_1_DO" "SPI_1_DO" }

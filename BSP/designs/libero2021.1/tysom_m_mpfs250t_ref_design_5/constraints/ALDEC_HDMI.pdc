@@ -1,0 +1,213 @@
+set_iobank -bank_name Bank8 -vcci 1.80 -fixed false
+
+set_io -port_name HDMI_CLK  \
+    -pin_name AN6       \
+    -fixed true          \
+    -DIRECTION OUTPUT
+
+set_io -port_name HDMI_HSYNC  \
+    -pin_name AG15       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name HDMI_VSYNC  \
+    -pin_name AF12       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+    
+set_io -port_name HDMI_DE  \
+    -pin_name AG12       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+    
+    
+set_io -port_name {data_b[0]}  \
+    -pin_name AG14       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+    
+set_io -port_name {data_b[1]}  \
+    -pin_name AH13       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+
+set_io -port_name {data_b[2]}  \
+    -pin_name AH14       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+
+set_io -port_name {data_b[3]}  \
+    -pin_name AH12       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+
+set_io -port_name {data_b[4]}  \
+    -pin_name AJ14       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+
+set_io -port_name {data_b[5]}  \
+    -pin_name AN12       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+
+set_io -port_name {data_b[6]}  \
+    -pin_name AJ13       \
+    -fixed true          \
+    -DIRECTION OUTPUT            
+    
+set_io -port_name {data_b[7]}  \
+    -pin_name AN11       \
+    -fixed true          \
+    -DIRECTION OUTPUT  \
+
+set_io -port_name {data_g[0]}  \
+    -pin_name AP11       \
+    -fixed true          \
+    -DIRECTION OUTPUT      
+
+set_io -port_name {data_g[1]}  \
+    -pin_name AM12       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+    
+set_io -port_name {data_g[2]}  \
+    -pin_name AP10       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+
+set_io -port_name {data_g[3]}  \
+    -pin_name AM11       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_g[4]}  \
+    -pin_name AN9       \
+    -fixed true          \
+    -DIRECTION OUTPUT   
+
+set_io -port_name {data_g[5]}  \
+    -pin_name AN8       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_g[6]}  \
+    -pin_name AM9       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_g[7]}  \
+    -pin_name AL12       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+    
+set_io -port_name {data_r[0]}  \
+    -pin_name AN7       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_r[1]}  \
+    -pin_name AL9       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+    
+set_io -port_name {data_r[2]}  \
+    -pin_name AM7       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_r[3]}  \
+    -pin_name AL8       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_r[4]}  \
+    -pin_name AL10       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_r[5]}  \
+    -pin_name AL7       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_r[6]}  \
+    -pin_name AK8       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name {data_r[7]}  \
+    -pin_name AK7       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+    
+set_io -port_name HDMI_SCL  \
+    -pin_name AH11       \
+    -DIRECTION INOUT  \
+    -io_std LVCMOS18 \
+      -fixed true            
+
+set_io -port_name HDMI_SDA  \
+    -pin_name AK10       \
+    -DIRECTION INOUT\
+    -io_std LVCMOS18 \
+     -fixed true          
+     
+set_io -port_name HDMI_PD_AD \
+    -pin_name AE13       \
+    -fixed true          \
+    -DIRECTION OUTPUT        
+    
+set_io -port_name HDMI_SCLK  \
+    -pin_name AH9       \
+    -fixed true          \
+    -DIRECTION OUTPUT     
+ 
+set_io -port_name HDMI_LRCLK  \
+    -pin_name AJ10       \
+    -fixed true          \
+    -DIRECTION OUTPUT  
+ 
+set_io -port_name HDMI_SPDIF  \
+    -pin_name AJ9       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+   
+set_io -port_name HDMI_MCLK  \
+    -pin_name AJ8       \
+    -fixed true          \
+    -DIRECTION OUTPUT     
+
+set_io -port_name HDMI_I2S0  \
+    -pin_name AK12       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+
+set_io -port_name HDMI_I2S1  \
+    -pin_name AK13       \
+    -fixed true          \
+    -DIRECTION OUTPUT 
+
+set_io -port_name HDMI_I2S2  \
+    -pin_name AK11       \
+    -fixed true          \
+    -DIRECTION OUTPUT 
+
+set_io -port_name HDMI_I2S3  \
+    -pin_name AJ11       \
+    -fixed true          \
+    -DIRECTION OUTPUT     
+    
+    
+    # LED
+    
+#    set_io -port_name LED0  \
+    -pin_name AL18       \
+    -fixed true          \
+    -DIRECTION OUTPUT    
+   
+#    set_io -port_name LED1  \
+    -pin_name AN21      \
+    -fixed true          \
+    -DIRECTION OUTPUT  
+   

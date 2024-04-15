@@ -1,6 +1,6 @@
 # Exporting Component Description of INIT_MONITOR to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component INIT_MONITOR
 create_and_configure_core -core_vlnv {Microsemi:SgCore:PFSOC_INIT_MONITOR:1.0.304} -component_name {INIT_MONITOR} -params {\
 "BANK_0_CALIB_STATUS_ENABLED:false"  \

@@ -1,6 +1,6 @@
 # Exporting Component Description of FIC_1_INITIATOR to TCL
 # Family: PolarFireSoC
-# Part Number: MPFS250T_ES-FCG1152E
+# Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component FIC_1_INITIATOR
 create_and_configure_core -core_vlnv {Actel:DirectCore:COREAXI4INTERCONNECT:2.8.103} -component_name {FIC_1_INITIATOR} -params {\
 "ADDR_WIDTH:38"  \

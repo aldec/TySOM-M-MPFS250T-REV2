@@ -4,7 +4,7 @@
       <design_name>Aldec_MSS_2022_2_PCIe</design_name>
       <mpfs_part_no>MPFS250T_ES</mpfs_part_no>
       <mpfs_package>FCG1152</mpfs_package>
-      <creation_date_time>09-08-2023_08:51:25</creation_date_time>
+      <creation_date_time>04-08-2024_09:30:36</creation_date_time>
       <xml_format_version>0.6.5</xml_format_version>
     </design_information>
     <mss_memory_map>
@@ -1237,9 +1237,9 @@
             <field Type="RW" name="SPI1_FABRIC" offset="1" width="1">0x0</field>
             <field Type="RW" name="I2C0_FABRIC" offset="2" width="1">0x1</field>
             <field Type="RW" name="I2C1_FABRIC" offset="3" width="1">0x1</field>
-            <field Type="RW" name="CAN0_FABRIC" offset="4" width="1">0x0</field>
-            <field Type="RW" name="CAN1_FABRIC" offset="5" width="1">0x0</field>
-            <field Type="RW" name="QSPI_FABRIC" offset="6" width="1">0x0</field>
+            <field Type="RW" name="CAN0_FABRIC" offset="4" width="1">0x1</field>
+            <field Type="RW" name="CAN1_FABRIC" offset="5" width="1">0x1</field>
+            <field Type="RW" name="QSPI_FABRIC" offset="6" width="1">0x1</field>
             <field Type="RW" name="MMUART0_FABRIC" offset="7" width="1">0x0</field>
             <field Type="RW" name="MMUART1_FABRIC" offset="8" width="1">0x1</field>
             <field Type="RW" name="MMUART2_FABRIC" offset="9" width="1">0x1</field>
@@ -1283,8 +1283,8 @@
             <field Type="RW" name="PAD25" offset="12" width="4">0x4</field>
             <field Type="RW" name="PAD26" offset="16" width="4">0xC</field>
             <field Type="RW" name="PAD27" offset="20" width="4">0xC</field>
-            <field Type="RW" name="PAD28" offset="24" width="4">0xF</field>
-            <field Type="RW" name="PAD29" offset="28" width="4">0xF</field>
+            <field Type="RW" name="PAD28" offset="24" width="4">0x8</field>
+            <field Type="RW" name="PAD29" offset="28" width="4">0x8</field>
           </register>
           <register address="0x00000214" description="Configures the IO Mux structure for each IO pad.  0  implies  SD/SDIO, 1 implies  EMMC, 2 implies QSPI, 3 implies SPI,4 implies USB,5 implies MMUART,6 implies I2C,7 implies CAN,8 implies MDIO,9 implies Miscellaneous,0xA implies Reserved (Equivalent to Tristate),0xB implies GPIO ,0xC implies Fabric-test,0xD implies Logic 0,0xE implies Logic 1, 0xF implies Tristate" name="IOMUX5_CR">
             <field Type="RW" name="PAD30" offset="0" width="4">0x3</field>
@@ -1483,9 +1483,9 @@
             <field Type="RW" name="SPI1_FABRIC" offset="1" width="1">0x0</field>
             <field Type="RW" name="I2C0_FABRIC" offset="2" width="1">0x1</field>
             <field Type="RW" name="I2C1_FABRIC" offset="3" width="1">0x1</field>
-            <field Type="RW" name="CAN0_FABRIC" offset="4" width="1">0x0</field>
-            <field Type="RW" name="CAN1_FABRIC" offset="5" width="1">0x0</field>
-            <field Type="RW" name="QSPI_FABRIC" offset="6" width="1">0x0</field>
+            <field Type="RW" name="CAN0_FABRIC" offset="4" width="1">0x1</field>
+            <field Type="RW" name="CAN1_FABRIC" offset="5" width="1">0x1</field>
+            <field Type="RW" name="QSPI_FABRIC" offset="6" width="1">0x1</field>
             <field Type="RW" name="MMUART0_FABRIC" offset="7" width="1">0x0</field>
             <field Type="RW" name="MMUART1_FABRIC" offset="8" width="1">0x1</field>
             <field Type="RW" name="MMUART2_FABRIC" offset="9" width="1">0x1</field>
@@ -1529,8 +1529,8 @@
             <field Type="RW" name="PAD25" offset="12" width="4">0x4</field>
             <field Type="RW" name="PAD26" offset="16" width="4">0xC</field>
             <field Type="RW" name="PAD27" offset="20" width="4">0xC</field>
-            <field Type="RW" name="PAD28" offset="24" width="4">0xF</field>
-            <field Type="RW" name="PAD29" offset="28" width="4">0xF</field>
+            <field Type="RW" name="PAD28" offset="24" width="4">0x8</field>
+            <field Type="RW" name="PAD29" offset="28" width="4">0x8</field>
           </register>
           <register address="0x00000214" description="Configures the IO Mux structure for each IO pad.  0  implies  SD/SDIO, 1 implies  EMMC, 2 implies QSPI, 3 implies SPI,4 implies USB,5 implies MMUART,6 implies I2C,7 implies CAN,8 implies MDIO,9 implies Miscellaneous,0xA implies Reserved (Equivalent to Tristate),0xB implies GPIO ,0xC implies Fabric-test,0xD implies Logic 0,0xE implies Logic 1, 0xF implies Tristate" name="ALT_IOMUX5_CR">
             <field Type="RW" name="PAD30" offset="0" width="4">0x3</field>
@@ -1738,14 +1738,14 @@
       <tip>
         <registers>
           <register address="0x00000004" description="SGMII mode control (SEU)" name="SGMII_MODE">
-            <field Type="RW" name="REG_PLL_EN" offset="0" width="1">0x0</field>
-            <field Type="RW" name="REG_DLL_EN" offset="1" width="1">0x0</field>
+            <field Type="RW" name="REG_PLL_EN" offset="0" width="1">0x1</field>
+            <field Type="RW" name="REG_DLL_EN" offset="1" width="1">0x1</field>
             <field Type="RW" name="REG_PVT_EN" offset="2" width="1">0x1</field>
             <field Type="RW" name="REG_BC_VRGEN_EN" offset="3" width="1">0x1</field>
-            <field Type="RW" name="REG_TX0_EN" offset="4" width="1">0x0</field>
-            <field Type="RW" name="REG_RX0_EN" offset="5" width="1">0x0</field>
-            <field Type="RW" name="REG_TX1_EN" offset="6" width="1">0x0</field>
-            <field Type="RW" name="REG_RX1_EN" offset="7" width="1">0x0</field>
+            <field Type="RW" name="REG_TX0_EN" offset="4" width="1">0x1</field>
+            <field Type="RW" name="REG_RX0_EN" offset="5" width="1">0x1</field>
+            <field Type="RW" name="REG_TX1_EN" offset="6" width="1">0x1</field>
+            <field Type="RW" name="REG_RX1_EN" offset="7" width="1">0x1</field>
             <field Type="RW" name="REG_DLL_LOCK_FLT" offset="8" width="2">0x2</field>
             <field Type="RW" name="REG_DLL_ADJ_CODE" offset="10" width="4">0xC</field>
             <field Type="RW" name="REG_CH0_CDR_RESET_B" offset="14" width="1">0x1</field>
@@ -1760,46 +1760,46 @@
             <field Type="RW" name="REG_REFCLK_EN_INS_HYST_N" offset="31" width="1">0x0</field>
           </register>
           <register address="0x00000008" description="PLL control register (SEU)" name="PLL_CNTL">
-            <field Type="RW" name="REG_PLL_POSTDIV" offset="0" width="7">0x01</field>
+            <field Type="RW" name="REG_PLL_POSTDIV" offset="0" width="7">0x1</field>
             <field Type="RO" name="ARO_PLL0_LOCK" offset="7" width="1">
             </field>
-            <field Type="RW" name="REG_PLL_RFDIV" offset="8" width="6">0x01</field>
+            <field Type="RW" name="REG_PLL_RFDIV" offset="8" width="6">0x1</field>
             <field Type="RW" name="REG_PLL_REG_RFCLK_SEL" offset="14" width="1">0x0</field>
             <field Type="RW" name="REG_PLL_LP_REQUIRES_LOCK" offset="15" width="1">0x0</field>
-            <field Type="RW" name="REG_PLL_INTIN" offset="16" width="12">0x014</field>
+            <field Type="RW" name="REG_PLL_INTIN" offset="16" width="12">0x14</field>
             <field Type="RW" name="REG_PLL_BWI" offset="28" width="2">0x0</field>
             <field Type="RW" name="REG_PLL_BWP" offset="30" width="2">0x2</field>
           </register>
           <register address="0x0000000C" description="Channel0 control register" name="CH0_CNTL">
             <field Type="RW" name="REG_TX0_WPU_P" offset="0" width="1">0x0</field>
-            <field Type="RW" name="REG_TX0_WPD_P" offset="1" width="1">0x1</field>
+            <field Type="RW" name="REG_TX0_WPD_P" offset="1" width="1">0x0</field>
             <field Type="RW" name="REG_TX0_SLEW_P" offset="2" width="2">0x0</field>
-            <field Type="RW" name="REG_TX0_DRV_P" offset="4" width="4">0x0</field>
-            <field Type="RW" name="REG_TX0_ODT_P" offset="8" width="4">0x0</field>
-            <field Type="RW" name="REG_TX0_ODT_STATIC_P" offset="12" width="3">0x0</field>
+            <field Type="RW" name="REG_TX0_DRV_P" offset="4" width="4">0x7</field>
+            <field Type="RW" name="REG_TX0_ODT_P" offset="8" width="4">0x7</field>
+            <field Type="RW" name="REG_TX0_ODT_STATIC_P" offset="12" width="3">0x7</field>
             <field Type="RW" name="REG_RX0_TIM_LONG" offset="15" width="1">0x0</field>
             <field Type="RW" name="REG_RX0_WPU_P" offset="16" width="1">0x0</field>
-            <field Type="RW" name="REG_RX0_WPD_P" offset="17" width="1">0x1</field>
-            <field Type="RW" name="REG_RX0_IBUFMD_P" offset="18" width="3">0x7</field>
+            <field Type="RW" name="REG_RX0_WPD_P" offset="17" width="1">0x0</field>
+            <field Type="RW" name="REG_RX0_IBUFMD_P" offset="18" width="3">0x4</field>
             <field Type="RW" name="REG_RX0_EYEWIDTH_P" offset="21" width="3">0x7</field>
-            <field Type="RW" name="REG_RX0_ODT_P" offset="24" width="4">0x0</field>
-            <field Type="RW" name="REG_RX0_ODT_STATIC_P" offset="28" width="3">0x0</field>
+            <field Type="RW" name="REG_RX0_ODT_P" offset="24" width="4">0x7</field>
+            <field Type="RW" name="REG_RX0_ODT_STATIC_P" offset="28" width="3">0x3</field>
             <field Type="RW" name="REG_RX0_EN_FLAG_N" offset="31" width="1">0x0</field>
           </register>
           <register address="0x00000010" description="Channel1 control register" name="CH1_CNTL">
             <field Type="RW" name="REG_TX1_WPU_P" offset="0" width="1">0x0</field>
-            <field Type="RW" name="REG_TX1_WPD_P" offset="1" width="1">0x1</field>
+            <field Type="RW" name="REG_TX1_WPD_P" offset="1" width="1">0x0</field>
             <field Type="RW" name="REG_TX1_SLEW_P" offset="2" width="2">0x0</field>
-            <field Type="RW" name="REG_TX1_DRV_P" offset="4" width="4">0x0</field>
-            <field Type="RW" name="REG_TX1_ODT_P" offset="8" width="4">0x0</field>
-            <field Type="RW" name="REG_TX1_ODT_STATIC_P" offset="12" width="3">0x0</field>
+            <field Type="RW" name="REG_TX1_DRV_P" offset="4" width="4">0x7</field>
+            <field Type="RW" name="REG_TX1_ODT_P" offset="8" width="4">0x7</field>
+            <field Type="RW" name="REG_TX1_ODT_STATIC_P" offset="12" width="3">0x7</field>
             <field Type="RW" name="REG_RX1_TIM_LONG" offset="15" width="1">0x0</field>
             <field Type="RW" name="REG_RX1_WPU_P" offset="16" width="1">0x0</field>
-            <field Type="RW" name="REG_RX1_WPD_P" offset="17" width="1">0x1</field>
-            <field Type="RW" name="REG_RX1_IBUFMD_P" offset="18" width="3">0x7</field>
+            <field Type="RW" name="REG_RX1_WPD_P" offset="17" width="1">0x0</field>
+            <field Type="RW" name="REG_RX1_IBUFMD_P" offset="18" width="3">0x4</field>
             <field Type="RW" name="REG_RX1_EYEWIDTH_P" offset="21" width="3">0x7</field>
-            <field Type="RW" name="REG_RX1_ODT_P" offset="24" width="4">0x0</field>
-            <field Type="RW" name="REG_RX1_ODT_STATIC_P" offset="28" width="3">0x0</field>
+            <field Type="RW" name="REG_RX1_ODT_P" offset="24" width="4">0x7</field>
+            <field Type="RW" name="REG_RX1_ODT_STATIC_P" offset="28" width="3">0x3</field>
             <field Type="RW" name="REG_RX1_EN_FLAG_N" offset="31" width="1">0x0</field>
           </register>
           <register address="0x00000014" description="Recalibration control register" name="RECAL_CNTL">
@@ -1845,7 +1845,7 @@
             </field>
             <field Type="RW" name="REG_PLL_SOFT_RESET_PERIPH" offset="8" width="1">0x0</field>
             <field Type="RW" name="REG_DLL_SOFT_RESET_PERIPH" offset="9" width="1">0x0</field>
-            <field Type="RW" name="REG_PVT_SOFT_RESET_PERIPH" offset="10" width="1">0x1</field>
+            <field Type="RW" name="REG_PVT_SOFT_RESET_PERIPH" offset="10" width="1">0x0</field>
             <field Type="RW" name="REG_BC_SOFT_RESET_PERIPH" offset="11" width="1">0x0</field>
             <field Type="RW" name="REG_CLKMUX_SOFT_RESET_PERIPH" offset="12" width="1">0x0</field>
             <field Type="RW" name="REG_LANE0_SOFT_RESET_PERIPH" offset="13" width="1">0x0</field>
@@ -1888,7 +1888,7 @@
             <field Type="RW" name="PVT_CALIB_START" offset="31" width="1">0x0</field>
           </register>
           <register address="0x00000024" description="Spare control register" name="SPARE_CNTL">
-            <field Type="RW" name="REG_SPARE" offset="0" width="32">0xff000000</field>
+            <field Type="RW" name="REG_SPARE" offset="0" width="32">0xFF000000</field>
           </register>
           <register address="0x00000028" description="Spare status register" name="SPARE_STAT">
             <field Type="RO" name="SRO_SPARE" offset="0" width="32">
@@ -3613,7 +3613,7 @@
             <field Type="RW" name="REG_DIVQ0_EN" offset="2" width="1">0x1</field>
             <field Type="RW" name="REG_DIVQ1_EN" offset="3" width="1">0x0</field>
             <field Type="RW" name="REG_DIVQ2_EN" offset="4" width="1">0x1</field>
-            <field Type="RW" name="REG_DIVQ3_EN" offset="5" width="1">0x0</field>
+            <field Type="RW" name="REG_DIVQ3_EN" offset="5" width="1">0x1</field>
             <field Type="RW" name="REG_RFCLK_SEL" offset="6" width="1">0x0</field>
             <field Type="RW" name="RESETONLOCK" offset="7" width="1">0x0</field>
             <field Type="RW" name="BYPCK_SEL" offset="8" width="4">0x0</field>
@@ -3667,7 +3667,7 @@
             <field Type="RO" name="VCO3PH_SEL" offset="16" width="3">0x0</field>
             <field Type="RW" name="DIV3_START" offset="19" width="3">0x0</field>
             <field Type="RSVD" name="RESERVE24" offset="22" width="2">0x0</field>
-            <field Type="RW" name="POST3DIV" offset="24" width="7">0x1</field>
+            <field Type="RW" name="POST3DIV" offset="24" width="7">0x4B</field>
             <field Type="RW" name="CKPOST3_SEL" offset="31" width="1">0x0</field>
           </register>
           <register address="0x00000018" description="PLL control register" name="PLL_CTRL2">
@@ -3739,7 +3739,7 @@
             <field Type="ID" name="BLOCKID" offset="16" width="16">0x0</field>
           </register>
           <register address="0x00000004" description="PLL control register" name="PLL_CTRL">
-            <field Type="RW" name="REG_POWERDOWN_B" offset="0" width="1">0x0</field>
+            <field Type="RW" name="REG_POWERDOWN_B" offset="0" width="1">0x1</field>
             <field Type="RW" name="REG_RFDIV_EN" offset="1" width="1">0x1</field>
             <field Type="RW" name="REG_DIVQ0_EN" offset="2" width="1">0x1</field>
             <field Type="RW" name="REG_DIVQ1_EN" offset="3" width="1">0x1</field>
@@ -3845,7 +3845,7 @@
             <field Type="RSVD" name="RESERVE01" offset="30" width="2">0x0</field>
           </register>
           <register address="0x0000002C" description="SSCG registers 2" name="SSCG_REG_2">
-            <field Type="RW" name="INTIN" offset="0" width="12">0x19</field>
+            <field Type="RW" name="INTIN" offset="0" width="12">0x14</field>
             <field Type="RO" name="INTMOD" offset="12" width="12">0x0</field>
             <field Type="RSVD" name="RESERVE02" offset="24" width="8">0x0</field>
           </register>
@@ -4108,9 +4108,9 @@
             <field Type="RW" name="EMMC" offset="0" width="1">0x1</field>
             <field Type="RW" name="SD_SDIO" offset="1" width="1">0x1</field>
             <field Type="RW" name="USB" offset="2" width="1">0x1</field>
-            <field Type="RW" name="MAC0" offset="3" width="1">0x0</field>
-            <field Type="RW" name="MAC1" offset="4" width="1">0x0</field>
-            <field Type="RW" name="QSPI" offset="5" width="1">0x0</field>
+            <field Type="RW" name="MAC0" offset="3" width="1">0x1</field>
+            <field Type="RW" name="MAC1" offset="4" width="1">0x1</field>
+            <field Type="RW" name="QSPI" offset="5" width="1">0x1</field>
             <field Type="RW" name="SPI0" offset="6" width="1">0x0</field>
             <field Type="RW" name="SPI1" offset="7" width="1">0x1</field>
             <field Type="RW" name="MMUART0" offset="8" width="1">0x1</field>
@@ -4120,8 +4120,8 @@
             <field Type="RW" name="MMUART4" offset="12" width="1">0x1</field>
             <field Type="RW" name="I2C0" offset="13" width="1">0x1</field>
             <field Type="RW" name="I2C1" offset="14" width="1">0x1</field>
-            <field Type="RW" name="CAN0" offset="15" width="1">0x0</field>
-            <field Type="RW" name="CAN1" offset="16" width="1">0x0</field>
+            <field Type="RW" name="CAN0" offset="15" width="1">0x1</field>
+            <field Type="RW" name="CAN1" offset="16" width="1">0x1</field>
             <field Type="RW" name="GPIO0" offset="17" width="1">0x0</field>
             <field Type="RW" name="GPIO1" offset="18" width="1">0x1</field>
             <field Type="RW" name="GPIO2" offset="19" width="1">0x0</field>
