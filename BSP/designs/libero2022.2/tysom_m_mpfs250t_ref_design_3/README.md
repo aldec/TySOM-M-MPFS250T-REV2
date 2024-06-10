@@ -68,3 +68,23 @@ The following interfaces and modules are supported in this reference design.
 - Fabric DDR: additional system memory should be visible in /proc/meminfo (736 MB Low MSS DDR + 1 GB High MSS DDR + 512 MB Low Fabric DDR, 2272 MB Total);
 - PCIe: type lspci to verify current PCIe bus hierarchy.
 
+## Additional: Connecting a PCIe End Point and NVMe SSD drive mounting:
+This example supports connecting and mounting NVMe drive used as End Point. It is required to use PCIe -> M.2 adapter. To do this, follow steps below:
+- Plug an adapter with NVMe SSD drive into the PCIe port.
+- Power on a TySOM-M board, wait for booting Linux and log in using "root" password.
+- Check if PCIe adapter with connected NVMe drive is visible for system.
+```bash
+lspci
+```
+- Check if NVMe drive is visible in "dev" directory. The following command should return available NVMe devices.
+```bash
+ls /dev/nvme*
+```
+- If both of the above conditions are completed, create an ext4 file system on NVMe drive that is visible in "dev" directory.
+```bash
+mkfs.ext4 /dev/nvme0n1
+```
+- Mount disk to existing directory or create new one.
+```bash
+mount /dev/nvme0n1 /example_directory
+```
