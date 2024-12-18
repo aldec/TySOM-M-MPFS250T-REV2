@@ -11,11 +11,8 @@ This example project demonstrates the usage of LEDs, Switches, HDMI and UART.
 - Build project
 - Run Polarfire SoC program non-secure boot mode 1
 - Open terminal on ChA
-- The following menu should appear
-Hello World
-Press 1 to switch all LEDs ON.
-Press 2 to switch all LEDs OFF.
-Use switches to switch a specific diode ON and change colour.
+- Wait until the first message appears in the terminal
+- Using the switches and keys 1 and 2 you can change the displayed image and switch the LEDs.
 
 ## Known issues
 

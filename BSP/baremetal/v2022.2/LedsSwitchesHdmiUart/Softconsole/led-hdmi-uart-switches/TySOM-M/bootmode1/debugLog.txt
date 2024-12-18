@@ -1,0 +1,33 @@
+
+15:55:41 DEBUG - Looking for ELF file in the work directory.
+15:55:41 DEBUG - ELF file found: "led-hdmi-uart-switches.elf".
+15:55:41 INFO  - Selected boot mode "1 - non-secure boot from eNVM" and working in directory "/home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M".
+15:55:41 DEBUG - Workdir=/home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M die=MPFS250T_ES diePackage=FCVG484 bm=1 - non-secure boot from eNVM verify=false elf=led-hdmi-uart-switches.elf
+15:55:41 DEBUG - Invoking command: "/edatools/microsemi/Libero_SoC_2022_2/Libero/bin64/fpgenprog new_project --location /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/fpgenprogProject --target_die MPFS250T_ES --target_package FCVG484".
+15:55:41 DEBUG - Finished with exit code: "0".
+15:55:41 INFO  - Generating BIN file...
+15:55:41 DEBUG - Invoking command: "/home/makro/microchip/SoftConsole-v2022.2-RISC-V-747/riscv-unknown-elf-gcc/bin/riscv64-unknown-elf-objcopy --version".
+15:55:41 DEBUG - Finished with exit code: "0".
+15:55:41 DEBUG - Invoking command: "/home/makro/microchip/SoftConsole-v2022.2-RISC-V-747/riscv-unknown-elf-gcc/bin/riscv64-unknown-elf-objcopy -O binary /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/led-hdmi-uart-switches.elf /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/led-hdmi-uart-switches.bin ".
+15:55:41 DEBUG - Finished with exit code: "0".
+15:55:41 DEBUG - Size of the BIN file is "35968 (decimal)" or "0x00008C80 (hex)".
+15:55:41 DEBUG - Invoking command: "/home/makro/microchip/SoftConsole-v2022.2-RISC-V-747/riscv-unknown-elf-gcc/bin/riscv64-unknown-elf-readelf --program-headers /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/led-hdmi-uart-switches.elf ".
+15:55:41 DEBUG - Finished with exit code: "0".
+15:55:41 DEBUG - Entry point 0x20220100
+15:55:41 DEBUG - The detected entry address is "20220100".
+15:55:41 INFO  - Generating header...
+15:55:41 INFO  - Generating HEX file...
+15:55:41 DEBUG - Invoking command: "/home/makro/microchip/SoftConsole-v2022.2-RISC-V-747/riscv-unknown-elf-gcc/bin/riscv64-unknown-elf-objcopy -I binary -O ihex --change-section-lma *+0x20220000 /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/led-hdmi-uart-switches-bm1-p0.bin /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/led-hdmi-uart-switches-bm1-p0.hex ".
+15:55:41 DEBUG - Finished with exit code: "0".
+15:55:41 INFO  - Preparing for bitstream generation...
+15:55:41 DEBUG - Invoking command: "/edatools/microsemi/Libero_SoC_2022_2/Libero/bin64/fpgenprog mss_boot_info --location /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/fpgenprogProject --u_mss_bootmode 1 --u_mss_bootcfg 2022010020220100202201002022010020220100".
+15:55:41 DEBUG - Finished with exit code: "0".
+15:55:41 DEBUG - Invoking command: "/edatools/microsemi/Libero_SoC_2022_2/Libero/bin64/fpgenprog envm_client --location /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/fpgenprogProject --number_of_bytes 36224 --content_file_format intel-hex --content_file /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/led-hdmi-uart-switches-bm1-p0.hex --start_page 0 --client_name bootmode1_0 --mem_file_base_address 20220000".
+15:55:41 DEBUG - Finished with exit code: "0".
+15:55:41 INFO  - Generating bitstream...
+15:55:41 DEBUG - Invoking command: "/edatools/microsemi/Libero_SoC_2022_2/Libero/bin64/fpgenprog generate_bitstream --location /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/fpgenprogProject".
+15:55:47 DEBUG - Finished with exit code: "0".
+15:55:47 INFO  - Programming the target...
+15:55:47 DEBUG - Invoking command: "/edatools/microsemi/Libero_SoC_2022_2/Libero/bin64/fpgenprog run_action --location /home/makro/softconsole_2022/led-hdmi-uart-switches/TySOM-M/bootmode1/fpgenprogProject --action PROGRAM".
+15:55:54 DEBUG - Finished with exit code: "0".
+15:55:54 INFO  - mpfsBootmodeProgrammer completed successfully.

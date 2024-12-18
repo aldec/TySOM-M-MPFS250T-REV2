@@ -63,21 +63,21 @@ The following steps needs to be performed to generate the reference design:
 
 3. Execute the script that starts the color change procedure:
 
-`   ./change_colours.sh`
+`   ./test_pattern.sh`
 
 4. Example log from running script:
 
 ```
    Take a look at the HDMI screen. 
-   Check if RED is visible and press enter
+   Check if color boxes pattern is visible and press enter
 
-   Check if GREEN is visible and press enter
+   Check if vertical eight color bars are visible and press enter
 
-   Check if BLUE is visible and press enter
+   Check if horizontal eight color bars are visible and press enter
 
-   Check if GRAY is visible and press enter
+   Check if vertical graded bars from black to white is visible and press enter
 
-   Check if BLACK is visible and press enter
+   Check if  horizontal graded bars from black to white are visible and press enter
 
    The script ended successfully! 
 ```

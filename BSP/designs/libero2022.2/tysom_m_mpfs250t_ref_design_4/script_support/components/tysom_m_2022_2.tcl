@@ -217,7 +217,6 @@ sd_instantiate_component -sd_name ${sd_name} -component_name {CoreGPIO_C0} -inst
 sd_create_pin_slices -sd_name ${sd_name} -pin_name {CoreGPIO_C0_0:GPIO_OUT} -pin_slices {[0:0]}
 sd_create_pin_slices -sd_name ${sd_name} -pin_name {CoreGPIO_C0_0:GPIO_OUT} -pin_slices {[1:1]}
 sd_create_pin_slices -sd_name ${sd_name} -pin_name {CoreGPIO_C0_0:GPIO_OUT} -pin_slices {[2:2]}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {CoreGPIO_C0_0:GPIO_OUT} -pin_slices {[3:3]}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {CoreGPIO_C0_0:INT}
 sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {CoreGPIO_C0_0:GPIO_IN} -value {GND}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {CoreGPIO_C0_0:GPIO_OE}
@@ -240,32 +239,18 @@ sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {CORERESET_PF_C0_1:FF
 
 
 
-# Add data_unpacker_0 instance
-sd_instantiate_hdl_core -sd_name ${sd_name} -hdl_core_name {data_unpacker} -instance_name {data_unpacker_0}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[14:8]}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {data_unpacker_0:data_i[14:8]} -value {GND}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[15:15]}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[21:16]}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {data_unpacker_0:data_i[21:16]} -value {GND}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[22:22]}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[23:23]}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[31:24]}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {data_unpacker_0:data_i[31:24]} -value {GND}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[6:0]}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {data_unpacker_0:data_i[6:0]} -value {GND}
-sd_create_pin_slices -sd_name ${sd_name} -pin_name {data_unpacker_0:data_i} -pin_slices {[7:7]}
-sd_mark_pins_unused -sd_name ${sd_name} -pin_names {data_unpacker_0:beats_to_read_o}
-
-
-
 # Add Display_Controller_C0_0 instance
-sd_instantiate_component -sd_name ${sd_name} -component_name {Display_Controller_C0} -instance_name {Display_Controller_C0_0}
+sd_instantiate_component -sd_name ${sd_name} -component_name {Display_Controller_C1} -instance_name {Display_Controller_C0_0}
+sd_create_pin_slices -sd_name ${sd_name} -pin_name {Display_Controller_C0_0:DATA_I} -pin_slices {[15:8]}
+sd_create_pin_slices -sd_name ${sd_name} -pin_name {Display_Controller_C0_0:DATA_I} -pin_slices {[23:16]}
+sd_create_pin_slices -sd_name ${sd_name} -pin_name {Display_Controller_C0_0:DATA_I} -pin_slices {[7:0]}
+sd_create_pin_slices -sd_name ${sd_name} -pin_name {Display_Controller_C0_0:DATA_O} -pin_slices {[15:8]}
+sd_create_pin_slices -sd_name ${sd_name} -pin_name {Display_Controller_C0_0:DATA_O} -pin_slices {[23:16]}
+sd_create_pin_slices -sd_name ${sd_name} -pin_name {Display_Controller_C0_0:DATA_O} -pin_slices {[7:0]}
 sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:ENABLE_I} -value {VCC}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:ENABLE_EXT_SYNC_I} -value {GND}
-sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:EXT_SYNC_SIGNAL_I} -value {GND}
-sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:FRAME_END_O}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:V_ACTIVE_O}
-sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:DATA_TRIGGER_O}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:H_RES_O}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Display_Controller_C0_0:V_RES_O}
 
 
 
@@ -314,6 +299,14 @@ sd_mark_pins_unused -sd_name ${sd_name} -pin_names {PFSOC_INIT_MONITOR_C0_0:SRAM
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {PFSOC_INIT_MONITOR_C0_0:SRAM_INIT_FROM_UPROM_DONE}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {PFSOC_INIT_MONITOR_C0_0:SRAM_INIT_FROM_SPI_DONE}
 sd_mark_pins_unused -sd_name ${sd_name} -pin_names {PFSOC_INIT_MONITOR_C0_0:AUTOCALIB_DONE}
+
+
+
+# Add Test_Pattern_Generator_C0_0 instance
+sd_instantiate_component -sd_name ${sd_name} -component_name {Test_Pattern_Generator_C0} -instance_name {Test_Pattern_Generator_C0_0}
+sd_connect_pins_to_constant -sd_name ${sd_name} -pin_names {Test_Pattern_Generator_C0_0:BAYER_PATTERN_I} -value {00}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Test_Pattern_Generator_C0_0:FRAME_END_O}
+sd_mark_pins_unused -sd_name ${sd_name} -pin_names {Test_Pattern_Generator_C0_0:LINE_END_O}
 
 
 
@@ -404,19 +397,17 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_0:FPGA_POR_N" "
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_0:INIT_DONE" "CORERESET_PF_C0_1:INIT_DONE" "PFSOC_INIT_MONITOR_C0_0:DEVICE_INIT_DONE" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_0:PLL_LOCK" "PF_CCC_C0_0:PLL_LOCK_0" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_0:PLL_POWERDOWN_B" "PF_CCC_C0_0:PLL_POWERDOWN_N_0" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_1:CLK" "Display_Controller_C0_0:SYS_CLK_I" "HDMI_CLK" "PF_CCC_C1_0:OUT0_FABCLK_0" "data_unpacker_0:disp_clk_i" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_1:FABRIC_RESET_N" "Display_Controller_C0_0:RESETN_I" "data_unpacker_0:reset_i" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_1:CLK" "Display_Controller_C0_0:SYS_CLK_I" "HDMI_CLK" "PF_CCC_C1_0:OUT0_FABCLK_0" "Test_Pattern_Generator_C0_0:SYS_CLK_I" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_1:FABRIC_RESET_N" "Display_Controller_C0_0:RESETN_I" "Test_Pattern_Generator_C0_0:RESET_N_I" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_1:PLL_LOCK" "PF_CCC_C1_0:PLL_LOCK_0" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CORERESET_PF_C0_1:PLL_POWERDOWN_B" "PF_CCC_C1_0:PLL_POWERDOWN_N_0" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"CS_N" "PF_DDR4_C0_0:CS_N" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"CoreGPIO_C0_0:GPIO_OUT[0:0]" "data_unpacker_0:data_i[7:7]" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"CoreGPIO_C0_0:GPIO_OUT[1:1]" "data_unpacker_0:data_i[15:15]" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"CoreGPIO_C0_0:GPIO_OUT[2:2]" "data_unpacker_0:data_i[22:22]" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"CoreGPIO_C0_0:GPIO_OUT[3:3]" "data_unpacker_0:data_i[23:23]" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_ENABLE_O" "data_unpacker_0:read_en_i" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_TRIGGER_O" "Test_Pattern_Generator_C0_0:DATA_EN_I" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_VALID_O" "HDMI_DE" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:EXT_SYNC_SIGNAL_I" "Test_Pattern_Generator_C0_0:DATA_VALID_O" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:FRAME_END_O" "Test_Pattern_Generator_C0_0:FRAME_END_I" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:H_SYNC_O" "HDMI_HSYNC" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:V_SYNC_O" "HDMI_VSYNC" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"HDMI_DE" "data_unpacker_0:data_valid_o" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"ODT" "PF_DDR4_C0_0:ODT" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"PF_CCC_C0_0:OUT1_FABCLK_0" "PF_DDR4_C0_0:PLL_REF_CLK" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"PF_CCC_C0_0:REF_CLK_0" "PF_CCC_C1_0:REF_CLK_0" "PF_OSC_C0_0:RCOSC_160MHZ_GL" }
@@ -439,14 +430,17 @@ sd_connect_pins -sd_name ${sd_name} -pin_names {"Aldec_MSS_2022_2:DQS" "DQS" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"Aldec_MSS_2022_2:DQS_N" "DQS_N" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"BA_0" "PF_DDR4_C0_0:BA" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"BG_0" "PF_DDR4_C0_0:BG" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"CoreGPIO_C0_0:GPIO_OUT" "Test_Pattern_Generator_C0_0:PATTERN_SEL_I" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"DM_N" "PF_DDR4_C0_0:DM_N" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"DQS_0" "PF_DDR4_C0_0:DQS" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"DQS_N_0" "PF_DDR4_C0_0:DQS_N" }
 sd_connect_pins -sd_name ${sd_name} -pin_names {"DQ_0" "PF_DDR4_C0_0:DQ" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:H_RES_O" "data_unpacker_0:horz_resl_i" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"data_b" "data_unpacker_0:data_b" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"data_g" "data_unpacker_0:data_g" }
-sd_connect_pins -sd_name ${sd_name} -pin_names {"data_r" "data_unpacker_0:data_r" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_I[15:8]" "Test_Pattern_Generator_C0_0:GREEN_O" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_I[23:16]" "Test_Pattern_Generator_C0_0:RED_O" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_I[7:0]" "Test_Pattern_Generator_C0_0:BLUE_O" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_O[15:8]" "data_g" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_O[23:16]" "data_r" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"Display_Controller_C0_0:DATA_O[7:0]" "data_b" }
 
 # Add bus interface net connections
 sd_connect_pins -sd_name ${sd_name} -pin_names {"APB_PASS_THROUGH_0:APB_INITIATOR" "FIC_3_0x4FFF_Fxxx_0:APB3mmaster" }
