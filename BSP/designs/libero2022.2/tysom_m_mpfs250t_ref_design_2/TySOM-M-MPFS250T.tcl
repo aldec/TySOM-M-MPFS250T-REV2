@@ -44,7 +44,7 @@ download_core -vlnv {Actel:SystemBuilder:PF_DDR4:2.5.108} -location {www.actel-i
 download_core -vlnv {Actel:DirectCore:COREAXI4INTERCONNECT:2.8.103} -location {www.microchip-ip.com/repositories/DirectCore}
 download_core -vlnv {Actel:DirectCore:CoreGPIO:3.2.102} -location {www.microchip-ip.com/repositories/DirectCore}
 download_core -vlnv {Actel:DirectCore:CoreAPB3:4.2.100} -location {www.microchip-ip.com/repositories/DirectCore}  
-download_core -vlnv {Actel:DirectCore:COREFIFO:3.0.101} -location {www.microchip-ip.com/repositories/DirectCore}
+download_core -vlnv {Actel:DirectCore:COREFIFO:3.1.101} -location {www.microchip-ip.com/repositories/DirectCore}
 
 source ./script_support/TySOM_M_MPFS250T_recursive.tcl
 

@@ -2,7 +2,7 @@
 # Family: PolarFireSoC
 # Part Number: MPFS250T_ES-1FCG1152E
 # Create and Configure the core component COREFIFO_C1
-create_and_configure_core -core_vlnv {Actel:DirectCore:COREFIFO:3.0.101} -component_name {COREFIFO_C1} -params {\
+create_and_configure_core -core_vlnv {Actel:DirectCore:COREFIFO:3.1.101} -component_name {COREFIFO_C1} -params {\
 "AE_STATIC_EN:false"  \
 "AEVAL:4"  \
 "AF_STATIC_EN:false"  \
@@ -32,4 +32,3 @@ create_and_configure_core -core_vlnv {Actel:DirectCore:COREFIFO:3.0.101} -compon
 "WRITE_ACK:false"  \
 "WWIDTH:8"   }
 # Exporting Component Description of COREFIFO_C1 to TCL done
-
