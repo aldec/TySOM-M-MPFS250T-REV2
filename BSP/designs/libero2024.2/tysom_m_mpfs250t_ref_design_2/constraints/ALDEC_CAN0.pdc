@@ -1,0 +1,5 @@
+
+set_io -port_name CAN_0_TXBUS_M2F -pin_name F3 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33
+set_io -port_name CAN_0_STANDBY -pin_name J5 -fixed true -DIRECTION OUTPUT -io_std LVCMOS33
+set_io -port_name CAN_0_RXBUS_F2M -pin_name H6 -fixed true -DIRECTION INPUT -io_std LVCMOS33
+

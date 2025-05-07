@@ -10,7 +10,7 @@
 - [TySOM-M-MPFS250T HSS Patch](#hss_patch)
     - [Building](#building)
     - [Rebuilding](#rebuilding)
-    - [Programming](#programming)
+    - [Programming using GUI](#programming)
 
 ## Hardware Software Services code <a name="hardware_software_services_code"/>
 
@@ -35,13 +35,6 @@ Acting as an FSBL and SSBL, HSS can be used to boot Linux directly like the Berk
 ### Licenses <a name="license"/>
 This software is released under an MIT license. It also uses other open source tools. RISC-V OpenSBI is released under a BSD-2-Clause, and FastLZ compression is released under an MIT license. More information on licensing can be found here: [HSS GitHub Repo](https://github.com/polarfire-soc/hart-software-services/blob/master/LICENSE.md).
 
-## TySOM-M-MPFS250T HSS Patch <a name="hss_patch"/>
-
-Aldec has patched the [HSS](https://github.com/polarfire-soc/hart-software-services) repository with necessary changes for TySOM-M-MPFS250T board.  
-- Patch version : 1.0
-- HSS original repository fork commit: 58b03943834fe34991dc5fa924436b3620e07aa5
-- SoftConsole v2021.3
-
 ### Building <a name="building"/>
 
 The build is configured using the Kconfig system of selecting build options.
@@ -55,15 +48,15 @@ $ pip install kconfiglib
 ```
 
 This step requires a RISC-V cross compiler. An instance where this compiler can be found is inside the SoftConsole tool (SoftConsole-v2021.3/riscv-unknown-elf-gcc/bin). Make sure that the cross compiler is added to system PATH (export PATH=<path to your cross compiller>:$PATH). Then:
-1. Change directory to version directory (v1_0), and execute ./hss.sh script. This will download the HSS repo, checkout the specified commit, and patch it with the Aldec HSS patch.
-2. Change directory to hart-software-services and copy config file for TySOM-M-MPFS250T board
+1. Change directory to `hss`, and execute `./hss.sh` script. This will download the HSS repo, checkout the specified commit, and patch it with the Aldec HSS patch.
+2. Change directory to `hart-software-services`
 
 ```
 $ cd hart-software-services
 ```
-
+Select configuration dedicated for TySOM-M board:
 ```
-$ cp boards/tysom-m-mpfs250t/def_config ./.config
+$ make BOARD=tysom-m-mpfs250t defconfig 
 ```
 
 3. Build
@@ -71,13 +64,16 @@ $ cp boards/tysom-m-mpfs250t/def_config ./.config
 ```
 $ make BOARD=tysom-m-mpfs250t
 ```
+After this step, the .hex and .elf can be found within `build` directory.
 
-After this step, the .hex and .elf can be found within Default directory.
-
+4. Once built, program the HSS to the board:
+```
+$ make program BOARD=tysom-m-mpfs250t
+```
 ### Rebuilding <a name="rebuilding"/>
 
 HSS should be recompiled each time the PolarFire SoC MSS Configuration has been changed. To recompile:
-1. Replace the boards/tysom-m-mpfs250t/soc_fpga_design/xml/Aldec_2022_2_mss_cfg.xml file with the new configuration XML file generated using the PolarFire SoC MSS Configurator.
+1. Replace the boards/tysom-m-mpfs250t/soc_fpga_design/xml/TySOM_M_2024_9_mss_cfg.xml file with the new configuration XML file generated using the PolarFire SoC MSS Configurator.
 2. Remove boards/tysom-m-mpfs250t/soc_config directory.
 3. Clean and make:
 
@@ -89,12 +85,12 @@ $ make BOARD=tysom-m-mpfs250t clean
 $ make BOARD=tysom-m-mpfs250t
 ```
 
-### Programming <a name="programming"/>
+### Programming using GUI <a name="programming"/>
 
 To program the board, the FlashPro5 or FlashPro6 cable must be connected to the JTAG connector of the TySOM-M MPFS250T board, and the board should be powered on.
 
 Programming the board with HSS can be done in two ways:
-1. Libero 2022.2 - hss.hex file can be added as a Boot Mode Client 1 to the eNVM memory during bitfile creation.
+1. Libero 2024.2 - hss.hex file can be added as a Boot Mode Client 1 to the eNVM memory during bitfile creation.
 - In Libero Design Flow tab, after Generating FPGA Array Data of the design, click on "Configure Design Initialization Data and Memories".
 - Select eNVM tab, click Add Boot Mode Client 1, and select the hss.hex file.
 - The HSS will be inside the bitfile, and will run after board programming.

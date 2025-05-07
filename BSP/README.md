@@ -17,7 +17,7 @@ This repository provides all necessary files for building and running Linux OS o
 ## Introduction <a name="introduction"/>
 [TySOM-M-MPFS250T](https://www.aldec.com/en/products/emulation/tysom_boards/polarfire_microchip/tysom_m) is an Aldec board based on PolarFire SoC MPFS250T-ES, the first SoC FPGA with 64-bit RISC-V multi-core microprocessor subsystem. There are a few steps that need to be done to boot Linux on the board:
 1. Generate bitfile using Libero SoC with FPGA and microprocessor subsystem configuration.
-In the designs/libero2022.2/reference_design directory there are files to generate reference design for TySOM-M-MPFS250T using Libero.
+In the designs/libero2024.2/reference_design directory there are files to generate reference design for TySOM-M-MPFS250T using Libero.
 2. Build the Hart Software Services baremetal application for TySOM-M-MPFS250T.
 Aldec delivers a patch for the official HSS repository which adds TySOM-M-MPFS250T support. HSS is the baremetal application that acts as the zero stage bootloader (ZSBL) in this flow.
 3. Add the Linux OS Aldec Yocto Project layer to the PolarFire SoC Yocto Project repository to build the Linux.
@@ -30,8 +30,8 @@ Aldec delivers a patch for the official HSS repository which adds TySOM-M-MPFS25
 - 2 x Micro USB Cable
 
 ### Software <a name="requirements-software"/>
-- Libero 2022.2
-- SoftConsole 2021.3
+- Libero 2024.2
+- SoftConsole 2021.3 or 2022.2
 ## BSP structure <a name="bsp-structure"/>
 
 The Aldec TySOM-M-MPFS250T BSP contains the following subdirectories:
@@ -48,29 +48,29 @@ The Aldec TySOM-M-MPFS250T BSP contains the following subdirectories:
 
 | Interface Name  | Version | HSS version |
 | --------------- |:-------:|:-----------:|
-| DDR             | 2022.2  |   2022.09   |
-| USB             | 2022.2  |   2022.09   |
-| I2C1            | 2022.2  |   2022.09   |
-| ETH1            | 2022.2  |   2022.09   |
-| ETH2            | 2022.2  |   2022.09   |
-| ETH MDIO        | 2022.2  |   2022.09   |
-| UART            | 2022.2  |   2022.09   |
-| uSD/eMMC        | 2022.2  |   2022.09   |
-| GPIO LED0       | 2022.2  |   2022.09   |
-| GPIO PUSHBUTTON | 2022.2  |   2022.09   |
+| DDR             | 2024.2  |   2024.09   |
+| USB             | 2024.2  |   2024.09   |
+| I2C1            | 2024.2  |   2024.09   |
+| ETH1            | 2024.2  |   2024.09   |
+| ETH2            | 2024.2  |   2024.09   |
+| ETH MDIO        | 2024.2  |   2024.09   |
+| UART            | 2024.2  |   2024.09   |
+| uSD/eMMC        | 2024.2  |   2024.09   |
+| GPIO LED0       | 2024.2  |   2024.09   |
+| GPIO PUSHBUTTON | 2024.2  |   2024.09   |
 
 2. Fabric Interfaces
 
 | Interface Name | Version | HSS version |
 | -------------- |:-------:|:-----------:|
-| DDR-HSIO       | 2022.2  |   2022.09   |
-| PMOD           | 2022.2  |   2022.09   |
-| HDMI           | 2022.2  |   2022.09   |
-| GPIO           | 2022.2  |   2022.09   |
-| USER SWITCH    | 2022.2  |   2022.09   |
-| CoreUartapb    | 2022.2  |   2022.09   |
-| CAN            | 2022.2  |   2022.09   |
-| PCIe           | 2022.2  |   2022.09   |
+| DDR-HSIO       | 2024.2  |   2024.09   |
+| PMOD           | 2024.2  |   2024.09   |
+| HDMI           | 2024.2  |   2024.09   |
+| GPIO           | 2024.2  |   2024.09   |
+| USER SWITCH    | 2024.2  |   2024.09   |
+| CoreUartapb    | 2024.2  |   2024.09   |
+| CAN            | 2024.2  |   2024.09   |
+| PCIe           | 2024.2  |   2024.09   |
 
 ## Reference design <a name="reference-design"/>
 In this BSP, users can access a set of [reference designs](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs) that demonstrate how to use different interfaces on the board.

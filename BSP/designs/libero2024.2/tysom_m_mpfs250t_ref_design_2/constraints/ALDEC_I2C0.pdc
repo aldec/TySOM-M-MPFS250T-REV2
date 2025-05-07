@@ -1,0 +1,2 @@
+set_io -port_name I2C_0_SCL	-pin_name AH11 -fixed true -DIRECTION INOUT
+set_io -port_name I2C_0_SDA	-pin_name AK10 -fixed true -DIRECTION INOUT

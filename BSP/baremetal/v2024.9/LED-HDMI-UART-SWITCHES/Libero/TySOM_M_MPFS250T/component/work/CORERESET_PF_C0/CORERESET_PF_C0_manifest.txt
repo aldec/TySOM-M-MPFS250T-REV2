@@ -1,0 +1,15 @@
+Microchip Technology Inc. - Microchip Libero Software Release v2024.2 (Version 2024.2.0.13)
+
+Date      :  Fri Apr 18 10:10:40 2025
+Project   :  /home/makro/Desktop/Git/tysom_m_base/BSP/baremetal/v2024.9/LED-HDMI-UART-SWITCHES/Libero/TySOM_M_MPFS250T
+Component :  CORERESET_PF_C0
+Family    :  PolarFireSoC
+
+
+HDL source files for all Synthesis and Simulation tools:
+    /home/makro/Desktop/Git/tysom_m_base/BSP/baremetal/v2024.9/LED-HDMI-UART-SWITCHES/Libero/TySOM_M_MPFS250T/component/work/CORERESET_PF_C0/CORERESET_PF_C0_0/core/corereset_pf.v
+    /home/makro/Desktop/Git/tysom_m_base/BSP/baremetal/v2024.9/LED-HDMI-UART-SWITCHES/Libero/TySOM_M_MPFS250T/component/work/CORERESET_PF_C0/CORERESET_PF_C0.v
+
+Stimulus files for all Simulation tools:
+    /home/makro/Desktop/Git/tysom_m_base/BSP/baremetal/v2024.9/LED-HDMI-UART-SWITCHES/Libero/TySOM_M_MPFS250T/component/work/CORERESET_PF_C0/CORERESET_PF_C0_0/test/corereset_pf_tb.v
+

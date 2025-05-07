@@ -22,17 +22,17 @@ All the reference desings support the following MSS interfaces:
 
 | Interface Name  | Version | HSS version |
 | --------------- |:-------:|:-----------:|
-| DDR             | 2022.2  |   2022.09   |
-| USB             | 2022.2  |   2022.09   |
-| I2C1            | 2022.2  |   2022.09   |
-| ETH1            | 2022.2  |   2022.09   |
-| ETH2            | 2022.2  |   2022.09   |
-| ETH MDIO        | 2022.2  |   2022.09   |
-| UART            | 2022.2  |   2022.09   |
-| uSD/eMMC        | 2022.2  |   2022.09   |
-| GPIO LED0       | 2022.2  |   2022.09   |
-| GPIO PUSHBUTTON | 2022.2  |   2022.09   |
-| PCIe            | 2022.2  |   2022.09   |
+| DDR             | 2024.2  |   2024.09   |
+| USB             | 2024.2  |   2024.09   |
+| I2C1            | 2024.2  |   2024.09   |
+| ETH1            | 2024.2  |   2024.09   |
+| ETH2            | 2024.2  |   2024.09   |
+| ETH MDIO        | 2024.2  |   2024.09   |
+| UART            | 2024.2  |   2024.09   |
+| uSD/eMMC        | 2024.2  |   2024.09   |
+| GPIO LED0       | 2024.2  |   2024.09   |
+| GPIO PUSHBUTTON | 2024.2  |   2024.09   |
+| PCIe            | 2024.2  |   2024.09   |
 
 A reference design folder contains a comprehensive instruction on building and using a reference design.
 
@@ -42,8 +42,8 @@ Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| CAN                   | 2022.2  |   2022.09   |
-| I2C0                  | 2022.2  |   2022.09   |
+| CAN                   | 2024.2  |   2024.09   |
+| I2C0                  | 2024.2  |   2024.09   |
 
 ### [tysom_m_mpfs250t_ref_design_2](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_2) <a name="ref-desing-2"/>
 
@@ -51,8 +51,8 @@ Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| DDR                   | 2022.2  |   2022.09   |
-| QSFP                  | 2022.2  |   2022.09   |
+| DDR                   | 2024.2  |   2024.09   |
+| QSFP                  | 2024.2  |   2024.09   |
 
 ### [tysom_m_mpfs250t_ref_design_3](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_3) <a name="ref-desing-3"/>
 
@@ -60,8 +60,8 @@ Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| DDR                   | 2022.2  |   2022.09   |
-| PCIe                  | 2022.2  |   2022.09   |
+| DDR                   | 2024.2  |   2024.09   |
+| PCIe                  | 2024.2  |   2024.09   |
 
 ### [tysom_m_mpfs250t_ref_design_4](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_4) <a name="ref-desing-4"/>
 
@@ -69,8 +69,8 @@ Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| DDR                   | 2022.2  |   2022.09   |
-| HDMI                  | 2022.2  |   2022.09   |
+| DDR                   | 2024.2  |   2024.09   |
+| HDMI                  | 2024.2  |   2024.09   |
 
 ### [tysom_m_mpfs250t_ref_design_5](https://github.com/aldec/TySOM-M-MPFS250T-REV2/tree/revision2.2/BSP/designs/libero2022.2/tysom_m_mpfs250t_ref_design_5) <a name="ref-desing-5"/>
 
@@ -78,7 +78,7 @@ Supported Fabric Interfaces:
 
 | Interface/Module Name | Version | HSS version |
 | --------------------- |:-------:|:-----------:|
-| DDR                   | 2022.2  |   2022.09   |
+| DDR                   | 2024.2  |   2024.09   |
 | FMC2                  |         |             |
 
 FMC Cards and interfaces

@@ -1,0 +1,85 @@
+<a href="https://www.aldec.com/en">
+  <img src="https://www.aldec.com/files/file/Aldec_Crescent_rgb_sm.png" width="500" alt="Aldec, Inc. logo" />
+</a>
+
+# TySOM-M-MPFS250T Reference design 4
+
+## Table of Content
+- [Introduction](#introduction)
+- [Supported Interfaces](#supported-interfaces)
+- [Generating the design](#generating-design)
+- [Running HDMI test](#running-hdmi-test)
+
+## Introduction <a name="introduction"/>
+
+The reference TySOM-M-MPFS250T design is a basic design for this board. The design is provided as a TCL script that will generate the design with the base components in the FPGA (HDMI, DDR) and the microprocessor subsystem from mss directory. 
+
+## Supported Interfaces <a name="supported-interfaces"/>
+
+The following interfaces and modules are supported in this reference design.
+
+1. MSS Interfaces/Modules
+
+| Interface Name  | Version | HSS version |
+| --------------- |:-------:|:-----------:|
+| DDR             | 2024.2  |   2024.09   |
+| USB             | 2024.2  |   2024.09   |
+| I2C1            | 2024.2  |   2024.09   |
+| ETH1            | 2024.2  |   2024.09   |
+| ETH2            | 2024.2  |   2024.09   |
+| ETH MDIO        | 2024.2  |   2024.09   |
+| UART            | 2024.2  |   2024.09   |
+| uSD/eMMC        | 2024.2  |   2024.09   |
+| GPIO LED0       | 2024.2  |   2024.09   |
+| GPIO PUSHBUTTON | 2024.2  |   2024.09   |
+
+
+2. Fabric Interfaces/Modules
+
+| Interface/Module Name | Version | HSS version |
+| --------------------- |:-------:|:-----------:|
+| DDR                   | 2024.2  |   2024.09   |
+| HDMI                  | 2024.2  |   2024.09   |
+
+## Generating the design <a name="generating-design"/>
+
+The following steps needs to be performed to generate the reference design:
+- open Libero and press **Project->Execute Script**
+- select TySOM-M-MPFS250T.tcl script
+- wait few seconds for the design generation
+- in the Design Flow tab double click on the Generate FPGA Array Data and wait until finish
+- double click on Configure Design Initialization Data and Memories and select the eNVM tab
+- press Add->Add Boot Mode 1 Client and select the hss.hex file built in the hss directory
+- generate Bitstream, and Run PROGRAM action in Design Flow tab
+
+## Running HDMI test <a name="running-hdmi-test"/>
+
+1. Go to the directory with the HDMI bash scripts:
+
+`   cd ../../root`
+
+2. Execute the script to initialize the ADV7511 module:
+
+`   ./config_adv7511.sh`
+
+3. Execute the script that starts the color change procedure:
+
+`   ./test_pattern.sh`
+
+4. Example log from running script:
+
+```
+   Take a look at the HDMI screen. 
+   Check if color boxes pattern is visible and press enter
+
+   Check if vertical eight color bars are visible and press enter
+
+   Check if horizontal eight color bars are visible and press enter
+
+   Check if vertical graded bars from black to white is visible and press enter
+
+   Check if  horizontal graded bars from black to white are visible and press enter
+
+   The script ended successfully! 
+```
+

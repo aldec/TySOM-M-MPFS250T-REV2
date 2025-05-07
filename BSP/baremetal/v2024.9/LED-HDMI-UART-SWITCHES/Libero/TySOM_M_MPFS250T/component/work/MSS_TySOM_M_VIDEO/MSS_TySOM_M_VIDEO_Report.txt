@@ -1,0 +1,414 @@
+Configuration Report for PolarFireSoC MSS Configurator
+Design Information
++-----------------------+---------------------------+
+| Design Parameter Name | Design Parameter Value    |
++-----------------------+---------------------------+
+| Family                | PolarFireSoC              |
+| Die                   | MPFS250T_ES               |
+| Package               | FCG1152                   |
+| Version               | 2022.2                    |
+| Date                  | Fri Oct 11 12:36:21 2024
+ |
++-----------------------+---------------------------+
+
+
+
+FPGA Fabric
++-------------------------+----------+
+| FPGA Fabric Programming | Required |
++-------------------------+----------+
++-------------------------+----------+
+
+
+
+MSS to/from Fabric Interface Controllers
++--------------------------------+---------+
+| Interface Controller Name      | Enabled |
++--------------------------------+---------+
+| FIC_0 AXI4 Initiator Interface | true    |
+| FIC_0 AXI4 Target Interface    | true    |
+| FIC_1 AXI4 Initiator Interface | false   |
+| FIC_1 AXI4 Target Interface    | false   |
+| FIC_2 AXI4 Target Interface    | false   |
+| FIC_3 APB Initiator Interface  | false   |
++--------------------------------+---------+
+
+
+
+Peripherals
++------------------------+------------+
+| Peripheral Name        | Enabled    |
++------------------------+------------+
+| eMMC                   | UNUSED     |
+| USB                    | MSSIO_B2   |
+| SD/SDIO                | UNUSED     |
+| Gigabit Ethernet MAC_0 | UNUSED     |
+| Gigabit Ethernet MAC_1 | UNUSED     |
+| QSPI                   | UNUSED     |
+| SPI_0                  | UNUSED     |
+| SPI_1                  | MSSIO_B2_B |
+| MMUART_0               | MSSIO_B2_C |
+| MMUART_1               | FABRIC     |
+| MMUART_2               | FABRIC     |
+| MMUART_3               | FABRIC     |
+| MMUART_4               | FABRIC     |
+| I2C_0                  | FABRIC     |
+| I2C_1                  | MSSIO_B2_B |
+| CAN_0                  | FABRIC     |
+| CAN_1                  | UNUSED     |
+| GPIO_0_0               | UNUSED     |
+| GPIO_0_1               | UNUSED     |
+| GPIO_0_2               | UNUSED     |
+| GPIO_0_3               | UNUSED     |
+| GPIO_0_4               | UNUSED     |
+| GPIO_0_5               | UNUSED     |
+| GPIO_0_6               | UNUSED     |
+| GPIO_0_7               | UNUSED     |
+| GPIO_0_8               | UNUSED     |
+| GPIO_0_9               | UNUSED     |
+| GPIO_0_10              | UNUSED     |
+| GPIO_0_11              | UNUSED     |
+| GPIO_0_12              | UNUSED     |
+| GPIO_0_13              | UNUSED     |
+| GPIO_1_0               | UNUSED     |
+| GPIO_1_1               | UNUSED     |
+| GPIO_1_2               | UNUSED     |
+| GPIO_1_3               | UNUSED     |
+| GPIO_1_4               | UNUSED     |
+| GPIO_1_5               | UNUSED     |
+| GPIO_1_6               | UNUSED     |
+| GPIO_1_7               | UNUSED     |
+| GPIO_1_8               | UNUSED     |
+| GPIO_1_9               | UNUSED     |
+| GPIO_1_10              | UNUSED     |
+| GPIO_1_11              | UNUSED     |
+| GPIO_1_12              | UNUSED     |
+| GPIO_1_13              | UNUSED     |
+| GPIO_1_14              | UNUSED     |
+| GPIO_1_15              | UNUSED     |
+| GPIO_1_16              | UNUSED     |
+| GPIO_1_17              | UNUSED     |
+| GPIO_1_18              | UNUSED     |
+| GPIO_1_19              | UNUSED     |
+| GPIO_1_20              | MSSIO_B2   |
+| GPIO_1_21              | UNUSED     |
+| GPIO_1_22              | UNUSED     |
+| GPIO_1_23              | MSSIO_B2   |
+| GPIO_2_0               | UNUSED     |
+| GPIO_2_1               | UNUSED     |
+| GPIO_2_2               | UNUSED     |
+| GPIO_2_3               | UNUSED     |
+| GPIO_2_4               | UNUSED     |
+| GPIO_2_5               | UNUSED     |
+| GPIO_2_6               | UNUSED     |
+| GPIO_2_7               | UNUSED     |
+| GPIO_2_8               | UNUSED     |
+| GPIO_2_9               | UNUSED     |
+| GPIO_2_10              | UNUSED     |
+| GPIO_2_11              | UNUSED     |
+| GPIO_2_12              | UNUSED     |
+| GPIO_2_13              | UNUSED     |
+| GPIO_2_14              | UNUSED     |
+| GPIO_2_15              | UNUSED     |
+| GPIO_2_16              | FABRIC     |
+| GPIO_2_17              | FABRIC     |
+| GPIO_2_18              | FABRIC     |
+| GPIO_2_19              | UNUSED     |
+| GPIO_2_20              | FABRIC     |
+| GPIO_2_21              | FABRIC     |
+| GPIO_2_22              | FABRIC     |
+| GPIO_2_23              | FABRIC     |
+| GPIO_2_24              | UNUSED     |
+| GPIO_2_25              | UNUSED     |
+| GPIO_2_26              | UNUSED     |
+| GPIO_2_27              | UNUSED     |
+| GPIO_2_28              | UNUSED     |
+| GPIO_2_29              | UNUSED     |
+| GPIO_2_30              | UNUSED     |
+| GPIO_2_31              | UNUSED     |
++------------------------+------------+
+
+
+
+DDR Memory
++-------------+----------+
+| DDR         | Protocol |
++-------------+----------+
+| Memory Type | DDR4     |
++-------------+----------+
+
+
+
+List of Ports
++---------------------------+-----------+
+| Port Name                 | Direction |
++---------------------------+-----------+
+| FIC_0_ACLK                | INPUT     |
+| FIC_0_AXI4_M_AWREADY      | INPUT     |
+| FIC_0_AXI4_M_WREADY       | INPUT     |
+| FIC_0_AXI4_M_BID[7:0]     | INPUT     |
+| FIC_0_AXI4_M_BRESP[1:0]   | INPUT     |
+| FIC_0_AXI4_M_BVALID       | INPUT     |
+| FIC_0_AXI4_M_ARREADY      | INPUT     |
+| FIC_0_AXI4_M_RID[7:0]     | INPUT     |
+| FIC_0_AXI4_M_RDATA[63:0]  | INPUT     |
+| FIC_0_AXI4_M_RRESP[1:0]   | INPUT     |
+| FIC_0_AXI4_M_RLAST        | INPUT     |
+| FIC_0_AXI4_M_RVALID       | INPUT     |
+| FIC_0_AXI4_S_AWID[3:0]    | INPUT     |
+| FIC_0_AXI4_S_AWADDR[37:0] | INPUT     |
+| FIC_0_AXI4_S_AWLEN[7:0]   | INPUT     |
+| FIC_0_AXI4_S_AWSIZE[2:0]  | INPUT     |
+| FIC_0_AXI4_S_AWBURST[1:0] | INPUT     |
+| FIC_0_AXI4_S_AWQOS[3:0]   | INPUT     |
+| FIC_0_AXI4_S_AWLOCK       | INPUT     |
+| FIC_0_AXI4_S_AWCACHE[3:0] | INPUT     |
+| FIC_0_AXI4_S_AWPROT[2:0]  | INPUT     |
+| FIC_0_AXI4_S_AWVALID      | INPUT     |
+| FIC_0_AXI4_S_WDATA[63:0]  | INPUT     |
+| FIC_0_AXI4_S_WSTRB[7:0]   | INPUT     |
+| FIC_0_AXI4_S_WLAST        | INPUT     |
+| FIC_0_AXI4_S_WVALID       | INPUT     |
+| FIC_0_AXI4_S_BREADY       | INPUT     |
+| FIC_0_AXI4_S_ARID[3:0]    | INPUT     |
+| FIC_0_AXI4_S_ARADDR[37:0] | INPUT     |
+| FIC_0_AXI4_S_ARLEN[7:0]   | INPUT     |
+| FIC_0_AXI4_S_ARSIZE[2:0]  | INPUT     |
+| FIC_0_AXI4_S_ARBURST[1:0] | INPUT     |
+| FIC_0_AXI4_S_ARQOS[3:0]   | INPUT     |
+| FIC_0_AXI4_S_ARLOCK       | INPUT     |
+| FIC_0_AXI4_S_ARCACHE[3:0] | INPUT     |
+| FIC_0_AXI4_S_ARPROT[2:0]  | INPUT     |
+| FIC_0_AXI4_S_ARVALID      | INPUT     |
+| FIC_0_AXI4_S_RREADY       | INPUT     |
+| MMUART_1_RXD_F2M          | INPUT     |
+| MMUART_2_RXD_F2M          | INPUT     |
+| MMUART_3_RXD_F2M          | INPUT     |
+| MMUART_4_RXD_F2M          | INPUT     |
+| CAN_0_RXBUS_F2M           | INPUT     |
+| I2C_0_SCL_F2M             | INPUT     |
+| I2C_0_SDA_F2M             | INPUT     |
+| GPIO_2_F2M_23             | INPUT     |
+| GPIO_2_F2M_22             | INPUT     |
+| GPIO_2_F2M_21             | INPUT     |
+| GPIO_2_F2M_20             | INPUT     |
+| MSS_RESET_N_F2M           | INPUT     |
+| FIC_0_DLL_LOCK_M2F        | OUTPUT    |
+| FIC_0_AXI4_M_AWID[7:0]    | OUTPUT    |
+| FIC_0_AXI4_M_AWADDR[37:0] | OUTPUT    |
+| FIC_0_AXI4_M_AWLEN[7:0]   | OUTPUT    |
+| FIC_0_AXI4_M_AWSIZE[2:0]  | OUTPUT    |
+| FIC_0_AXI4_M_AWBURST[1:0] | OUTPUT    |
+| FIC_0_AXI4_M_AWLOCK       | OUTPUT    |
+| FIC_0_AXI4_M_AWQOS[3:0]   | OUTPUT    |
+| FIC_0_AXI4_M_AWCACHE[3:0] | OUTPUT    |
+| FIC_0_AXI4_M_AWPROT[2:0]  | OUTPUT    |
+| FIC_0_AXI4_M_AWVALID      | OUTPUT    |
+| FIC_0_AXI4_M_WDATA[63:0]  | OUTPUT    |
+| FIC_0_AXI4_M_WSTRB[7:0]   | OUTPUT    |
+| FIC_0_AXI4_M_WLAST        | OUTPUT    |
+| FIC_0_AXI4_M_WVALID       | OUTPUT    |
+| FIC_0_AXI4_M_BREADY       | OUTPUT    |
+| FIC_0_AXI4_M_ARID[7:0]    | OUTPUT    |
+| FIC_0_AXI4_M_ARADDR[37:0] | OUTPUT    |
+| FIC_0_AXI4_M_ARLEN[7:0]   | OUTPUT    |
+| FIC_0_AXI4_M_ARSIZE[2:0]  | OUTPUT    |
+| FIC_0_AXI4_M_ARBURST[1:0] | OUTPUT    |
+| FIC_0_AXI4_M_ARLOCK       | OUTPUT    |
+| FIC_0_AXI4_M_ARQOS[3:0]   | OUTPUT    |
+| FIC_0_AXI4_M_ARCACHE[3:0] | OUTPUT    |
+| FIC_0_AXI4_M_ARPROT[2:0]  | OUTPUT    |
+| FIC_0_AXI4_M_ARVALID      | OUTPUT    |
+| FIC_0_AXI4_M_RREADY       | OUTPUT    |
+| FIC_0_AXI4_S_AWREADY      | OUTPUT    |
+| FIC_0_AXI4_S_WREADY       | OUTPUT    |
+| FIC_0_AXI4_S_BID[3:0]     | OUTPUT    |
+| FIC_0_AXI4_S_BRESP[1:0]   | OUTPUT    |
+| FIC_0_AXI4_S_BVALID       | OUTPUT    |
+| FIC_0_AXI4_S_ARREADY      | OUTPUT    |
+| FIC_0_AXI4_S_RID[3:0]     | OUTPUT    |
+| FIC_0_AXI4_S_RDATA[63:0]  | OUTPUT    |
+| FIC_0_AXI4_S_RRESP[1:0]   | OUTPUT    |
+| FIC_0_AXI4_S_RLAST        | OUTPUT    |
+| FIC_0_AXI4_S_RVALID       | OUTPUT    |
+| MMUART_1_TXD_M2F          | OUTPUT    |
+| MMUART_1_TXD_OE_M2F       | OUTPUT    |
+| MMUART_2_TXD_M2F          | OUTPUT    |
+| MMUART_3_TXD_M2F          | OUTPUT    |
+| MMUART_4_TXD_M2F          | OUTPUT    |
+| CAN_0_TX_EBL_M2F          | OUTPUT    |
+| CAN_0_TXBUS_M2F           | OUTPUT    |
+| I2C_0_SCL_OE_M2F          | OUTPUT    |
+| I2C_0_SDA_OE_M2F          | OUTPUT    |
+| GPIO_2_M2F_18             | OUTPUT    |
+| GPIO_2_M2F_17             | OUTPUT    |
+| GPIO_2_M2F_16             | OUTPUT    |
+| PLL_CPU_LOCK_M2F          | OUTPUT    |
+| PLL_DDR_LOCK_M2F          | OUTPUT    |
+| MSS_RESET_N_M2F           | OUTPUT    |
+| MMUART_0_RXD              | INPUT     |
+| MMUART_0_TXD              | OUTPUT    |
+| I2C_1_SCL                 | INOUT     |
+| I2C_1_SDA                 | INOUT     |
+| GPIO_1_20_IN              | INPUT     |
+| GPIO_1_23_OUT             | OUTPUT    |
+| USB_CLK                   | INPUT     |
+| USB_DIR                   | INPUT     |
+| USB_NXT                   | INPUT     |
+| USB_STP                   | OUTPUT    |
+| USB_DATA0                 | INOUT     |
+| USB_DATA1                 | INOUT     |
+| USB_DATA2                 | INOUT     |
+| USB_DATA3                 | INOUT     |
+| USB_DATA4                 | INOUT     |
+| USB_DATA5                 | INOUT     |
+| USB_DATA6                 | INOUT     |
+| USB_DATA7                 | INOUT     |
+| SPI_1_DO                  | OUTPUT    |
+| SPI_1_DI                  | INPUT     |
+| SPI_1_SS0                 | INOUT     |
+| SPI_1_CLK                 | INOUT     |
+| REFCLK                    | INPUT     |
+| REFCLK_N                  | INPUT     |
+| BA[1:0]                   | OUTPUT    |
+| DQ[35:0]                  | INOUT     |
+| DQS[4:0]                  | INOUT     |
+| DQS_N[4:0]                | INOUT     |
+| A[13:0]                   | OUTPUT    |
+| RESET_N                   | OUTPUT    |
+| CKE0                      | OUTPUT    |
+| CS0_N                     | OUTPUT    |
+| ODT0                      | OUTPUT    |
+| CK0                       | OUTPUT    |
+| CK0_N                     | OUTPUT    |
+| RAS_N                     | OUTPUT    |
+| WE_N                      | OUTPUT    |
+| CAS_N                     | OUTPUT    |
+| ACT_N                     | OUTPUT    |
+| BG[1:0]                   | OUTPUT    |
++---------------------------+-----------+
+
+
+
+I/O REFCLK Port settings
++-----------+------------------+-----------+--------------+-----------------+--------------------+----------------------+---------+
+| Port Name | Package Pin Name | Direction | I/O Standard | Schmitt Trigger | On Die Termination | Thevenin Termination | Pull Up |
++-----------+------------------+-----------+--------------+-----------------+--------------------+----------------------+---------+
+| REFCLK_N  | W3               | INPUT     | LVDS25       | OFF             | 100                | OFF                  | OFF     |
+| REFCLK    | V3               | INPUT     | LVDS25       | OFF             | 100                | OFF                  | OFF     |
++-----------+------------------+-----------+--------------+-----------------+--------------------+----------------------+---------+
+
+
+
+MSSIO Port Settings
++---------------+----------------+------------------+-----------+---------------+---------+-------------+-----------------+-------------------------------+-------------------+------------------------------+
+| Port Name     | MSS I/O Number | Package Pin Name | Direction | Resistor Pull | Persist | Clamp Diode | Schmitt Trigger | Low Power Mode Input Receiver | Output Drive (mA) | Low Power Mode Output Buffer |
++---------------+----------------+------------------+-----------+---------------+---------+-------------+-----------------+-------------------------------+-------------------+------------------------------+
+| USB_CLK       | MSSIO14        | W6               | INPUT     | UP            | OFF     | OFF         | OFF             | OFF                           | --                | --                           |
+| USB_DIR       | MSSIO15        | V6               | INPUT     | UP            | OFF     | OFF         | OFF             | OFF                           | --                | --                           |
+| USB_NXT       | MSSIO16        | W8               | INPUT     | UP            | OFF     | OFF         | OFF             | OFF                           | --                | --                           |
+| USB_STP       | MSSIO17        | V8               | OUTPUT    | UP            | OFF     | OFF         | --              | --                            | 8                 | OFF                          |
+| USB_DATA0     | MSSIO18        | V4               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| USB_DATA1     | MSSIO19        | U5               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| USB_DATA2     | MSSIO20        | W9               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| USB_DATA3     | MSSIO21        | U7               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| USB_DATA4     | MSSIO22        | U6               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| USB_DATA5     | MSSIO23        | V7               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| USB_DATA6     | MSSIO24        | V9               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| USB_DATA7     | MSSIO25        | U9               | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| I2C_1_SCL     | MSSIO26        | V14              | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| I2C_1_SDA     | MSSIO27        | V13              | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| SPI_1_CLK     | MSSIO30        | W14              | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| SPI_1_SS0     | MSSIO31        | W13              | INOUT     | UP            | OFF     | OFF         | OFF             | OFF                           | 8                 | OFF                          |
+| SPI_1_DO      | MSSIO32        | U11              | OUTPUT    | UP            | OFF     | OFF         | --              | --                            | 8                 | OFF                          |
+| SPI_1_DI      | MSSIO33        | U12              | INPUT     | UP            | OFF     | OFF         | OFF             | OFF                           | --                | --                           |
+| GPIO_1_20_IN  | MSSIO34        | V11              | INPUT     | NONE          | OFF     | OFF         | OFF             | ON                            | --                | --                           |
+| MMUART_0_RXD  | MSSIO35        | U10              | INPUT     | UP            | OFF     | OFF         | OFF             | OFF                           | --                | --                           |
+| MMUART_0_TXD  | MSSIO36        | U14              | OUTPUT    | UP            | OFF     | OFF         | --              | --                            | 8                 | OFF                          |
+| GPIO_1_23_OUT | MSSIO37        | V12              | OUTPUT    | UP            | OFF     | OFF         | --              | --                            | 8                 | OFF                          |
++---------------+----------------+------------------+-----------+---------------+---------+-------------+-----------------+-------------------------------+-------------------+------------------------------+
+
+
+
+DDRIO Port Settings
++-----------+------------------+-----------+--------------------+-------------------+
+| Port Name | Package Pin Name | Direction | On Die Termination | Output Drive (mA) |
++-----------+------------------+-----------+--------------------+-------------------+
+| BA[0]     | AD4              | OUTPUT    | --                 | 34                |
+| BA[1]     | AD5              | OUTPUT    | --                 | 34                |
+| DQ[0]     | AF8              | INOUT     | 120                | 34                |
+| DQ[1]     | AF7              | INOUT     | 120                | 34                |
+| DQ[2]     | AE8              | INOUT     | 120                | 34                |
+| DQ[3]     | AE7              | INOUT     | 120                | 34                |
+| DQ[4]     | AH7              | INOUT     | 120                | 34                |
+| DQ[5]     | AH8              | INOUT     | 120                | 34                |
+| DQ[6]     | AF5              | INOUT     | 120                | 34                |
+| DQ[7]     | AF4              | INOUT     | 120                | 34                |
+| DQ[8]     | AF3              | INOUT     | 120                | 34                |
+| DQ[9]     | AF2              | INOUT     | 120                | 34                |
+| DQ[10]    | AE2              | INOUT     | 120                | 34                |
+| DQ[11]    | AE1              | INOUT     | 120                | 34                |
+| DQ[12]    | AG1              | INOUT     | 120                | 34                |
+| DQ[13]    | AH1              | INOUT     | 120                | 34                |
+| DQ[14]    | AH3              | INOUT     | 120                | 34                |
+| DQ[15]    | AJ3              | INOUT     | 120                | 34                |
+| DQ[16]    | AJ6              | INOUT     | 120                | 34                |
+| DQ[17]    | AG5              | INOUT     | 120                | 34                |
+| DQ[18]    | AH6              | INOUT     | 120                | 34                |
+| DQ[19]    | AH4              | INOUT     | 120                | 34                |
+| DQ[20]    | AG6              | INOUT     | 120                | 34                |
+| DQ[21]    | AG4              | INOUT     | 120                | 34                |
+| DQ[22]    | AK5              | INOUT     | 120                | 34                |
+| DQ[23]    | AL5              | INOUT     | 120                | 34                |
+| DQ[24]    | AK3              | INOUT     | 120                | 34                |
+| DQ[25]    | AL3              | INOUT     | 120                | 34                |
+| DQ[26]    | AK2              | INOUT     | 120                | 34                |
+| DQ[27]    | AK1              | INOUT     | 120                | 34                |
+| DQ[28]    | AL2              | INOUT     | 120                | 34                |
+| DQ[29]    | AM1              | INOUT     | 120                | 34                |
+| DQ[30]    | AM2              | INOUT     | 120                | 34                |
+| DQ[31]    | AN2              | INOUT     | 120                | 34                |
+| DQ[32]    | AE10             | INOUT     | 120                | 34                |
+| DQ[33]    | AE11             | INOUT     | 120                | 34                |
+| DQ[34]    | AG10             | INOUT     | 120                | 34                |
+| DQ[35]    | AF10             | INOUT     | 120                | 34                |
+| DQS[0]    | AE6              | INOUT     | 60                 | 34                |
+| DQS[1]    | AG2              | INOUT     | 60                 | 34                |
+| DQS[2]    | AJ4              | INOUT     | 60                 | 34                |
+| DQS[3]    | AL4              | INOUT     | 60                 | 34                |
+| DQS[4]    | AG9              | INOUT     | 60                 | 34                |
+| DQS_N[0]  | AE5              | INOUT     | 60                 | 34                |
+| DQS_N[1]  | AH2              | INOUT     | 60                 | 34                |
+| DQS_N[2]  | AJ5              | INOUT     | 60                 | 34                |
+| DQS_N[3]  | AM4              | INOUT     | 60                 | 34                |
+| DQS_N[4]  | AF9              | INOUT     | 60                 | 34                |
+| A[0]      | AB1              | OUTPUT    | --                 | 34                |
+| A[1]      | AB2              | OUTPUT    | --                 | 34                |
+| A[2]      | AE3              | OUTPUT    | --                 | 34                |
+| A[3]      | AD1              | OUTPUT    | --                 | 34                |
+| A[4]      | AA2              | OUTPUT    | --                 | 34                |
+| A[5]      | AA3              | OUTPUT    | --                 | 34                |
+| A[6]      | AB4              | OUTPUT    | --                 | 34                |
+| A[7]      | AC3              | OUTPUT    | --                 | 34                |
+| A[8]      | AA4              | OUTPUT    | --                 | 34                |
+| A[9]      | AD3              | OUTPUT    | --                 | 34                |
+| A[10]     | AC6              | OUTPUT    | --                 | 34                |
+| A[11]     | AB5              | OUTPUT    | --                 | 34                |
+| A[12]     | AB6              | OUTPUT    | --                 | 34                |
+| A[13]     | AB7              | OUTPUT    | --                 | 34                |
+| RESET_N   | AB12             | OUTPUT    | --                 | 34                |
+| CKE0      | AC11             | OUTPUT    | --                 | 34                |
+| CS0_N     | AC14             | OUTPUT    | --                 | 34                |
+| ODT0      | AB11             | OUTPUT    | --                 | 34                |
+| CK0       | AC1              | OUTPUT    | --                 | 34                |
+| CK0_N     | AC2              | OUTPUT    | --                 | 34                |
+| RAS_N     | AC4              | OUTPUT    | --                 | 34                |
+| WE_N      | AD8              | OUTPUT    | --                 | 34                |
+| CAS_N     | AD9              | OUTPUT    | --                 | 34                |
+| ACT_N     | AC9              | OUTPUT    | --                 | 34                |
+| BG[0]     | AC12             | OUTPUT    | --                 | 34                |
+| BG[1]     | AD13             | OUTPUT    | --                 | 34                |
++-----------+------------------+-----------+--------------------+-------------------+
+
+
+

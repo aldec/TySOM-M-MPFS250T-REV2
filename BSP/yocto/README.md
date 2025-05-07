@@ -65,14 +65,6 @@ After successful build, the Yocto Project Image and Binaries will be available i
 ```bash
 build/tmp-glibc/deploy/images/tysom-m-mpfs250t
 ```
-To build Linux in AMP mode type:
-```bash
-$ MACHINE=tysom-m-mpfs250t-amp bitbake mpfs-dev-cli
-```
-To build Linux with PCIe support (required for design 3) type:
-```bash
-$ MACHINE=tysom-m-mpfs250t-pcie bitbake mpfs-dev-cli
-```
 
 ## 3. Running Linux OS on the TySOM-M-MPFS250T <a name="running_linux"/>
 To be able to boot Linux OS on the TySOM-M-MPFS250T, the board must be programmed with a bitfile and HSS application. Linux OS can be loaded from an SD card or from eMMC, but not at the same time. Please use the bitfile and HSS for the desired mode (more information can be found in the reference_design directory in this repository)

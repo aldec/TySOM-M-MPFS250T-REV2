@@ -1,0 +1,329 @@
+KEY LIBERO "2024.2"
+KEY CAPTURE "2024.2.0.13"
+KEY DEFAULT_IMPORT_LOC "C:\Actelprj\A3P_Verilog_labs\lab2"
+KEY ProjectID "0"
+KEY HDLTechnology "VERILOG"
+KEY VERILOGMODE "SYSTEMVERILOG"
+KEY VHDLMODE "VHDL2008"
+KEY SYSTEMVERILOGMFCU "FALSE"
+KEY UseConstraintFlowTechnology "TRUE"
+KEY VendorTechnology_Family "PolarFireSoC"
+KEY VendorTechnology_Die "PA5SOC250T_ES"
+KEY VendorTechnology_Package "fcg1152"
+KEY VendorTechnology_Speed "-1"
+KEY VendorTechnology_DieVoltage "1.0"
+KEY VendorTechnology_PART_RANGE "EXT"
+KEY VendorTechnology_IO_DEFT_STD "LVCMOS18"
+KEY VendorTechnology_RESERVEMIGRATIONPINS "1"
+KEY VendorTechnology_RESTRICTPROBEPINS "1"
+KEY VendorTechnology_RESTRICTSPIPINS "0"
+KEY VendorTechnology_SYSTEM_CONTROLLER_SUSPEND_MODE "0"
+KEY VendorTechnology_TARGETDEVICESFORMIGRATION "PA5SOC250T_ES"
+KEY VendorTechnology_TEMPR "EXT"
+KEY VendorTechnology_UNUSED_MSS_IO_RESISTOR_PULL "None"
+KEY VendorTechnology_VCCI_1.2_VOLTR "EXT"
+KEY VendorTechnology_VCCI_1.5_VOLTR "EXT"
+KEY VendorTechnology_VCCI_1.8_VOLTR "EXT"
+KEY VendorTechnology_VCCI_2.5_VOLTR "EXT"
+KEY VendorTechnology_VCCI_3.3_VOLTR "EXT"
+KEY VendorTechnology_VOLTR "EXT"
+KEY ProjectLocation "/home/makro/Desktop/Git/tysom_m_base/BSP/baremetal/v2024.9/LED-HDMI-UART-SWITCHES/Libero/TySOM_M_MPFS250T"
+KEY ProjectDescription ""
+KEY UseRootLocationForLinkedFiles "FALSE"
+KEY RootLocationENVForLinkedFiles ""
+KEY RootLocationForLinkedFiles ""
+KEY GlobalIncludePaths ""
+KEY Pa4PeripheralNewSeq "GOOD"
+KEY MemoryMapDrcSeverity "FALSE"
+KEY LossOfDataDRCSeverity "TRUE"
+KEY IdWidthMismatchDRCSeverity "TRUE"
+KEY SimulationType "VERILOG"
+KEY Vendor "Actel"
+LIST REVISIONS
+VALUE="Impl1",NUM=1
+CURREV=1
+ENDLIST
+LIST GlobalIncludeFileList
+ENDLIST
+LIST FileManager
+VALUE "<project>/component/Actel/DirectCore/CORERESET_PF/2.3.100/CORERESET_PF.cxf,actgen_cxf"
+STATE="utd"
+TIME="1744963840"
+SIZE="485"
+PARENT="<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0.cxf"
+ENDFILE
+VALUE "<project>/component/Microchip/SolutionCore/Display_Controller/4.8.0/Display_Controller.cxf,actgen_cxf"
+STATE="utd"
+TIME="1744963840"
+SIZE="717"
+PARENT="<project>/component/work/Display_Controller_New/Display_Controller_New.cxf"
+ENDFILE
+VALUE "<project>/component/Microchip/SolutionCore/Display_Controller/4.8.0/Encrypted/Display_Controller.v,hdl"
+STATE="utd"
+TIME="1744963840"
+SIZE="94268"
+PARENT="<project>/component/Microchip/SolutionCore/Display_Controller/4.8.0/Display_Controller.cxf"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/Microchip/SolutionCore/Display_Controller/4.8.0/Stimulus/Display_Controller_tb.v,tb_hdl"
+STATE="utd"
+TIME="1744963840"
+SIZE="10076"
+PARENT="<project>/component/Microchip/SolutionCore/Display_Controller/4.8.0/Display_Controller.cxf"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0.cxf,actgen_cxf"
+STATE="utd"
+TIME="1744963840"
+SIZE="3376"
+ENDFILE
+VALUE "<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0.v,hdl"
+STATE="utd"
+TIME="1744963840"
+SIZE="3326"
+PARENT="<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0.cxf"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0_0/core/corereset_pf.v,hdl"
+STATE="utd"
+TIME="1744963840"
+SIZE="2667"
+PARENT="<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0_0/CORERESET_PF_C0_CORERESET_PF_C0_0_CORERESET_PF.cxf"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0_0/CORERESET_PF_C0_CORERESET_PF_C0_0_CORERESET_PF.cxf,actgen_cxf"
+STATE="utd"
+TIME="1744963840"
+SIZE="871"
+PARENT="<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0.cxf"
+ENDFILE
+VALUE "<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0_0/test/corereset_pf_tb.v,tb_hdl"
+STATE="utd"
+TIME="1744963840"
+SIZE="5491"
+PARENT="<project>/component/work/CORERESET_PF_C0/CORERESET_PF_C0_0/CORERESET_PF_C0_CORERESET_PF_C0_0_CORERESET_PF.cxf"
+MODULE_UNDER_TEST="corereset_pf_tb"
+SIMULATION_TIME="-all"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/work/Display_Controller_New/Display_Controller_New.cxf,actgen_cxf"
+STATE="utd"
+TIME="1744963840"
+SIZE="4376"
+ENDFILE
+VALUE "<project>/component/work/Display_Controller_New/Display_Controller_New.v,hdl"
+STATE="utd"
+TIME="1744963840"
+SIZE="7341"
+PARENT="<project>/component/work/Display_Controller_New/Display_Controller_New.cxf"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/work/MSS_TySOM_M_VIDEO/MSS_NOBYP_BYP_BYP_BYP_BYP_syn_comps.v,hdl"
+STATE="utd"
+TIME="1744963839"
+SIZE="223290"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf,actgen_cxf"
+STATE="utd"
+TIME="1744963839"
+SIZE="50602"
+ENDFILE
+VALUE "<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.sdc,sdc"
+STATE="utd"
+TIME="1744963839"
+SIZE="88"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+BEGIN_USE_CONSTRAINT
+TOOL_CONSTRAINT_TYPE="ideSYNTHESIS"
+TOOL_CONSTRAINT_USE="SYNPLIFY7_EXT"
+END_USE_CONSTRAINT
+USE_FOR_ANY_TOOL="FALSE"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.v,hdl"
+STATE="utd"
+TIME="1744963839"
+SIZE="113483"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+IS_READONLY="TRUE"
+ENDFILE
+VALUE "<project>/simulation/MSS_TySOM_M_VIDEO_PFSOC_MSS_FIC0_compile_bfm.tcl,sim"
+STATE="utd"
+TIME="1744963839"
+SIZE="820"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+ENDFILE
+VALUE "<project>/simulation/MSS_TySOM_M_VIDEO_PFSOC_MSS_FIC0_user.bfm,sim"
+STATE="utd"
+TIME="1744963839"
+SIZE="852"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+ENDFILE
+VALUE "<project>/simulation/MSS_TySOM_M_VIDEO_PFSOC_MSS_FIC1_compile_bfm.tcl,sim"
+STATE="utd"
+TIME="1744963839"
+SIZE="820"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+ENDFILE
+VALUE "<project>/simulation/MSS_TySOM_M_VIDEO_PFSOC_MSS_FIC1_user.bfm,sim"
+STATE="utd"
+TIME="1744963839"
+SIZE="852"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+ENDFILE
+VALUE "<project>/simulation/MSS_TySOM_M_VIDEO_PFSOC_MSS_FIC3_compile_bfm.tcl,sim"
+STATE="utd"
+TIME="1744963839"
+SIZE="782"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+ENDFILE
+VALUE "<project>/simulation/MSS_TySOM_M_VIDEO_PFSOC_MSS_FIC3_user.bfm,sim"
+STATE="utd"
+TIME="1744963839"
+SIZE="852"
+PARENT="<project>/component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf"
+ENDFILE
+ENDLIST
+LIST UsedFile
+ENDLIST
+LIST NewModulesInfo
+ENDLIST
+LIST AssociatedStimulus
+ENDLIST
+LIST Other_Association
+ENDLIST
+LIST SimulationOptions
+UseAutomaticDoFile=true
+IncludeWaveDo=false
+Type=max
+RunTime=1000ns
+Resolution=1ps
+VsimOpt=
+EntityName=testbench
+TopInstanceName=<top>_0
+DoFileName=
+DoFileName2=wave.do
+DoFileParams=
+DisplayDUTWave=false
+LogAllSignals=false
+DisablePulseFiltering=false
+DumpVCD=false
+VCDFileName=power.vcd
+VHDL2008=false
+Verilog2001=false
+SystemVerilog=false
+TimeUnit=1
+TimeUnitBase=ns
+Precision=100
+PrecisionBase=ps
+SdfCorner=slow_lv_ht
+PliPath=/edatools/microsemi/Libero_SoC_v2024.2/Libero/lib/modelsimpro/pli/pf_crypto_lin_me_pli.so
+UseCustomPliPath=false
+ENDLIST
+LIST ModelSimLibPath
+UseCustomPath=FALSE
+LibraryPath=
+ENDLIST
+LIST GlobalFlowOptions
+GenerateHDLAfterSynthesis=FALSE
+GenerateHDLAfterPhySynthesis=FALSE
+RunDRCAfterSynthesis=FALSE
+AutoCheckConstraints=TRUE
+UpdateModelSimIni=TRUE
+NoIOMode=FALSE
+PeriInitStandalone=FALSE
+OnDemandBuildDH=TRUE
+EnableViewDraw=FALSE
+UpdateViewDrawIni=TRUE
+GenerateHDLFromSchematic=TRUE
+VmNetlistFlowOn=TRUE
+EnableDesignSeparationOn=FALSE
+EnableSETMitigationOn=FALSE
+DisplayFanoutLimit=10
+AbortFlowOnPDCErrorsOn=TRUE
+AbortFlowOnSDCErrorsOn=TRUE
+AbortFlowOn3.3V_IO_ON=FALSE
+InstantiateInSmartDesign=TRUE
+FlashProInputFile=pdb
+SmartGenCompileReport=T
+ENDLIST
+LIST PhySynthesisOptions
+ENDLIST
+LIST Profiles
+NAME="SoftConsole"
+FUNCTION="SoftwareIDE"
+TOOL="SoftConsole"
+LOCATION="eclipse.exe"
+PARAM=""
+BATCH=0
+LICENSE=""
+IS32BIT="1"
+EndProfile
+NAME="Synplify Pro ME"
+FUNCTION="Synthesis"
+TOOL="Synplify Pro ME"
+LOCATION="/edatools/microchip/Libero_SoC_v2024.2/SynplifyPro/bin/synplify_pro"
+PARAM=""
+BATCH=0
+LICENSE=""
+IS32BIT="1"
+EndProfile
+NAME="ModelSim ME Pro"
+FUNCTION="Simulation"
+TOOL="ModelSim Pro Edition"
+LOCATION="/edatools/microchip/Libero_SoC_v2024.2/ModelSim/linuxacoem/vsim"
+PARAM=""
+BATCH=0
+LICENSE=""
+IS32BIT="1"
+EndProfile
+NAME="Identify Debugger"
+FUNCTION="IdentifyDebugger"
+TOOL="Identify Debugger"
+LOCATION="/edatools/microchip/Libero_SoC_v2024.2/Identify/bin/identify_debugger"
+PARAM=""
+BATCH=0
+LICENSE=""
+IS32BIT="1"
+EndProfile
+ENDLIST
+LIST ProjectState5.1
+ENDLIST
+LIST ExcludePackageForSimulation
+ENDLIST
+LIST ExcludePackageForSynthesis
+ENDLIST
+LIST IncludeModuleForSimulation
+ENDLIST
+LIST CDBOrder
+ENDLIST
+LIST UserCustomizedFileList
+ENDLIST
+LIST OpenedFileList
+ORIENTATION;HORIZONTAL
+Reports;Reports;0
+ReportsCurrentItem;Project Summary:TySOM_M_MPFS250T.log
+StartPage;StartPage;0
+ACTIVEVIEW;Reports
+ENDLIST
+LIST ModuleSubBlockList
+LIST "CORERESET_PF_C0::work","component/work/CORERESET_PF_C0/CORERESET_PF_C0.cxf","TRUE","FALSE"
+ENDLIST
+LIST "Display_Controller_New::work","component/work/Display_Controller_New/Display_Controller_New.cxf","TRUE","FALSE"
+ENDLIST
+LIST "MSS_TySOM_M_VIDEO::work","component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.cxf","TRUE","FALSE"
+ENDLIST
+ENDLIST
+LIST ActiveTestBenchList
+ENDLIST
+LIST IOTabList
+ENDLIST
+LIST FPTabList
+ENDLIST
+LIST TimingTabList
+VALUE "component/work/MSS_TySOM_M_VIDEO/MSS_TySOM_M_VIDEO.sdc"
+ENDLIST
+LIST FDCTabList
+ENDLIST
