@@ -1,0 +1,2323 @@
+From 70e7de69c7a77584f2dd981ff8c364006e769468 Mon Sep 17 00:00:00 2001
+From: Maciej Kromer <makro@makro.alatek.com.pl>
+Date: Tue, 21 Feb 2023 12:00:22 +0100
+Subject: [PATCH] aldec_uboot_v5
+
+---
+ Makefile                                      |   2 +-
+ arch/riscv/Kconfig                            |   5 +
+ arch/riscv/cpu/generic/dram.c                 |   3 +-
+ arch/riscv/cpu/mpfs/Kconfig                   |  32 ++
+ arch/riscv/cpu/mpfs/Makefile                  |   6 +
+ arch/riscv/cpu/mpfs/cpu.c                     |  22 ++
+ arch/riscv/cpu/mpfs/dram.c                    |  47 +++
+ arch/riscv/dts/Makefile                       |   3 +-
+ .../dts/microchip-mpfs-icicle-kit-amp.dts     | 114 ++++++-
+ arch/riscv/dts/microchip-mpfs-icicle-kit.dts  | 113 ++++++-
+ arch/riscv/dts/microchip-mpfs-sev-kit.dts     |   4 +
+ arch/riscv/dts/microchip-mpfs.dtsi            |  14 +-
+ arch/riscv/dts/mpfs-m100pfsevp-u-boot.dtsi    |  14 +
+ arch/riscv/dts/mpfs-m100pfsevp.dts            |  80 +++++
+ arch/riscv/dts/mpfs-tysom-m-u-boot.dtsi       |  14 +
+ arch/riscv/dts/mpfs-tysom-m.dts               |  86 +++++
+ arch/riscv/include/asm/arch-mpfs/clk.h        |   8 +
+ board/aldec/tysom-m-mpfs250t/Kconfig          |  43 +++
+ board/aldec/tysom-m-mpfs250t/Makefile         |   7 +
+ .../aldec/tysom-m-mpfs250t/tysom-m-mpfs250t.c | 313 ++++++++++++++++++
+ board/aries/m100pfsevp/Kconfig                |  21 +-
+ board/microchip/mpfs_icicle/Kconfig           |  26 +-
+ board/microchip/mpfs_icicle/mpfs_icicle.c     | 264 ++++++++++++++-
+ board/microchip/mpfs_sevkit/Kconfig           |  23 +-
+ configs/aldec_tysom_m_mpfs250t_defconfig      |  21 ++
+ configs/m100pfsevp_defconfig                  |   2 +-
+ configs/microchip_mpfs_icicle_amp_defconfig   |   8 +-
+ configs/microchip_mpfs_icicle_defconfig       |   8 +-
+ .../microchip_mpfs_icicle_qspi_nor_defconfig  |   2 -
+ drivers/clk/microchip/Makefile                |   2 +-
+ drivers/clk/microchip/mpfs_clk.c              |  39 ++-
+ drivers/clk/microchip/mpfs_clk.h              |  24 +-
+ drivers/clk/microchip/mpfs_clk_cfg.c          |   7 +-
+ drivers/clk/microchip/mpfs_clk_msspll.c       | 119 +++++++
+ drivers/clk/microchip/mpfs_clk_periph.c       |  96 +++---
+ include/configs/aldec_tysom_m_mpfs250t.h      |  31 ++
+ include/configs/microchip_mpfs_icicle.h       |  44 +--
+ .../dt-bindings/clock/microchip-mpfs-clock.h  |   3 +
+ 38 files changed, 1476 insertions(+), 194 deletions(-)
+ create mode 100644 arch/riscv/cpu/mpfs/Kconfig
+ create mode 100644 arch/riscv/cpu/mpfs/Makefile
+ create mode 100644 arch/riscv/cpu/mpfs/cpu.c
+ create mode 100644 arch/riscv/cpu/mpfs/dram.c
+ create mode 100644 arch/riscv/dts/mpfs-m100pfsevp-u-boot.dtsi
+ create mode 100644 arch/riscv/dts/mpfs-m100pfsevp.dts
+ create mode 100644 arch/riscv/dts/mpfs-tysom-m-u-boot.dtsi
+ create mode 100644 arch/riscv/dts/mpfs-tysom-m.dts
+ create mode 100644 arch/riscv/include/asm/arch-mpfs/clk.h
+ create mode 100644 board/aldec/tysom-m-mpfs250t/Kconfig
+ create mode 100644 board/aldec/tysom-m-mpfs250t/Makefile
+ create mode 100644 board/aldec/tysom-m-mpfs250t/tysom-m-mpfs250t.c
+ create mode 100644 configs/aldec_tysom_m_mpfs250t_defconfig
+ create mode 100644 drivers/clk/microchip/mpfs_clk_msspll.c
+ create mode 100644 include/configs/aldec_tysom_m_mpfs250t.h
+
+diff --git a/Makefile b/Makefile
+index a30098c66f..6333ce42e5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@
+ VERSION = 2022
+ PATCHLEVEL = 01
+ SUBLEVEL =
+-EXTRAVERSION =
++EXTRAVERSION = linux4microchip+fpga-2023.02-rc1
+ NAME =
+ 
+ # *DOCUMENTATION*
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index b239a1a3c7..d3e4396490 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -20,6 +20,9 @@ config TARGET_MICROCHIP_ICICLE
+ config TARGET_MICROCHIP_SEVKIT
+ 	bool "Support Microchip PolarFire-SoC SEV Kit"
+ 
++config TARGET_ALDEC_TYSOM_M_MPFS250T
++	bool "Support Aldec TySoM M MPFS250T Board"
++
+ config TARGET_QEMU_VIRT
+ 	bool "Support QEMU Virt Board"
+ 
+@@ -64,6 +67,7 @@ config SPL_SYS_DCACHE_OFF
+ 	  Do not enable data cache in SPL.
+ 
+ # board-specific options below
++source "board/aldec/tysom-m-mpfs250t/Kconfig"
+ source "board/AndesTech/ax25-ae350/Kconfig"
+ source "board/aries/m100pfsevp/Kconfig"
+ source "board/emulation/qemu-riscv/Kconfig"
+@@ -78,6 +82,7 @@ source "board/sipeed/maix/Kconfig"
+ source "arch/riscv/cpu/ax25/Kconfig"
+ source "arch/riscv/cpu/fu540/Kconfig"
+ source "arch/riscv/cpu/fu740/Kconfig"
++source "arch/riscv/cpu/mpfs/Kconfig"
+ source "arch/riscv/cpu/generic/Kconfig"
+ 
+ # architecture-specific options below
+diff --git a/arch/riscv/cpu/generic/dram.c b/arch/riscv/cpu/generic/dram.c
+index ea720900e1..1fdc7837b8 100644
+--- a/arch/riscv/cpu/generic/dram.c
++++ b/arch/riscv/cpu/generic/dram.c
+@@ -23,7 +23,6 @@ int dram_init_banksize(void)
+ 
+ ulong board_get_usable_ram_top(ulong total_size)
+ {
+-#if !defined(CONFIG_TARGET_MICROCHIP_ICICLE) && !defined(CONFIG_TARGET_MICROCHIP_SEVKIT)
+ 	/*
+ 	 * Ensure that we run from first 4GB so that all
+ 	 * addresses used by U-Boot are 32bit addresses.
+@@ -34,6 +33,6 @@ ulong board_get_usable_ram_top(ulong total_size)
+ 	 */
+ 	if (gd->ram_top >= SZ_4G)
+ 		return SZ_4G - 1;
+-#endif
++
+ 	return gd->ram_top;
+ }
+diff --git a/arch/riscv/cpu/mpfs/Kconfig b/arch/riscv/cpu/mpfs/Kconfig
+new file mode 100644
+index 0000000000..12e159c1fd
+--- /dev/null
++++ b/arch/riscv/cpu/mpfs/Kconfig
+@@ -0,0 +1,32 @@
++# SPDX-License-Identifier: GPL-2.0+
++
++config MICROCHIP_MPFS
++	bool
++	select ARCH_EARLY_INIT_R
++	imply CPU
++	imply CPU_RISCV
++	imply RISCV_TIMER if (RISCV_SMODE || SPL_RISCV_SMODE)
++	imply SIFIVE_CLINT if RISCV_MMODE
++	imply SPL_SIFIVE_CLINT if SPL_RISCV_MMODE
++	imply CMD_CPU
++	imply SPL_CPU
++	imply SPL_OPENSBI
++	imply SPL_LOAD_FIT
++	imply CLK_CCF
++	imply CLK_MPFS
++	imply SYS_NS16550
++	imply MACB
++	imply MII
++	imply CMD_I2C
++	imply DM_I2C
++	imply SYS_I2C_MICROCHIP
++	imply MMC
++	imply MMC_WRITE
++	imply MMC_SDHCI
++	imply MMC_SDHCI_CADENCE
++	imply MMC_SDHCI_ADMA
++	imply MMC_HS200_SUPPORT
++	imply SPI
++	imply DM_SPI
++	imply MICROCHIP_QSPI
++
+diff --git a/arch/riscv/cpu/mpfs/Makefile b/arch/riscv/cpu/mpfs/Makefile
+new file mode 100644
+index 0000000000..c4bf2b4c29
+--- /dev/null
++++ b/arch/riscv/cpu/mpfs/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0+
++
++ifneq ($(CONFIG_SPL_BUILD),y)
++obj-y += dram.o
++obj-y += cpu.o
++endif
+diff --git a/arch/riscv/cpu/mpfs/cpu.c b/arch/riscv/cpu/mpfs/cpu.c
+new file mode 100644
+index 0000000000..f13c18942f
+--- /dev/null
++++ b/arch/riscv/cpu/mpfs/cpu.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018, Bin Meng <bmeng.cn@gmail.com>
++ */
++
++#include <irq_func.h>
++#include <asm/cache.h>
++
++/*
++ * cleanup_before_linux() is called just before we call linux
++ * it prepares the processor for linux
++ *
++ * we disable interrupt and caches.
++ */
++int cleanup_before_linux(void)
++{
++	disable_interrupts();
++
++	cache_flush();
++
++	return 0;
++}
+diff --git a/arch/riscv/cpu/mpfs/dram.c b/arch/riscv/cpu/mpfs/dram.c
+new file mode 100644
+index 0000000000..6e65e5c2b5
+--- /dev/null
++++ b/arch/riscv/cpu/mpfs/dram.c
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018, Bin Meng <bmeng.cn@gmail.com>
++ */
++
++#include <common.h>
++#include <fdtdec.h>
++#include <init.h>
++#include <asm/global_data.h>
++#include <linux/sizes.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#define MPFS_TOP_OF_CACHED (SZ_2G + SZ_1G)
++#define MPFS_HSS_RESERVATION (SZ_4M)
++
++int dram_init(void)
++{
++	return fdtdec_setup_mem_size_base();
++}
++
++int dram_init_banksize(void)
++{
++	return fdtdec_setup_memory_banksize();
++}
++
++ulong board_get_usable_ram_top(ulong total_size)
++{
++	/*
++	 * Ensure that if we run from 32-bit memory that all memory used by
++	 * U-Boot is cached addresses, but also account for the reservation at
++	 * the top of 32 bit cached DDR used by the HSS.
++	 * The SEVKIT doesn't run out of 32-bit memory however, just uses
++	 * gd->ram_top directly.
++	 */
++#if	!defined(CONFIG_TARGET_MICROCHIP_SEVKIT)
++		if (gd->ram_top >= MPFS_TOP_OF_CACHED - MPFS_HSS_RESERVATION)
++			return MPFS_TOP_OF_CACHED - MPFS_HSS_RESERVATION - 1;
++#endif
++	/*
++	 * If we don't find a 32 bit region just return the top of memory.
++	 * If the address is a 32-bit region, but fits beneath the HSS'
++	 * reservation, ram_top is adequate also.
++	 */
++	return gd->ram_top;
++}
++
+diff --git a/arch/riscv/dts/Makefile b/arch/riscv/dts/Makefile
+index 883d8cc11c..abdc9a658c 100644
+--- a/arch/riscv/dts/Makefile
++++ b/arch/riscv/dts/Makefile
+@@ -1,7 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0+
+ 
+ dtb-$(CONFIG_TARGET_AX25_AE350) += ae350_32.dtb ae350_64.dtb
+-dtb-$(CONFIG_TARGET_ARIES_M100PFSEVP) += m100pfsevp.dtb
++dtb-$(CONFIG_TARGET_ALDEC_TYSOM_M_MPFS250T) += mpfs-tysom-m.dtb
++dtb-$(CONFIG_TARGET_ARIES_M100PFSEVP) += mpfs-m100pfsevp.dtb
+ dtb-$(CONFIG_TARGET_MICROCHIP_ICICLE) += microchip-mpfs-icicle-kit.dtb \
+ microchip-mpfs-icicle-kit-amp.dtb microchip-mpfs-icicle-kit-qspi-nor.dtb
+ dtb-$(CONFIG_TARGET_MICROCHIP_SEVKIT) += microchip-mpfs-sev-kit.dtb
+diff --git a/arch/riscv/dts/microchip-mpfs-icicle-kit-amp.dts b/arch/riscv/dts/microchip-mpfs-icicle-kit-amp.dts
+index 4b34443e17..4bff491d44 100644
+--- a/arch/riscv/dts/microchip-mpfs-icicle-kit-amp.dts
++++ b/arch/riscv/dts/microchip-mpfs-icicle-kit-amp.dts
+@@ -13,7 +13,9 @@
+ 
+ / {
+ 	model = "Microchip PolarFire-SoC Icicle Kit";
+-	compatible = "microchip,mpfs-icicle-kit", "microchip,mpfs";
++	compatible = "microchip,mpfs-icicle-reference-rtlv2210", "microchip,mpfs-icicle-kit",
++		     "microchip,mpfs";
++
+ 
+ 	aliases {
+ 		serial1 = &uart1;
+@@ -29,12 +31,114 @@
+ 		timebase-frequency = <RTCCLK_FREQ>;
+ 	};
+ 
+-	ddrc_cache: memory@1000000000 {
++	kernel: memory@80000000 {
+ 		device_type = "memory";
+-		reg = <0x10 0x0 0x0 0x75BB0000>;
+-		clocks = <&clkcfg CLK_DDRC>;
+-		status = "okay";
++		reg = <0x0 0x80000000 0x0 0x4000000>;
++		label = "kernel";
++	};
++
++	ddr_cached_low: memory@8a000000 {
++		device_type = "memory";
++		reg = <0x0 0x8a000000 0x0 0x8000000>;
++		label = "cached-low";
++	};
++
++	ddr_non_cached_low: memory@c4000000 {
++		device_type = "memory";
++		reg = <0x0 0xc4000000 0x0 0x6000000>;
++		label = "non-cached-low";
++	};
++
++	ddr_cached_high: memory@1022000000 {
++		device_type = "memory";
++		reg = <0x10 0x22000000 0x0 0x5e000000>;
++		label = "cached-high";
++	};
++
++	ddr_non_cached_high: memory@1412000000 {
++		device_type = "memory";
++		reg = <0x14 0x12000000 0x0 0x10000000>;
++		label = "non-cached-high";
++	};
++
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		hss: hss-buffer {
++			compatible = "shared-dma-pool";
++			reg = <0x10 0x3fc00000 0x0 0x400000>;
++			no-map;
++		};
++
++		dma_non_cached_low: non-cached-low-buffer {
++			compatible = "shared-dma-pool";
++			size = <0x0 0x4000000>;
++			no-map;
++			linux,dma-default;
++			alloc-ranges = <0x0 0xc4000000 0x0 0x4000000>;
++			dma-ranges = <0x0 0xc4000000 0x0 0xc4000000 0x0 0x4000000>;
++		};
++
++		dma_non_cached_high: non-cached-high-buffer {
++			compatible = "shared-dma-pool";
++			size = <0x0 0x10000000>;
++			no-map;
++			linux,dma-default;
++			alloc-ranges = <0x14 0x12000000 0x0 0x10000000>;
++			dma-ranges = <0x14 0x12000000 0x14 0x12000000 0x0 0x10000000>;
++		};
++
++		fabricbuf0ddrc: buffer@88000000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0x88000000 0x0 0x2000000>;
++			no-map;
++		};
++
++		fabricbuf1ddrnc: buffer@c8000000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0xc8000000 0x0 0x2000000>;
++			no-map;
++		};
++
++		fabricbuf2ddrncwcb: buffer@d8000000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0xd8000000 0x0 0x2000000>;
++			no-map;
++		};
++	};
++
++	udmabuf0 {
++		compatible = "ikwzm,u-dma-buf";
++		device-name = "udmabuf-ddr-c0";
++		minor-number = <0>;
++		size = <0x0 0x2000000>;
++		memory-region = <&fabricbuf0ddrc>;
++		sync-mode = <3>;
++	};
++
++	udmabuf1 {
++		compatible = "ikwzm,u-dma-buf";
++		device-name = "udmabuf-ddr-nc0";
++		minor-number = <1>;
++		size = <0x0 0x2000000>;
++		memory-region = <&fabricbuf1ddrnc>;
++		sync-mode = <3>;
+ 	};
++
++	udmabuf2 {
++		compatible = "ikwzm,u-dma-buf";
++		device-name = "udmabuf-ddr-nc-wcb0";
++		minor-number = <2>;
++		size = <0x0 0x2000000>;
++		memory-region = <&fabricbuf2ddrncwcb>;
++		sync-mode = <3>;
++	};
++};
++
++&refclk {
++	clock-frequency = <125000000>;
+ };
+ 
+ &cpu4 {
+diff --git a/arch/riscv/dts/microchip-mpfs-icicle-kit.dts b/arch/riscv/dts/microchip-mpfs-icicle-kit.dts
+index 324eb96bb8..09722a02a4 100644
+--- a/arch/riscv/dts/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/dts/microchip-mpfs-icicle-kit.dts
+@@ -13,7 +13,8 @@
+ 
+ / {
+ 	model = "Microchip PolarFire-SoC Icicle Kit";
+-	compatible = "microchip,mpfs-icicle-kit", "microchip,mpfs";
++	compatible = "microchip,mpfs-icicle-reference-rtlv2210", "microchip,mpfs-icicle-kit",
++		     "microchip,mpfs";
+ 
+ 	aliases {
+ 		serial1 = &uart1;
+@@ -29,12 +30,114 @@
+ 		timebase-frequency = <RTCCLK_FREQ>;
+ 	};
+ 
+-	ddrc_cache: memory@1000000000 {
++	kernel: memory@80000000 {
+ 		device_type = "memory";
+-		reg = <0x10 0x0 0x0 0x76000000>;
+-		clocks = <&clkcfg CLK_DDRC>;
+-		status = "okay";
++		reg = <0x0 0x80000000 0x0 0x4000000>;
++		label = "kernel";
++	};
++
++	ddr_cached_low: memory@8a000000 {
++		device_type = "memory";
++		reg = <0x0 0x8a000000 0x0 0x8000000>;
++		label = "cached-low";
++	};
++
++	ddr_non_cached_low: memory@c4000000 {
++		device_type = "memory";
++		reg = <0x0 0xc4000000 0x0 0x6000000>;
++		label = "non-cached-low";
++	};
++
++	ddr_cached_high: memory@1022000000 {
++		device_type = "memory";
++		reg = <0x10 0x22000000 0x0 0x5e000000>;
++		label = "cached-high";
+ 	};
++
++	ddr_non_cached_high: memory@1412000000 {
++		device_type = "memory";
++		reg = <0x14 0x12000000 0x0 0x10000000>;
++		label = "non-cached-high";
++	};
++
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		hss: hss-buffer {
++			compatible = "shared-dma-pool";
++			reg = <0x10 0x3fc00000 0x0 0x400000>;
++			no-map;
++		};
++
++		dma_non_cached_low: non-cached-low-buffer {
++			compatible = "shared-dma-pool";
++			size = <0x0 0x4000000>;
++			no-map;
++			linux,dma-default;
++			alloc-ranges = <0x0 0xc4000000 0x0 0x4000000>;
++			dma-ranges = <0x0 0xc4000000 0x0 0xc4000000 0x0 0x4000000>;
++		};
++
++		dma_non_cached_high: non-cached-high-buffer {
++			compatible = "shared-dma-pool";
++			size = <0x0 0x10000000>;
++			no-map;
++			linux,dma-default;
++			alloc-ranges = <0x14 0x12000000 0x0 0x10000000>;
++			dma-ranges = <0x14 0x12000000 0x14 0x12000000 0x0 0x10000000>;
++		};
++
++		fabricbuf0ddrc: buffer@88000000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0x88000000 0x0 0x2000000>;
++			no-map;
++		};
++
++		fabricbuf1ddrnc: buffer@c8000000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0xc8000000 0x0 0x2000000>;
++			no-map;
++		};
++
++		fabricbuf2ddrncwcb: buffer@d8000000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0xd8000000 0x0 0x2000000>;
++			no-map;
++		};
++	};
++
++	udmabuf0 {
++		compatible = "ikwzm,u-dma-buf";
++		device-name = "udmabuf-ddr-c0";
++		minor-number = <0>;
++		size = <0x0 0x2000000>;
++		memory-region = <&fabricbuf0ddrc>;
++		sync-mode = <3>;
++	};
++
++	udmabuf1 {
++		compatible = "ikwzm,u-dma-buf";
++		device-name = "udmabuf-ddr-nc0";
++		minor-number = <1>;
++		size = <0x0 0x2000000>;
++		memory-region = <&fabricbuf1ddrnc>;
++		sync-mode = <3>;
++	};
++
++	udmabuf2 {
++		compatible = "ikwzm,u-dma-buf";
++		device-name = "udmabuf-ddr-nc-wcb0";
++		minor-number = <2>;
++		size = <0x0 0x2000000>;
++		memory-region = <&fabricbuf2ddrncwcb>;
++		sync-mode = <3>;
++	};
++};
++
++&refclk {
++	clock-frequency = <125000000>;
+ };
+ 
+ &uart1 {
+diff --git a/arch/riscv/dts/microchip-mpfs-sev-kit.dts b/arch/riscv/dts/microchip-mpfs-sev-kit.dts
+index 6de79eeb49..95f73ad4b3 100644
+--- a/arch/riscv/dts/microchip-mpfs-sev-kit.dts
++++ b/arch/riscv/dts/microchip-mpfs-sev-kit.dts
+@@ -36,6 +36,10 @@
+ 	};
+ };
+ 
++&refclk {
++	clock-frequency = <125000000>;
++};
++
+ &uart1 {
+ 	status = "okay";
+ };
+diff --git a/arch/riscv/dts/microchip-mpfs.dtsi b/arch/riscv/dts/microchip-mpfs.dtsi
+index 4f449a3a93..891dd0918b 100644
+--- a/arch/riscv/dts/microchip-mpfs.dtsi
++++ b/arch/riscv/dts/microchip-mpfs.dtsi
+@@ -170,6 +170,11 @@
+ 		};
+ 	};
+ 
++	refclk: refclk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++	};
++
+ 	soc {
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+@@ -225,16 +230,9 @@
+ 					&cpu4_intc HART_INT_M_EXT &cpu4_intc HART_INT_S_EXT>;
+ 		};
+ 
+-		refclk: refclk {
+-			compatible = "fixed-clock";
+-			#clock-cells = <0>;
+-			clock-frequency = <600000000>;
+-			clock-output-names = "msspllclk";
+-		};
+-
+ 		clkcfg: clkcfg@20002000 {
+ 			compatible = "microchip,mpfs-clkcfg";
+-			reg = <0x0 0x20002000 0x0 0x1000>;
++			reg = <0x0 0x20002000 0x0 0x1000>, <0x0 0x3E001000 0x0 0x1000>;
+ 			reg-names = "mss_sysreg";
+ 			clocks = <&refclk>;
+ 			#clock-cells = <1>;
+diff --git a/arch/riscv/dts/mpfs-m100pfsevp-u-boot.dtsi b/arch/riscv/dts/mpfs-m100pfsevp-u-boot.dtsi
+new file mode 100644
+index 0000000000..f60283fb6b
+--- /dev/null
++++ b/arch/riscv/dts/mpfs-m100pfsevp-u-boot.dtsi
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2020 Microchip Technology Inc.
++ * Padmarao Begari <padmarao.begari@microchip.com>
++ */
++
++/ {
++	aliases {
++		cpu1 = &cpu1;
++		cpu2 = &cpu2;
++		cpu3 = &cpu3;
++		cpu4 = &cpu4;
++	};
++};
+diff --git a/arch/riscv/dts/mpfs-m100pfsevp.dts b/arch/riscv/dts/mpfs-m100pfsevp.dts
+new file mode 100644
+index 0000000000..cfca361eb6
+--- /dev/null
++++ b/arch/riscv/dts/mpfs-m100pfsevp.dts
+@@ -0,0 +1,80 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/* Copyright (c) Aries Embbedded */
++
++/dts-v1/;
++
++#include "microchip-mpfs.dtsi"
++
++/* Clock frequency (in Hz) of the rtcclk */
++#define RTCCLK_FREQ		1000000
++
++/ {
++	#address-cells = <2>;
++	#size-cells = <2>;
++	model = "Aries M100PFSEVP";
++	compatible = "aries,m100pfsevp";
++
++	aliases {
++		serial1 = &uart1;
++		ethernet0 = &mac0;
++	};
++
++	chosen {
++		stdout-path = "serial1:115200n8";
++	};
++
++	cpus {
++		timebase-frequency = <RTCCLK_FREQ>;
++	};
++
++	ddrc_cache_lo: memory@80000000 {
++		device_type = "memory";
++		reg = <0x0 0x80000000 0x0 0x40000000>;
++	};
++
++	ddrc_cache_hi: memory@1040000000 {
++		device_type = "memory";
++		reg = <0x10 0x40000000 0x0 0x40000000>;
++	};
++};
++
++&refclk {
++	clock-frequency = <125000000>;
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&mmc {
++	status = "okay";
++	bus-width = <4>;
++	disable-wp;
++	cap-mmc-highspeed;
++	cap-sd-highspeed;
++	card-detect-delay = <200>;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
++	sd-uhs-sdr12;
++	sd-uhs-sdr25;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
++};
++
++&mac0 {
++	status = "okay";
++	phy-mode = "gmii";
++	phy-handle = <&phy0>;
++	phy0: ethernet-phy@0 {
++		reg = <0>;
++	};
++};
++
++&mac1 {
++	status = "disabled";
++	phy-mode = "gmii";
++	phy-handle = <&phy1>;
++	phy1: ethernet-phy@1 {
++		reg = <1>;
++	};
++};
+diff --git a/arch/riscv/dts/mpfs-tysom-m-u-boot.dtsi b/arch/riscv/dts/mpfs-tysom-m-u-boot.dtsi
+new file mode 100644
+index 0000000000..f60283fb6b
+--- /dev/null
++++ b/arch/riscv/dts/mpfs-tysom-m-u-boot.dtsi
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2020 Microchip Technology Inc.
++ * Padmarao Begari <padmarao.begari@microchip.com>
++ */
++
++/ {
++	aliases {
++		cpu1 = &cpu1;
++		cpu2 = &cpu2;
++		cpu3 = &cpu3;
++		cpu4 = &cpu4;
++	};
++};
+diff --git a/arch/riscv/dts/mpfs-tysom-m.dts b/arch/riscv/dts/mpfs-tysom-m.dts
+new file mode 100644
+index 0000000000..98aaa004f9
+--- /dev/null
++++ b/arch/riscv/dts/mpfs-tysom-m.dts
+@@ -0,0 +1,86 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Original all-in-one devicetree:
++ * Copyright (C) 2020-2022 - Aldec
++ * Rewritten to use includes:
++ * Copyright (C) 2022-2023 - Conor Dooley <conor.dooley@microchip.com>
++ */
++
++/dts-v1/;
++
++#include "microchip-mpfs.dtsi"
++
++/* Clock frequency (in Hz) of the rtcclk */
++#define MTIMER_FREQ	1000000
++
++/ {
++	#address-cells = <2>;
++	#size-cells = <2>;
++	model = "Aldec TySOM-M-MPFS250T-REV2";
++	compatible = "aldec,tysom-m-mpfs250t-rev2", "microchip,mpfs";
++
++	aliases {
++		serial1 = &uart1;
++		ethernet0 = &mac1;
++	};
++
++	chosen {
++		stdout-path = "serial1:115200n8";
++	};
++
++	cpus {
++		timebase-frequency = <MTIMER_FREQ>;
++	};
++
++	ddrc_cache_lo: memory@80000000 {
++		device_type = "memory";
++		reg = <0x0 0x80000000 0x0 0x30000000>;
++		status = "okay";
++	};
++
++	ddrc_cache_hi: memory@1000000000 {
++		device_type = "memory";
++		reg = <0x10 0x0 0x0 0x40000000>;
++		status = "okay";
++	};
++};
++
++&refclk {
++	clock-frequency = <125000000>;
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&mmc {
++	status = "okay";
++	pinctrl-names = "default";
++	bus-width = <4>;
++	cap-mmc-highspeed;
++	mmc-ddr-3_3v;
++	max-frequency = <200000000>;
++	non-removable;
++	no-sd;
++	no-sdio;
++	voltage-ranges = <3300 3300>;
++};
++
++&mac0 {
++	phy-mode = "sgmii";
++	phy-handle = <&phy0>;
++};
++
++&mac1 {
++	status = "okay";
++	phy-mode = "sgmii";
++	phy-handle = <&phy1>;
++
++	phy0: ethernet-phy@0 {
++		reg = <0>;
++	};
++
++	phy1: ethernet-phy@1 {
++		reg = <1>;
++	};
++};
+diff --git a/arch/riscv/include/asm/arch-mpfs/clk.h b/arch/riscv/include/asm/arch-mpfs/clk.h
+new file mode 100644
+index 0000000000..fbb1399f3c
+--- /dev/null
++++ b/arch/riscv/include/asm/arch-mpfs/clk.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++
++#ifndef __ASM_RISCV_ARCH_MPFS_CLK_H
++#define __ASM_RISCV_ARCH_MPFS_CLK_H
++
++/* Note: This is a placeholder header for driver compilation. */
++
++#endif
+diff --git a/board/aldec/tysom-m-mpfs250t/Kconfig b/board/aldec/tysom-m-mpfs250t/Kconfig
+new file mode 100644
+index 0000000000..ef282a788e
+--- /dev/null
++++ b/board/aldec/tysom-m-mpfs250t/Kconfig
+@@ -0,0 +1,43 @@
++if TARGET_ALDEC_TYSOM_M_MPFS250T
++
++config SYS_BOARD
++	default "tysom-m-mpfs250t"
++
++config SYS_VENDOR
++	default "aldec"
++
++config SYS_CPU
++	default "mpfs"
++
++config SYS_CONFIG_NAME
++	default "aldec_tysom_m_mpfs250t"
++
++config SYS_TEXT_BASE
++	default 0x80000000 if !RISCV_SMODE
++	default 0x80200000 if RISCV_SMODE
++
++config BOARD_SPECIFIC_OPTIONS # dummy
++	def_bool y
++	select MICROCHIP_MPFS
++	select BOARD_EARLY_INIT_F
++	select BOARD_LATE_INIT
++	imply SMP
++	imply CMD_DHCP
++	imply CMD_EXT2
++	imply CMD_EXT4
++	imply CMD_FAT
++	imply CMD_FS_GENERIC
++	imply CMD_NET
++	imply CMD_PING
++	imply CMD_MMC
++	imply DOS_PARTITION
++	imply EFI_PARTITION
++	imply IP_DYN
++	imply ISO_PARTITION
++	imply PHY_LIB
++	imply PHY_VITESSE
++	imply MTD_SPI_NAND
++	imply CMD_MTD
++	imply MTD_PARTITIONS
++	imply CMD_MTDPARTS
++endif
+diff --git a/board/aldec/tysom-m-mpfs250t/Makefile b/board/aldec/tysom-m-mpfs250t/Makefile
+new file mode 100644
+index 0000000000..6553009b65
+--- /dev/null
++++ b/board/aldec/tysom-m-mpfs250t/Makefile
+@@ -0,0 +1,7 @@
++# SPDX-License-Identifier: GPL-2.0+
++#
++# Copyright (C) 2019 Microchip Technology Inc.
++# Padmarao Begari <padmarao.begari@microchip.com>
++#
++
++obj-y	+= tysom-m-mpfs250t.o
+diff --git a/board/aldec/tysom-m-mpfs250t/tysom-m-mpfs250t.c b/board/aldec/tysom-m-mpfs250t/tysom-m-mpfs250t.c
+new file mode 100644
+index 0000000000..10bd9a7e87
+--- /dev/null
++++ b/board/aldec/tysom-m-mpfs250t/tysom-m-mpfs250t.c
+@@ -0,0 +1,313 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2019 Microchip Technology Inc.
++ * Padmarao Begari <padmarao.begari@microchip.com>
++ */
++
++#include <common.h>
++#include <command.h>
++#include <dm.h>
++#include <env.h>
++#include <init.h>
++#include <mmc.h>
++#include <dm/device-internal.h>
++#include <dm/lists.h>
++#include <asm/io.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#define MPFS_SYSREG_SOFT_RESET		((unsigned int *)0x20002088)
++#define MPFS_SYS_SERVICE_CR		((unsigned int *)0x37020050)
++#define MPFS_SYS_SERVICE_SR		((unsigned int *)0x37020054)
++#define MPFS_SYS_SERVICE_MAILBOX	((unsigned char *)0x37020800)
++
++#define GPIO_IOBANK0_LO_GPOUT		((unsigned char *)0x20120088)
++#define GPIO_IOBANK0_LO_CLEAR_BITS	((unsigned char *)0x201200a0)
++#define GPIO_IOBANK0_LO_SET_BITS	((unsigned char *)0x201200a4)
++#define GPIO_IOBANK0_SD_SEL_MASK	0x1000 /* bit #12 selects the SD card */
++
++#define MPFS_MMC_DRIVER_PATH		"/soc/mmc@20008000"
++#define MPFS_MMC_DRIVER_NAME		"sdhci-cdns"
++#define MPFS_MMC_DEV_NUM		0
++
++#define PERIPH_RESET_VALUE		0x1e8u
++#define SERVICE_CR_REQ			0x1u
++#define SERVICE_SR_BUSY			0x2u
++
++static void read_device_serial_number(u8 *response, u8 response_size)
++{
++	u8 idx;
++	u8 *response_buf;
++	unsigned int val;
++
++	response_buf = (u8 *)response;
++
++	writel(SERVICE_CR_REQ, MPFS_SYS_SERVICE_CR);
++	/*
++	 * REQ bit will remain set till the system controller starts
++	 * processing.
++	 */
++	do {
++		val = readl(MPFS_SYS_SERVICE_CR);
++	} while (SERVICE_CR_REQ == (val & SERVICE_CR_REQ));
++
++	/*
++	 * Once system controller starts processing the busy bit will
++	 * go high and service is completed when busy bit is gone low
++	 */
++	do {
++		val = readl(MPFS_SYS_SERVICE_SR);
++	} while (SERVICE_SR_BUSY == (val & SERVICE_SR_BUSY));
++
++	for (idx = 0; idx < response_size; idx++)
++		response_buf[idx] = readb(MPFS_SYS_SERVICE_MAILBOX + idx);
++}
++
++int board_init(void)
++{
++	/* For now nothing to do here. */
++
++	return 0;
++}
++
++int board_early_init_f(void)
++{
++	unsigned int val;
++
++	/* Reset uart, mmc peripheral */
++	val = readl(MPFS_SYSREG_SOFT_RESET);
++	val = (val & ~(PERIPH_RESET_VALUE));
++	writel(val, MPFS_SYSREG_SOFT_RESET);
++	return 0;
++}
++
++int board_late_init(void)
++{
++	u32 ret;
++	u32 node;
++	u8 idx;
++	u8 device_serial_number[16] = { 0 };
++	unsigned char mac_addr[6];
++	char icicle_mac_addr[20];
++	void *blob = (void *)gd->fdt_blob;
++
++	node = fdt_path_offset(blob, "ethernet0");
++	if (node < 0) {
++		printf("No ethernet0 path offset\n");
++		return -ENODEV;
++	}
++
++	ret = fdtdec_get_byte_array(blob, node, "local-mac-address", mac_addr, 6);
++	if (ret) {
++		printf("No local-mac-address property\n");
++		return -EINVAL;
++	}
++
++	read_device_serial_number(device_serial_number, 16);
++
++	/* Update MAC address with device serial number */
++	mac_addr[0] = 0xc0;
++	mac_addr[1] = 0xe5;
++	mac_addr[2] = 0x4e;
++	mac_addr[3] = device_serial_number[2];
++	mac_addr[4] = device_serial_number[1];
++	mac_addr[5] = device_serial_number[0];
++
++	ret = fdt_setprop(blob, node, "local-mac-address", mac_addr, 6);
++	if (ret) {
++		printf("Error setting local-mac-address property\n");
++		return -ENODEV;
++	}
++
++	icicle_mac_addr[0] = '[';
++
++	sprintf(&icicle_mac_addr[1], "%pM", mac_addr);
++
++	icicle_mac_addr[18] = ']';
++	icicle_mac_addr[19] = '\0';
++
++	for (idx = 0; idx < 20; idx++) {
++		if (icicle_mac_addr[idx] == ':')
++			icicle_mac_addr[idx] = ' ';
++	}
++	env_set("icicle_mac_addr0", icicle_mac_addr);
++
++	mac_addr[5] = device_serial_number[0] + 1;
++
++	icicle_mac_addr[0] = '[';
++
++	sprintf(&icicle_mac_addr[1], "%pM", mac_addr);
++
++	icicle_mac_addr[18] = ']';
++	icicle_mac_addr[19] = '\0';
++
++	for (idx = 0; idx < 20; idx++) {
++		if (icicle_mac_addr[idx] == ':')
++			icicle_mac_addr[idx] = ' ';
++	}
++	env_set("icicle_mac_addr1", icicle_mac_addr);
++
++	return 0;
++}
++
++/* code derived from cmd/bind.c */
++static int unbind_mmc_dev(void)
++{
++	const char *path = MPFS_MMC_DRIVER_PATH;
++	struct udevice *dev;
++	int ret;
++	ofnode ofnode;
++
++	ofnode = ofnode_path(path);
++	printf("%s: node=%ld\n", __func__, ofnode.of_offset);
++	if (!ofnode_valid(ofnode)) {
++		printf("%s is not a valid node path\n", path);
++		return -EINVAL;
++	}
++
++	ret = device_find_global_by_ofnode(ofnode, &dev);
++
++	if (!dev || ret) {
++		printf("Cannot find a device with path %s\n", path);
++		return -ENODEV;
++	}
++
++	ret = device_remove(dev, DM_REMOVE_NORMAL);
++	if (ret) {
++		printf("Unable to remove. err:%d\n", ret);
++		return ret;
++	}
++
++	ret = device_unbind(dev);
++	if (ret) {
++		printf("Unable to unbind. err:%d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int bind_and_init_mmc_dev(void)
++{
++	const char *path = MPFS_MMC_DRIVER_PATH;
++	const char *drv_name = MPFS_MMC_DRIVER_NAME;
++	struct udevice *dev;
++	struct udevice *parent = NULL;
++	int ret;
++	ofnode ofnode;
++	struct driver *drv;
++	drv = lists_driver_lookup_name(drv_name);
++	if (!drv) {
++		printf("%s is not a valid driver name\n", drv_name);
++		return -ENOENT;
++	}
++
++	ofnode = ofnode_path(path);
++	printf("%s: node=%ld\n", __func__, ofnode.of_offset);
++	if (!ofnode_valid(ofnode)) {
++		printf("%s is not a valid node path\n", path);
++		return -EINVAL;
++	}
++
++	while (ofnode_valid(ofnode)) {
++		if (!device_find_global_by_ofnode(ofnode, &parent))
++			break;
++		ofnode = ofnode_get_parent(ofnode);
++		printf("%s: parent=%ld\n", __func__, ofnode.of_offset);
++	}
++
++	if (!parent) {
++		printf("Cannot find a parent device for node path %s\n", path);
++		return -ENODEV;
++	}
++
++	ofnode = ofnode_path(path);
++	printf("%s: node=%ld\n", __func__, ofnode.of_offset);
++	ret = lists_bind_fdt(parent, ofnode, &dev, NULL, false);
++
++	if (!dev || ret) {
++		printf("Unable to bind. err:%d\n", ret);
++		return ret;
++	}
++
++	return mmc_init_device(MPFS_MMC_DEV_NUM);
++}
++
++static int fdt_mmc_fixup(int sd)
++{
++	void *blob = (void *)gd->fdt_blob;
++	u32 bus_width;
++	u32 node;
++	int ret;
++
++	node = fdt_path_offset(blob, MPFS_MMC_DRIVER_PATH);
++	if (node < 0) {
++		printf("No mmc path offset\n");
++		return -ENODEV;
++	}
++	printf("%s: node=%d\n", __func__, node);
++
++	bus_width = sd ? 4 : 8;
++	ret = fdt_setprop_u32(blob, node, "bus-width", bus_width);
++	if (ret) {
++		printf("Error setting bus-width property\n");
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++int do_selsd(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
++{
++	unsigned int val;
++	int sel = -1;
++	int ret;
++
++	val = readl(GPIO_IOBANK0_LO_GPOUT);
++        if (argc == 1) {
++		if (val & GPIO_IOBANK0_SD_SEL_MASK)
++			return 0;
++		else
++		return 1;
++        } else if (argc == 2) {
++		if (argv[1][0] == '0') {
++			if (val & GPIO_IOBANK0_SD_SEL_MASK)
++				sel = 0;
++		} else if (argv[1][0] == '1') {
++			if (!(val & GPIO_IOBANK0_SD_SEL_MASK))
++				sel = 1;
++		} else {
++			return CMD_RET_USAGE;
++		}
++		if (sel >= 0) {
++			ret = unbind_mmc_dev();
++			if (ret)
++				return CMD_RET_FAILURE;
++			if (sel) {
++				writel(GPIO_IOBANK0_SD_SEL_MASK,
++				       GPIO_IOBANK0_LO_SET_BITS);
++			} else {
++				writel(GPIO_IOBANK0_SD_SEL_MASK,
++				       GPIO_IOBANK0_LO_CLEAR_BITS);
++			}
++			ret = fdt_mmc_fixup(sel);
++			if (ret)
++				return CMD_RET_FAILURE;			
++			ret = bind_and_init_mmc_dev();
++			if (ret)
++				return CMD_RET_FAILURE;
++		}
++	} else {
++		return CMD_RET_USAGE;
++	}
++
++        return CMD_RET_SUCCESS;
++}
++
++U_BOOT_CMD(
++        selsd, CONFIG_SYS_MAXARGS, 1, do_selsd,
++        "Get or set the SD card as MMC device\n",
++        "selsd - returns 0 if the SD card or 1 if the eMMC is selected\n"
++        "selsd 1 - select the SD card\n"
++        "selsd 0 - select the eMMC\n"
++        );
+diff --git a/board/aries/m100pfsevp/Kconfig b/board/aries/m100pfsevp/Kconfig
+index a63fb40520..988aa5f2f5 100644
+--- a/board/aries/m100pfsevp/Kconfig
++++ b/board/aries/m100pfsevp/Kconfig
+@@ -7,7 +7,7 @@ config SYS_VENDOR
+ 	default "aries"
+ 
+ config SYS_CPU
+-	default "generic"
++	default "mpfs"
+ 
+ config SYS_CONFIG_NAME
+ 	default "m100pfsevp"
+@@ -18,13 +18,10 @@ config SYS_TEXT_BASE
+ 
+ config BOARD_SPECIFIC_OPTIONS # dummy
+ 	def_bool y
+-	select GENERIC_RISCV
++	select MICROCHIP_MPFS
+ 	select BOARD_EARLY_INIT_F
+ 	select BOARD_LATE_INIT
+ 	imply SMP
+-	imply CLK_CCF
+-	imply CLK_MPFS
+-	imply SYS_NS16550
+ 	imply CMD_DHCP
+ 	imply CMD_EXT2
+ 	imply CMD_EXT4
+@@ -37,22 +34,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
+ 	imply EFI_PARTITION
+ 	imply IP_DYN
+ 	imply ISO_PARTITION
+-	imply MACB
+-	imply MII
+ 	imply PHY_LIB
+ 	imply PHY_VITESSE
+-	imply MMC
+-	imply MMC_WRITE
+-	imply MMC_SDHCI
+-	imply MMC_SDHCI_CADENCE
+-	imply MMC_SDHCI_ADMA
+-	imply MMC_HS200_SUPPORT
+-	imply CMD_I2C
+-	imply DM_I2C
+-	imply SYS_I2C_MICROCHIP
+-	imply SPI
+-	imply DM_SPI
+-	imply MICROCHIP_QSPI
+ 	imply MTD_SPI_NAND
+ 	imply CMD_MTD
+ 	imply MTD_PARTITIONS
+diff --git a/board/microchip/mpfs_icicle/Kconfig b/board/microchip/mpfs_icicle/Kconfig
+index a445062101..23ad93ff8d 100644
+--- a/board/microchip/mpfs_icicle/Kconfig
++++ b/board/microchip/mpfs_icicle/Kconfig
+@@ -7,24 +7,21 @@ config SYS_VENDOR
+ 	default "microchip"
+ 
+ config SYS_CPU
+-	default "generic"
++	default "mpfs"
+ 
+ config SYS_CONFIG_NAME
+ 	default "microchip_mpfs_icicle"
+ 
+ config SYS_TEXT_BASE
+-	default 0x1000000000 if !RISCV_SMODE
+-	default 0x1000200000 if RISCV_SMODE
++	default 0x80000000 if !RISCV_SMODE
++	default 0x80200000 if RISCV_SMODE
+ 
+ config BOARD_SPECIFIC_OPTIONS # dummy
+ 	def_bool y
+-	select GENERIC_RISCV
++	select MICROCHIP_MPFS
+ 	select BOARD_EARLY_INIT_F
+ 	select BOARD_LATE_INIT
+ 	imply SMP
+-	imply CLK_CCF
+-	imply CLK_MPFS
+-	imply SYS_NS16550
+ 	imply CMD_DHCP
+ 	imply CMD_EXT2
+ 	imply CMD_EXT4
+@@ -37,25 +34,10 @@ config BOARD_SPECIFIC_OPTIONS # dummy
+ 	imply EFI_PARTITION
+ 	imply IP_DYN
+ 	imply ISO_PARTITION
+-	imply MACB
+-	imply MII
+ 	imply PHY_LIB
+ 	imply PHY_VITESSE
+-	imply MMC
+-	imply MMC_WRITE
+-	imply MMC_SDHCI
+-	imply MMC_SDHCI_CADENCE
+-	imply MMC_SDHCI_ADMA
+-	imply MMC_HS200_SUPPORT
+-	imply CMD_I2C
+-	imply DM_I2C
+-	imply SYS_I2C_MICROCHIP
+-	imply SPI
+-	imply DM_SPI
+-	imply MICROCHIP_QSPI
+ 	imply MTD_SPI_NAND
+ 	imply CMD_MTD
+ 	imply MTD_PARTITIONS
+ 	imply CMD_MTDPARTS
+-
+ endif
+diff --git a/board/microchip/mpfs_icicle/mpfs_icicle.c b/board/microchip/mpfs_icicle/mpfs_icicle.c
+index e74c9fb03c..4244ab0647 100644
+--- a/board/microchip/mpfs_icicle/mpfs_icicle.c
++++ b/board/microchip/mpfs_icicle/mpfs_icicle.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0+
+ /*
+- * Copyright (C) 2019 Microchip Technology Inc.
++ * Copyright (C) 2019-2023 Microchip Technology Inc.
+  * Padmarao Begari <padmarao.begari@microchip.com>
+  */
+ 
+@@ -8,6 +8,7 @@
+ #include <dm.h>
+ #include <env.h>
+ #include <init.h>
++#include <malloc.h>
+ #include <asm/global_data.h>
+ #include <asm/io.h>
+ 
+@@ -16,11 +17,46 @@ DECLARE_GLOBAL_DATA_PTR;
+ #define MPFS_SYSREG_SOFT_RESET		((unsigned int *)0x20002088)
+ #define MPFS_SYS_SERVICE_CR		((unsigned int *)0x37020050)
+ #define MPFS_SYS_SERVICE_SR		((unsigned int *)0x37020054)
+-#define MPFS_SYS_SERVICE_MAILBOX	((unsigned char *)0x37020800)
++#define MPFS_SYS_SERVICE_MAILBOX_U8	((unsigned char *)0x37020800)
++#define MPFS_SYS_SERVICE_MAILBOX_U32	((unsigned int *)0x37020800)
+ 
+-#define PERIPH_RESET_VALUE		0x1e8u
+-#define SERVICE_CR_REQ			0x1u
+-#define SERVICE_SR_BUSY			0x2u
++#define SERVICE_CR_REQ_MASK		0x1u
++#define SERVICE_SR_BUSY_MASK		0x2u
++#define SERVICE_SR_STATUS_SHIFT		16
++#define SERVICE_CR_COMMAND_SHIFT	16
++
++#define SYS_SPI_CMD			0x50
++#define SYS_SPI_MAILBOX_DATA_LEN	17
++#define SYS_SPI_MAILBOX_SRC_OFFSET	8
++#define SYS_SPI_MAILBOX_LENGTH_OFFSET	12
++#define SYS_SPI_MAILBOX_FREQ_OFFSET	16
++#define SYS_SPI_MAILBOX_FREQ		3
++#define SPI_FLASH_ADDR			0x400
++
++#define PERIPH_RESET_VALUE		0x800001e8u
++
++/* Descriptor table */
++#define START_OFFSET			4
++#define END_OFFSET			8
++#define SIZE_OFFSET			12
++#define DESC_NEXT			12
++#define DESC_RESERVED_SIZE		0
++#define DESC_SIZE			16
++
++#define BYTES_2				2
++#define BYTES_4				4
++#define BYTES_8				8
++#define BYTES_16			16
++#define BYTES_24			24
++#define MASK_8BIT			0xff
++
++#define DESIGN_MAGIC_0			0x4d /* 'M' */
++#define DESIGN_MAGIC_1			0x43 /* 'C'*/
++#define DESIGN_MAGIC_2			0x48 /* 'H'*/
++#define DESIGN_MAGIC_3			0x50 /* 'P'*/
++
++static u8 no_of_dtbo;
++static u32 dtbos_size;
+ 
+ static void read_device_serial_number(u8 *response, u8 response_size)
+ {
+@@ -30,14 +66,14 @@ static void read_device_serial_number(u8 *response, u8 response_size)
+ 
+ 	response_buf = (u8 *)response;
+ 
+-	writel(SERVICE_CR_REQ, MPFS_SYS_SERVICE_CR);
++	writel(SERVICE_CR_REQ_MASK, MPFS_SYS_SERVICE_CR);
+ 	/*
+ 	 * REQ bit will remain set till the system controller starts
+ 	 * processing.
+ 	 */
+ 	do {
+ 		val = readl(MPFS_SYS_SERVICE_CR);
+-	} while (SERVICE_CR_REQ == (val & SERVICE_CR_REQ));
++	} while (SERVICE_CR_REQ_MASK == (val & SERVICE_CR_REQ_MASK));
+ 
+ 	/*
+ 	 * Once system controller starts processing the busy bit will
+@@ -45,10 +81,218 @@ static void read_device_serial_number(u8 *response, u8 response_size)
+ 	 */
+ 	do {
+ 		val = readl(MPFS_SYS_SERVICE_SR);
+-	} while (SERVICE_SR_BUSY == (val & SERVICE_SR_BUSY));
++	} while (SERVICE_SR_BUSY_MASK == (val & SERVICE_SR_BUSY_MASK));
+ 
+ 	for (idx = 0; idx < response_size; idx++)
+-		response_buf[idx] = readb(MPFS_SYS_SERVICE_MAILBOX + idx);
++		response_buf[idx] = readb(MPFS_SYS_SERVICE_MAILBOX_U8 + idx);
++}
++
++static u16 execute_sys_service(u8 cmd_opcode, u8 *cmd_data, u16 cmd_data_size)
++{
++	u32 *word_buf;
++	u32 mailbox_val;
++	u32 idx, value;
++	u16 status;
++	u8 *byte_buf;
++	u8 byte_offset;
++	u8 byte_idx;
++
++	word_buf = (u32 *)cmd_data;
++
++	for (idx = 0; idx < cmd_data_size / BYTES_4; idx++)
++		writel(word_buf[idx], MPFS_SYS_SERVICE_MAILBOX_U32 + idx);
++
++	if (cmd_data_size % BYTES_4 > 0) {
++		byte_offset = (cmd_data_size / BYTES_4) * BYTES_4;
++		byte_buf = (u8 *)(cmd_data + byte_offset);
++
++		mailbox_val = readl(MPFS_SYS_SERVICE_MAILBOX_U32 + idx);
++
++		for (byte_idx = 0; byte_idx < cmd_data_size % 4; byte_idx++) {
++			mailbox_val &= ~(MASK_8BIT << (byte_idx * BYTES_8));
++			value = byte_buf[byte_idx] << (byte_idx * BYTES_8);
++			mailbox_val |= value;
++		}
++		writel(mailbox_val, MPFS_SYS_SERVICE_MAILBOX_U32 + idx);
++	}
++
++	writel((cmd_opcode << SERVICE_CR_COMMAND_SHIFT) | SERVICE_CR_REQ_MASK,
++	       MPFS_SYS_SERVICE_CR);
++
++	/*
++	 * REQ bit will remain set till the system controller starts
++	 * processing.
++	 */
++	do {
++		value = readl(MPFS_SYS_SERVICE_CR);
++	} while (SERVICE_CR_REQ_MASK == (value & SERVICE_CR_REQ_MASK));
++
++	/*
++	 * Once system controller starts processing the busy bit will
++	 * go high and service is completed when busy bit is gone low
++	 */
++	do {
++		value = readl(MPFS_SYS_SERVICE_SR);
++	} while (SERVICE_SR_BUSY_MASK == (value & SERVICE_SR_BUSY_MASK));
++
++	status = value >> SERVICE_SR_STATUS_SHIFT;
++
++	return status;
++}
++
++static u16 sys_service_spi_copy(void *dst_addr, u32 src_addr, u32 length)
++{
++	u16 status;
++	u8 mailbox_format[SYS_SPI_MAILBOX_DATA_LEN];
++
++	*(u64 *)mailbox_format = (u64)dst_addr;
++	*(u32 *)(mailbox_format + SYS_SPI_MAILBOX_SRC_OFFSET) = src_addr;
++	*(u32 *)(mailbox_format + SYS_SPI_MAILBOX_LENGTH_OFFSET) = length;
++	mailbox_format[SYS_SPI_MAILBOX_FREQ_OFFSET] = SYS_SPI_MAILBOX_FREQ;
++
++	status = execute_sys_service(SYS_SPI_CMD, mailbox_format,
++				     SYS_SPI_MAILBOX_DATA_LEN);
++	return status;
++}
++
++static u16 get_dtbo_desc_header(u8 *desc_data, u32 desc_addr)
++{
++	u32 length, no_of_descs;
++	u16 status;
++
++	/* Get first four bytes to calculate length */
++	status = sys_service_spi_copy(desc_data, desc_addr, BYTES_4);
++	if (!status) {
++		/* Number of descriptors in dtbo descriptor */
++		no_of_descs = *((u32 *)desc_data);
++		if (no_of_descs) {
++			length = DESC_SIZE + ((no_of_descs - 1) * DESC_SIZE);
++			status = sys_service_spi_copy(desc_data, desc_addr,
++						      length);
++		} else {
++			status = -1;
++		}
++	}
++
++	return status;
++}
++
++static u8 *get_dtbo(u32 start_addr, u32 size)
++{
++	u16 status;
++	u8 *dtbo;
++
++	dtbo = (u8 *)malloc(size);
++	/* Get a dtbo from the spi flash */
++	status = sys_service_spi_copy(dtbo, start_addr + SPI_FLASH_ADDR,
++				      size);
++	if (status) {
++		free(dtbo);
++		dtbo = NULL;
++	}
++
++	return dtbo;
++}
++
++static void parse_desc_header(u8 *desc_header)
++{
++	u32 dtbo_desc_start_addr;
++	u32 dtbo_desc_end_addr;
++	u32 dtbo_desc_size;
++	u32 no_of_descs;
++	u16 idx, rsvd = 0;
++	u8 dtbo_name[16];
++	u8 dtbo_addr[20];
++	u8 *desc;
++	u8 *dtbo;
++
++	no_of_descs = *((u32 *)desc_header);
++
++	for (idx = 0; idx < no_of_descs; idx++) {
++		desc = &desc_header[START_OFFSET + (DESC_NEXT * idx) + rsvd];
++		dtbo_desc_start_addr = *((u32 *)desc);
++
++		desc = &desc_header[END_OFFSET + (DESC_NEXT * idx) + rsvd];
++		dtbo_desc_end_addr = *((u32 *)desc);
++
++		desc = &desc_header[SIZE_OFFSET + (DESC_NEXT * idx) + rsvd];
++		dtbo_desc_size = *((u32 *)desc);
++
++		if (no_of_descs)
++			rsvd += DESC_RESERVED_SIZE;
++
++		dtbo = get_dtbo(dtbo_desc_start_addr, dtbo_desc_size);
++		if (dtbo) {
++			sprintf(dtbo_name, "dtbo_image%d", no_of_dtbo);
++			sprintf(dtbo_addr, "0x%llx", (u64)dtbo);
++			env_set(dtbo_name, dtbo_addr);
++			++no_of_dtbo;
++			dtbos_size += dtbo_desc_size;
++		}
++	}
++}
++
++static void get_device_tree_overlays(void)
++{
++	u32 desc_length;
++	u32 dtbo_desc_addr;
++	u32 dtbo_addr[5];
++	u16 i, status, hart, no_of_harts;
++	u8 design_info_desc[256];
++	u8 dtbo_desc_data[256];
++	u8 no_of_dtbos[8];
++	u8 dtbo_size[8];
++	u8 *desc;
++
++	no_of_dtbo = 0;
++	dtbos_size = 0;
++
++	/* Read first 10 bytes to verify the descriptor is found or not */
++	status = sys_service_spi_copy(design_info_desc, SPI_FLASH_ADDR, 10);
++
++	if (!status && design_info_desc[0] == DESIGN_MAGIC_0 &&
++	    design_info_desc[1] == DESIGN_MAGIC_1 &&
++	    design_info_desc[2] == DESIGN_MAGIC_2 &&
++	    design_info_desc[3] == DESIGN_MAGIC_3) {
++		desc_length = *((u32 *)&design_info_desc[4]);
++		/* Read Design descriptor */
++		status = sys_service_spi_copy(design_info_desc,
++					      SPI_FLASH_ADDR, desc_length);
++		if (!status) {
++			no_of_harts = *((u16 *)&design_info_desc[10]);
++
++			for (hart = 0; hart < no_of_harts; hart++) {
++				/* Start address of DTBO descriptor */
++				desc = &design_info_desc[(0x4 * hart) + 0xc];
++
++				dtbo_desc_addr = *((u32 *)desc);
++				dtbo_addr[hart] = dtbo_desc_addr;
++
++				if (!dtbo_addr[hart])
++					continue;
++
++				for (i = 0; i < hart; i++) {
++					if (dtbo_addr[hart] == dtbo_addr[i])
++						continue;
++				}
++
++				if (hart && hart == i)
++					continue;
++
++				dtbo_desc_addr += SPI_FLASH_ADDR;
++				status = get_dtbo_desc_header(dtbo_desc_data,
++							      dtbo_desc_addr);
++				if (status)
++					continue;
++				else
++					parse_desc_header(dtbo_desc_data);
++			}
++		}
++	}
++	sprintf(no_of_dtbos, "%d", no_of_dtbo);
++	env_set("no_of_overlays", no_of_dtbos);
++	sprintf(dtbo_size, "%d", dtbos_size);
++	env_set("dtbo_size", dtbo_size);
+ }
+ 
+ int board_init(void)
+@@ -136,5 +380,7 @@ int board_late_init(void)
+ 	}
+ 	env_set("icicle_mac_addr1", icicle_mac_addr);
+ 
++	get_device_tree_overlays();
++
+ 	return 0;
+ }
+diff --git a/board/microchip/mpfs_sevkit/Kconfig b/board/microchip/mpfs_sevkit/Kconfig
+index ea503a2ad6..e9bae1bd56 100644
+--- a/board/microchip/mpfs_sevkit/Kconfig
++++ b/board/microchip/mpfs_sevkit/Kconfig
+@@ -7,7 +7,7 @@ config SYS_VENDOR
+ 	default "microchip"
+ 
+ config SYS_CPU
+-	default "generic"
++	default "mpfs"
+ 
+ config SYS_CONFIG_NAME
+ 	default "microchip_mpfs_sevkit"
+@@ -18,13 +18,10 @@ config SYS_TEXT_BASE
+ 
+ config BOARD_SPECIFIC_OPTIONS # dummy
+ 	def_bool y
+-	select GENERIC_RISCV
++	select MICROCHIP_MPFS
+ 	select BOARD_EARLY_INIT_F
+ 	select BOARD_LATE_INIT
+ 	imply SMP
+-	imply CLK_CCF
+-	imply CLK_MPFS
+-	imply SYS_NS16550
+ 	imply CMD_DHCP
+ 	imply CMD_EXT2
+ 	imply CMD_EXT4
+@@ -37,18 +34,10 @@ config BOARD_SPECIFIC_OPTIONS # dummy
+ 	imply EFI_PARTITION
+ 	imply IP_DYN
+ 	imply ISO_PARTITION
+-	imply MACB
+-	imply MII
+ 	imply PHY_LIB
+ 	imply PHY_VITESSE
+-	imply MMC
+-	imply MMC_WRITE
+-	imply MMC_SDHCI
+-	imply MMC_SDHCI_CADENCE
+-	imply MMC_SDHCI_ADMA
+-	imply MMC_HS200_SUPPORT
+-	imply CMD_I2C
+-	imply DM_I2C
+-	imply SYS_I2C_MICROCHIP
+-
++	imply MTD_SPI_NAND
++	imply CMD_MTD
++	imply MTD_PARTITIONS
++	imply CMD_MTDPARTS
+ endif
+diff --git a/configs/aldec_tysom_m_mpfs250t_defconfig b/configs/aldec_tysom_m_mpfs250t_defconfig
+new file mode 100644
+index 0000000000..ca6af81be4
+--- /dev/null
++++ b/configs/aldec_tysom_m_mpfs250t_defconfig
+@@ -0,0 +1,21 @@
++CONFIG_RISCV=y
++CONFIG_SYS_MALLOC_LEN=0x800000
++CONFIG_SYS_MALLOC_F_LEN=0x2000
++CONFIG_ENV_SIZE=0x2000
++CONFIG_ENV_OFFSET=0x4400
++CONFIG_DEFAULT_DEVICE_TREE="mpfs-tysom-m"
++CONFIG_TARGET_ALDEC_TYSOM_M_MPFS250T=y
++CONFIG_ARCH_RV64I=y
++CONFIG_RISCV_SMODE=y
++CONFIG_SBI_V01=y
++CONFIG_DISTRO_DEFAULTS=y
++CONFIG_SYS_LOAD_ADDR=0x80200000
++CONFIG_FIT=y
++CONFIG_DISPLAY_CPUINFO=y
++CONFIG_DISPLAY_BOARDINFO=y
++CONFIG_ENV_OVERWRITE=y
++CONFIG_ENV_IS_IN_MMC=y
++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_BOOTP_SEND_HOSTNAME=y
++CONFIG_DM_MTD=y
++
+diff --git a/configs/m100pfsevp_defconfig b/configs/m100pfsevp_defconfig
+index 9cac48553c..32bf3e8d9d 100644
+--- a/configs/m100pfsevp_defconfig
++++ b/configs/m100pfsevp_defconfig
+@@ -3,7 +3,7 @@ CONFIG_SYS_MALLOC_LEN=0x800000
+ CONFIG_SYS_MALLOC_F_LEN=0x2000
+ CONFIG_ENV_SIZE=0x2000
+ CONFIG_ENV_OFFSET=0x4400
+-CONFIG_DEFAULT_DEVICE_TREE="m100pfsevp"
++CONFIG_DEFAULT_DEVICE_TREE="mpfs-m100pfsevp"
+ CONFIG_TARGET_ARIES_M100PFSEVP=y
+ CONFIG_ARCH_RV64I=y
+ CONFIG_RISCV_SMODE=y
+diff --git a/configs/microchip_mpfs_icicle_amp_defconfig b/configs/microchip_mpfs_icicle_amp_defconfig
+index ca4f7ac755..b9ec0f4b2f 100644
+--- a/configs/microchip_mpfs_icicle_amp_defconfig
++++ b/configs/microchip_mpfs_icicle_amp_defconfig
+@@ -7,7 +7,7 @@ CONFIG_TARGET_MICROCHIP_ICICLE=y
+ CONFIG_ARCH_RV64I=y
+ CONFIG_RISCV_SMODE=y
+ CONFIG_DISTRO_DEFAULTS=y
+-CONFIG_SYS_LOAD_ADDR=0x1000200000
++CONFIG_SYS_LOAD_ADDR=0x80200000
+ CONFIG_FIT=y
+ CONFIG_DISPLAY_CPUINFO=y
+ CONFIG_DISPLAY_BOARDINFO=y
+@@ -22,8 +22,4 @@ CONFIG_CMD_UBIFS=y
+ CONFIG_MTD_UBI=y
+ CONFIG_MTD_UBI_WL_THRESHOLD=4096
+ CONFIG_MTD_UBI_BEB_LIMIT=20
+-CONFIG_CMD_UBI=y
+-CONFIG_CMD_UBI=y
+-CONFIG_USE_BOOTCOMMAND=y
+-CONFIG_BOOTCOMMAND="run bootcmd_qspi;run bootcmd_mmc;run bootcmd_dhcp"
+-CONFIG_OF_LIBFDT_OVERLAY=y
+\ No newline at end of file
++CONFIG_OF_LIBFDT_OVERLAY=y
+diff --git a/configs/microchip_mpfs_icicle_defconfig b/configs/microchip_mpfs_icicle_defconfig
+index 4fa04c6cf9..13725c584e 100644
+--- a/configs/microchip_mpfs_icicle_defconfig
++++ b/configs/microchip_mpfs_icicle_defconfig
+@@ -7,7 +7,7 @@ CONFIG_TARGET_MICROCHIP_ICICLE=y
+ CONFIG_ARCH_RV64I=y
+ CONFIG_RISCV_SMODE=y
+ CONFIG_DISTRO_DEFAULTS=y
+-CONFIG_SYS_LOAD_ADDR=0x1000200000
++CONFIG_SYS_LOAD_ADDR=0x80200000
+ CONFIG_FIT=y
+ CONFIG_DISPLAY_CPUINFO=y
+ CONFIG_DISPLAY_BOARDINFO=y
+@@ -22,8 +22,4 @@ CONFIG_CMD_UBIFS=y
+ CONFIG_MTD_UBI=y
+ CONFIG_MTD_UBI_WL_THRESHOLD=4096
+ CONFIG_MTD_UBI_BEB_LIMIT=20
+-CONFIG_CMD_UBI=y
+-CONFIG_CMD_UBI=y
+-CONFIG_USE_BOOTCOMMAND=y
+-CONFIG_BOOTCOMMAND="run bootcmd_qspi;run bootcmd_mmc;run bootcmd_dhcp"
+-CONFIG_OF_LIBFDT_OVERLAY=y
+\ No newline at end of file
++CONFIG_OF_LIBFDT_OVERLAY=y
+diff --git a/configs/microchip_mpfs_icicle_qspi_nor_defconfig b/configs/microchip_mpfs_icicle_qspi_nor_defconfig
+index 5606951d6e..7eebc04b29 100644
+--- a/configs/microchip_mpfs_icicle_qspi_nor_defconfig
++++ b/configs/microchip_mpfs_icicle_qspi_nor_defconfig
+@@ -18,8 +18,6 @@ CONFIG_DM_MTD=y
+ CONFIG_CMD_MTDPARTS=y
+ CONFIG_MTDPARTS_DEFAULT="mtdparts=nor0:2m(payload),128k(env),28m(rootfs)"
+ CONFIG_MTDIDS_DEFAULT="nor0=nor0"
+-CONFIG_USE_BOOTCOMMAND=y
+-CONFIG_BOOTCOMMAND="run bootcmd_qspi;run bootcmd_mmc;run bootcmd_dhcp"
+ CONFIG_OF_LIBFDT_OVERLAY=y
+ CONFIG_CMD_UBI=y
+ CONFIG_CMD_UBIFS=y
+diff --git a/drivers/clk/microchip/Makefile b/drivers/clk/microchip/Makefile
+index 904b345d75..329b2c0c93 100644
+--- a/drivers/clk/microchip/Makefile
++++ b/drivers/clk/microchip/Makefile
+@@ -1 +1 @@
+-obj-y += mpfs_clk.o mpfs_clk_cfg.o mpfs_clk_periph.o
++obj-y += mpfs_clk.o mpfs_clk_cfg.o mpfs_clk_periph.o mpfs_clk_msspll.o
+diff --git a/drivers/clk/microchip/mpfs_clk.c b/drivers/clk/microchip/mpfs_clk.c
+index 05d7647206..586ae82e92 100644
+--- a/drivers/clk/microchip/mpfs_clk.c
++++ b/drivers/clk/microchip/mpfs_clk.c
+@@ -11,6 +11,7 @@
+ #include <dm/device.h>
+ #include <dm/devres.h>
+ #include <dm/uclass.h>
++#include <dt-bindings/clock/microchip-mpfs-clock.h>
+ #include <linux/err.h>
+ 
+ #include "mpfs_clk.h"
+@@ -74,28 +75,44 @@ static int mpfs_clk_disable(struct clk *clk)
+ 
+ static int mpfs_clk_probe(struct udevice *dev)
+ {
+-	int ret;
++	struct clk *parent_clk = dev_get_priv(dev);
++	struct clk clk_msspll = { .id = CLK_MSSPLL };
+ 	void __iomem *base;
+-	u32 clk_rate;
+-	const char *parent_clk_name;
+-	struct clk *clk = dev_get_priv(dev);
++	void __iomem *msspll_base;
++	int ret;
+ 
+-	base = dev_read_addr_ptr(dev);
++	base = dev_read_addr_index_ptr(dev, 0);
+ 	if (!base)
+ 		return -EINVAL;
+ 
+-	ret = clk_get_by_index(dev, 0, clk);
++	ret = clk_get_by_index(dev, 0, parent_clk);
+ 	if (ret)
+ 		return ret;
+ 
+-	dev_read_u32(clk->dev, "clock-frequency", &clk_rate);
+-	parent_clk_name = clk->dev->name;
+-
+-	ret = mpfs_clk_register_cfgs(base, clk_rate, parent_clk_name);
++	/*
++	 * The original devicetrees for mpfs messed up & defined the msspll's
++	 * output as a fixed-frequency, 600 MHz clock & used that as the input
++	 * for the clock controller node. The msspll is however not a fixed
++	 * frequency clock and later devicetrees handled this properly. Check
++	 * the devicetree & if it is one of the fixed ones, register the msspll.
++	 * Otherwise, skip registering it & pass the reference clock directly
++	 * to the cfg clock registration function.
++	 */
++	msspll_base = dev_read_addr_index_ptr(dev, 1);
++	if (msspll_base) {
++		ret = mpfs_clk_register_msspll(msspll_base, parent_clk);
++		if (ret)
++			return ret;
++
++		clk_request(dev, &clk_msspll);
++		parent_clk = &clk_msspll;
++	}
++
++	ret = mpfs_clk_register_cfgs(base, parent_clk);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = mpfs_clk_register_periphs(base, clk_rate, "clk_ahb");
++	ret = mpfs_clk_register_periphs(base, dev);
+ 
+ 	return ret;
+ }
+diff --git a/drivers/clk/microchip/mpfs_clk.h b/drivers/clk/microchip/mpfs_clk.h
+index 8e3fc55ae3..56195b2a28 100644
+--- a/drivers/clk/microchip/mpfs_clk.h
++++ b/drivers/clk/microchip/mpfs_clk.h
+@@ -11,22 +11,26 @@
+  * mpfs_clk_register_cfgs() - register configuration clocks
+  *
+  * @base: base address of the mpfs system register.
+- * @clk_rate: the mpfs pll clock rate.
+- * @parent_name: a pointer to parent clock name.
+- * @return zero on success, or a negative error code.
++ * @parent: a pointer to parent clock.
++ * Return: zero on success, or a negative error code.
+  */
+-int mpfs_clk_register_cfgs(void __iomem *base, u32 clk_rate,
+-			   const char *parent_name);
++int mpfs_clk_register_cfgs(void __iomem *base, struct clk *parent);
++/**
++ * mpfs_clk_register_msspll() - register the mss pll
++ *
++ * @base: base address of the mpfs system register.
++ * @parent: a pointer to parent clock.
++ * Return: zero on success, or a negative error code.
++ */
++int mpfs_clk_register_msspll(void __iomem *base, struct clk *parent);
+ /**
+  * mpfs_clk_register_periphs() - register peripheral clocks
+  *
+  * @base: base address of the mpfs system register.
+- * @clk_rate: the mpfs pll clock rate.
+- * @parent_name: a pointer to parent clock name.
+- * @return zero on success, or a negative error code.
++ * @dev: udevice representing the clock controller.
++ * Return: zero on success, or a negative error code.
+  */
+-int mpfs_clk_register_periphs(void __iomem *base, u32 clk_rate,
+-			      const char *parent_name);
++int mpfs_clk_register_periphs(void __iomem *base, struct udevice *dev);
+ /**
+  * divider_get_val() - get the clock divider value
+  *
+diff --git a/drivers/clk/microchip/mpfs_clk_cfg.c b/drivers/clk/microchip/mpfs_clk_cfg.c
+index fefddd1413..5739fd66e8 100644
+--- a/drivers/clk/microchip/mpfs_clk_cfg.c
++++ b/drivers/clk/microchip/mpfs_clk_cfg.c
+@@ -117,8 +117,7 @@ static struct mpfs_cfg_hw_clock mpfs_cfg_clks[] = {
+ 	CLK_CFG(CLK_AHB, "clk_ahb", 4, 2, mpfs_div_ahb_table, 0),
+ };
+ 
+-int mpfs_clk_register_cfgs(void __iomem *base, u32 clk_rate,
+-			   const char *parent_name)
++int mpfs_clk_register_cfgs(void __iomem *base, struct clk *parent)
+ {
+ 	int ret;
+ 	int i, id, num_clks;
+@@ -129,9 +128,9 @@ int mpfs_clk_register_cfgs(void __iomem *base, u32 clk_rate,
+ 	for (i = 0; i < num_clks; i++) {
+ 		hw = &mpfs_cfg_clks[i].hw;
+ 		mpfs_cfg_clks[i].sys_base = base;
+-		mpfs_cfg_clks[i].prate = clk_rate;
++		mpfs_cfg_clks[i].prate = clk_get_rate(parent);
+ 		name = mpfs_cfg_clks[i].cfg.name;
+-		ret = clk_register(hw, MPFS_CFG_CLOCK, name, parent_name);
++		ret = clk_register(hw, MPFS_CFG_CLOCK, name, parent->dev->name);
+ 		if (ret)
+ 			ERR_PTR(ret);
+ 		id = mpfs_cfg_clks[i].cfg.id;
+diff --git a/drivers/clk/microchip/mpfs_clk_msspll.c b/drivers/clk/microchip/mpfs_clk_msspll.c
+new file mode 100644
+index 0000000000..f37c0d8604
+--- /dev/null
++++ b/drivers/clk/microchip/mpfs_clk_msspll.c
+@@ -0,0 +1,119 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2022 Microchip Technology Inc.
++ */
++#include <common.h>
++#include <clk.h>
++#include <clk-uclass.h>
++#include <asm/io.h>
++#include <dm/device.h>
++#include <dm/devres.h>
++#include <dm/uclass.h>
++#include <dt-bindings/clock/microchip-mpfs-clock.h>
++#include <linux/err.h>
++
++#include "mpfs_clk.h"
++
++#define MPFS_MSSPLL_CLOCK "mpfs_msspll_clock"
++
++/* address offset of control registers */
++#define REG_MSSPLL_REF_CR	0x08u
++#define REG_MSSPLL_POSTDIV_CR	0x10u
++#define REG_MSSPLL_SSCG_2_CR	0x2Cu
++
++#define MSSPLL_FBDIV_SHIFT	0x00u
++#define MSSPLL_FBDIV_WIDTH	0x0Cu
++#define MSSPLL_REFDIV_SHIFT	0x08u
++#define MSSPLL_REFDIV_WIDTH	0x06u
++#define MSSPLL_POSTDIV_SHIFT	0x08u
++#define MSSPLL_POSTDIV_WIDTH	0x07u
++#define MSSPLL_FIXED_DIV	4u
++
++/**
++ * struct mpfs_msspll_hw_clock
++ * @id: index of the msspll clock
++ * @name: the msspll clocks name
++ * @reg_offset: offset to the core complex's output of the msspll
++ * @shift: shift to the divider bit field of a msspll clock output
++ * @width: width of the divider bit field of the msspll clock output
++ * @flags: common clock framework flags
++ * @prate: the reference clock rate
++ * @hw: clock instance
++ */
++struct mpfs_msspll_hw_clock {
++	void __iomem *base;
++	unsigned int id;
++	const char *name;
++	u32 reg_offset;
++	u32 shift;
++	u32 width;
++	u32 flags;
++	u32 prate;
++	struct clk hw;
++};
++
++#define to_mpfs_msspll_clk(_hw) container_of(_hw, struct mpfs_msspll_hw_clock, hw)
++
++static unsigned long mpfs_clk_msspll_recalc_rate(struct clk *hw)
++{
++	struct mpfs_msspll_hw_clock *msspll_hw = to_mpfs_msspll_clk(hw);
++	void __iomem *mult_addr = msspll_hw->base + msspll_hw->reg_offset;
++	void __iomem *ref_div_addr = msspll_hw->base + REG_MSSPLL_REF_CR;
++	void __iomem *postdiv_addr = msspll_hw->base + REG_MSSPLL_POSTDIV_CR;
++	u32 mult, ref_div, postdiv;
++	unsigned long temp;
++
++	mult = readl(mult_addr) >> MSSPLL_FBDIV_SHIFT;
++	mult &= clk_div_mask(MSSPLL_FBDIV_WIDTH);
++	ref_div = readl(ref_div_addr) >> MSSPLL_REFDIV_SHIFT;
++	ref_div &= clk_div_mask(MSSPLL_REFDIV_WIDTH);
++	postdiv = readl(postdiv_addr) >> MSSPLL_POSTDIV_SHIFT;
++	postdiv &= clk_div_mask(MSSPLL_POSTDIV_WIDTH);
++
++	temp = msspll_hw->prate / (ref_div * MSSPLL_FIXED_DIV * postdiv);
++	return temp * mult;
++}
++
++#define CLK_PLL(_id, _name, _shift, _width, _reg_offset, _flags) {	\
++	.id = _id,							\
++	.name = _name,							\
++	.shift = _shift,						\
++	.width = _width,						\
++	.reg_offset = _reg_offset,					\
++	.flags = _flags,						\
++}
++
++static struct mpfs_msspll_hw_clock mpfs_msspll_clks[] = {
++	CLK_PLL(CLK_MSSPLL, "clk_msspll", MSSPLL_FBDIV_SHIFT,
++		MSSPLL_FBDIV_WIDTH, REG_MSSPLL_SSCG_2_CR, 0),
++};
++
++int mpfs_clk_register_msspll(void __iomem *base, struct clk *parent)
++{
++	int id, ret;
++	const char *name;
++	struct clk *hw;
++
++	hw = &mpfs_msspll_clks[0].hw;
++	mpfs_msspll_clks[0].base = base;
++	mpfs_msspll_clks[0].prate = clk_get_rate(parent);
++	name = mpfs_msspll_clks[0].name;
++	ret = clk_register(hw, MPFS_MSSPLL_CLOCK, name, parent->dev->name);
++	if (ret)
++		ERR_PTR(ret);
++	id = mpfs_msspll_clks[0].id;
++	clk_dm(id, hw);
++
++	return 0;
++}
++
++const struct clk_ops mpfs_msspll_clk_ops = {
++	.get_rate = mpfs_clk_msspll_recalc_rate,
++};
++
++U_BOOT_DRIVER(mpfs_msspll_clock) = {
++	.name	= MPFS_MSSPLL_CLOCK,
++	.id	= UCLASS_CLK,
++	.ops	= &mpfs_msspll_clk_ops,
++};
++
+diff --git a/drivers/clk/microchip/mpfs_clk_periph.c b/drivers/clk/microchip/mpfs_clk_periph.c
+index 61d90eb4a8..ac750c258e 100644
+--- a/drivers/clk/microchip/mpfs_clk_periph.c
++++ b/drivers/clk/microchip/mpfs_clk_periph.c
+@@ -29,12 +29,14 @@
+ /**
+  * struct mpfs_periph_clock - per instance of peripheral clock
+  * @id: index of a peripheral clock
++ * @parent_id: index of the parent clock
+  * @name: name of a peripheral clock
+  * @shift: shift to a peripheral clock bit field
+  * @flags: common clock framework flags
+  */
+ struct mpfs_periph_clock {
+ 	unsigned int id;
++	unsigned int parent_id;
+ 	const char *name;
+ 	u8 shift;
+ 	unsigned long flags;
+@@ -99,59 +101,66 @@ static int mpfs_periph_clk_disable(struct clk *hw)
+ static ulong mpfs_periph_clk_recalc_rate(struct clk *hw)
+ {
+ 	struct mpfs_periph_hw_clock *periph_hw = to_mpfs_periph_clk(hw);
+-	void __iomem *base_addr = periph_hw->sys_base;
+-	unsigned long rate;
+-	u32 val;
+ 
+-	val = readl(base_addr + REG_CLOCK_CONFIG_CR) >> CFG_AHB_SHIFT;
+-	val &= clk_div_mask(CFG_WIDTH);
+-	rate = periph_hw->prate / (1u << val);
+-	hw->rate = rate;
++	return periph_hw->prate;
+ 
+-	return rate;
+ }
+ 
+-#define CLK_PERIPH(_id, _name, _shift, _flags) {	\
++#define CLK_PERIPH(_id, _name, _parent_id, _shift, _flags) {	\
+ 		.periph.id = _id,			\
++		.periph.parent_id = _parent_id,		\
+ 		.periph.name = _name,			\
+ 		.periph.shift = _shift,			\
+ 		.periph.flags = _flags,			\
+ 	}
+ 
++/*
++ * Critical clocks:
++ * - CLK_ENVM: reserved by hart software services (hss) superloop monitor/m mode interrupt
++ *   trap handler
++ * - CLK_MMUART0: reserved by the hss
++ * - CLK_DDRC: provides clock to the ddr subsystem
++ * - CLK_RTC: the onboard RTC's AHB bus clock must be kept running as the rtc will stop
++ *   if the AHB interface clock is disabled
++ * - CLK_FICx: these provide the processor side clocks to the "FIC" (Fabric InterConnect)
++ *   clock domain crossers which provide the interface to the FPGA fabric. Disabling them
++ *   causes the FPGA fabric to go into reset.
++ * - CLK_ATHENA: The athena clock is FIC4, which is reserved for the Athena TeraFire.
++ */
++
+ static struct mpfs_periph_hw_clock mpfs_periph_clks[] = {
+-	CLK_PERIPH(CLK_ENVM, "clk_periph_envm", 0, CLK_IS_CRITICAL),
+-	CLK_PERIPH(CLK_MAC0, "clk_periph_mac0", 1, 0),
+-	CLK_PERIPH(CLK_MAC1, "clk_periph_mac1", 2, 0),
+-	CLK_PERIPH(CLK_MMC, "clk_periph_mmc", 3, 0),
+-	CLK_PERIPH(CLK_TIMER, "clk_periph_timer", 4, 0),
+-	CLK_PERIPH(CLK_MMUART0, "clk_periph_mmuart0", 5, 0),
+-	CLK_PERIPH(CLK_MMUART1, "clk_periph_mmuart1", 6, 0),
+-	CLK_PERIPH(CLK_MMUART2, "clk_periph_mmuart2", 7, 0),
+-	CLK_PERIPH(CLK_MMUART3, "clk_periph_mmuart3", 8, 0),
+-	CLK_PERIPH(CLK_MMUART4, "clk_periph_mmuart4", 9, 0),
+-	CLK_PERIPH(CLK_SPI0, "clk_periph_spi0", 10, 0),
+-	CLK_PERIPH(CLK_SPI1, "clk_periph_spi1", 11, 0),
+-	CLK_PERIPH(CLK_I2C0, "clk_periph_i2c0", 12, 0),
+-	CLK_PERIPH(CLK_I2C1, "clk_periph_i2c1", 13, 0),
+-	CLK_PERIPH(CLK_CAN0, "clk_periph_can0", 14, 0),
+-	CLK_PERIPH(CLK_CAN1, "clk_periph_can1", 15, 0),
+-	CLK_PERIPH(CLK_USB, "clk_periph_usb", 16, 0),
+-	CLK_PERIPH(CLK_RTC, "clk_periph_rtc", 18, 0),
+-	CLK_PERIPH(CLK_QSPI, "clk_periph_qspi", 19, 0),
+-	CLK_PERIPH(CLK_GPIO0, "clk_periph_gpio0", 20, 0),
+-	CLK_PERIPH(CLK_GPIO1, "clk_periph_gpio1", 21, 0),
+-	CLK_PERIPH(CLK_GPIO2, "clk_periph_gpio2", 22, 0),
+-	CLK_PERIPH(CLK_DDRC, "clk_periph_ddrc", 23, CLK_IS_CRITICAL),
+-	CLK_PERIPH(CLK_FIC0, "clk_periph_fic0", 24, 0),
+-	CLK_PERIPH(CLK_FIC1, "clk_periph_fic1", 25, 0),
+-	CLK_PERIPH(CLK_FIC2, "clk_periph_fic2", 26, 0),
+-	CLK_PERIPH(CLK_FIC3, "clk_periph_fic3", 27, 0),
+-	CLK_PERIPH(CLK_ATHENA, "clk_periph_athena", 28, 0),
+-	CLK_PERIPH(CLK_CFM, "clk_periph_cfm", 29, 0),
++	CLK_PERIPH(CLK_ENVM, "clk_periph_envm", CLK_AHB, 0, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_MAC0, "clk_periph_mac0", CLK_AHB, 1, 0),
++	CLK_PERIPH(CLK_MAC1, "clk_periph_mac1", CLK_AHB, 2, 0),
++	CLK_PERIPH(CLK_MMC, "clk_periph_mmc", CLK_AHB, 3, 0),
++	CLK_PERIPH(CLK_TIMER, "clk_periph_timer", CLK_RTCREF, 4, 0),
++	CLK_PERIPH(CLK_MMUART0, "clk_periph_mmuart0", CLK_AHB, 5, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_MMUART1, "clk_periph_mmuart1", CLK_AHB, 6, 0),
++	CLK_PERIPH(CLK_MMUART2, "clk_periph_mmuart2", CLK_AHB, 7, 0),
++	CLK_PERIPH(CLK_MMUART3, "clk_periph_mmuart3", CLK_AHB, 8, 0),
++	CLK_PERIPH(CLK_MMUART4, "clk_periph_mmuart4", CLK_AHB, 9, 0),
++	CLK_PERIPH(CLK_SPI0, "clk_periph_spi0", CLK_AHB, 10, 0),
++	CLK_PERIPH(CLK_SPI1, "clk_periph_spi1", CLK_AHB, 11, 0),
++	CLK_PERIPH(CLK_I2C0, "clk_periph_i2c0", CLK_AHB, 12, 0),
++	CLK_PERIPH(CLK_I2C1, "clk_periph_i2c1", CLK_AHB, 13, 0),
++	CLK_PERIPH(CLK_CAN0, "clk_periph_can0", CLK_AHB, 14, 0),
++	CLK_PERIPH(CLK_CAN1, "clk_periph_can1", CLK_AHB, 15, 0),
++	CLK_PERIPH(CLK_USB, "clk_periph_usb", CLK_AHB, 16, 0),
++	CLK_PERIPH(CLK_RTC, "clk_periph_rtc", CLK_AHB, 18, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_QSPI, "clk_periph_qspi", CLK_AHB, 19, 0),
++	CLK_PERIPH(CLK_GPIO0, "clk_periph_gpio0", CLK_AHB, 20, 0),
++	CLK_PERIPH(CLK_GPIO1, "clk_periph_gpio1", CLK_AHB, 21, 0),
++	CLK_PERIPH(CLK_GPIO2, "clk_periph_gpio2", CLK_AHB, 22, 0),
++	CLK_PERIPH(CLK_DDRC, "clk_periph_ddrc", CLK_AHB, 23, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_FIC0, "clk_periph_fic0", CLK_AXI, 24, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_FIC1, "clk_periph_fic1", CLK_AXI, 25, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_FIC2, "clk_periph_fic2", CLK_AXI, 26, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_FIC3, "clk_periph_fic3", CLK_AXI, 27, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_ATHENA, "clk_periph_athena", CLK_AXI, 28, CLK_IS_CRITICAL),
++	CLK_PERIPH(CLK_CFM, "clk_periph_cfm", CLK_AHB, 29, 0),
+ };
+ 
+-int mpfs_clk_register_periphs(void __iomem *base, u32 clk_rate,
+-			      const char *parent_name)
++int mpfs_clk_register_periphs(void __iomem *base, struct udevice *dev)
+ {
+ 	int ret;
+ 	int i, id, num_clks;
+@@ -160,11 +169,14 @@ int mpfs_clk_register_periphs(void __iomem *base, u32 clk_rate,
+ 
+ 	num_clks = ARRAY_SIZE(mpfs_periph_clks);
+ 	for (i = 0; i < num_clks; i++)  {
++		struct clk parent = { .id = mpfs_periph_clks[i].periph.parent_id };
++		clk_request(dev, &parent);
++
+ 		hw = &mpfs_periph_clks[i].hw;
+ 		mpfs_periph_clks[i].sys_base = base;
+-		mpfs_periph_clks[i].prate = clk_rate;
++		mpfs_periph_clks[i].prate = clk_get_rate(&parent);
+ 		name = mpfs_periph_clks[i].periph.name;
+-		ret = clk_register(hw, MPFS_PERIPH_CLOCK, name, parent_name);
++		ret = clk_register(hw, MPFS_PERIPH_CLOCK, name, parent.dev->name);
+ 		if (ret)
+ 			ERR_PTR(ret);
+ 		id = mpfs_periph_clks[i].periph.id;
+diff --git a/include/configs/aldec_tysom_m_mpfs250t.h b/include/configs/aldec_tysom_m_mpfs250t.h
+new file mode 100644
+index 0000000000..2877dc661c
+--- /dev/null
++++ b/include/configs/aldec_tysom_m_mpfs250t.h
+@@ -0,0 +1,31 @@
++#ifndef __CONFIG_H
++#define __CONFIG_H
++
++#include <linux/sizes.h>
++
++#define CONFIG_SYS_SDRAM_BASE       0x80000000
++#define CONFIG_SYS_INIT_SP_ADDR     (CONFIG_SYS_SDRAM_BASE + SZ_2M)
++
++#define CONFIG_SYS_BOOTM_LEN        SZ_64M
++
++#define CONFIG_STANDALONE_LOAD_ADDR 0x80200000
++
++/* Environment options */
++
++#define BOOT_TARGET_DEVICES(func) \
++    func(MMC, mmc, 0) \
++    func(DHCP, dhcp, na)
++
++#include <config_distro_bootcmd.h>
++
++#define CONFIG_EXTRA_ENV_SETTINGS \
++    "fdt_high=0xffffffffffffffff\0" \
++    "initrd_high=0xffffffffffffffff\0" \
++    "kernel_addr_r=0x84000000\0" \
++    "fdt_addr_r=0x88000000\0" \
++    "scriptaddr=0x88100000\0" \
++    "pxefile_addr_r=0x88200000\0" \
++    "ramdisk_addr_r=0x88300000\0" \
++    BOOTENV
++
++#endif /* __CONFIG_H */
+diff --git a/include/configs/microchip_mpfs_icicle.h b/include/configs/microchip_mpfs_icicle.h
+index c6c709aa04..9ef5425c9f 100644
+--- a/include/configs/microchip_mpfs_icicle.h
++++ b/include/configs/microchip_mpfs_icicle.h
+@@ -9,12 +9,12 @@
+ 
+ #include <linux/sizes.h>
+ 
+-#define CONFIG_SYS_SDRAM_BASE       0x1000000000
++#define CONFIG_SYS_SDRAM_BASE       0x80000000
+ #define CONFIG_SYS_INIT_SP_ADDR     (CONFIG_SYS_SDRAM_BASE + SZ_2M)
+ 
+ #define CONFIG_SYS_BOOTM_LEN        SZ_64M
+ 
+-#define CONFIG_STANDALONE_LOAD_ADDR 0x1000200000
++#define CONFIG_STANDALONE_LOAD_ADDR 0x80200000
+ 
+ /* Environment options */
+ 
+@@ -31,9 +31,9 @@
+ #endif
+ 
+ #if defined(CONFIG_CMD_MMC)
+-#define BOOT_TARGET_DEVICES_EMMC(func)	func(EMMC, mmc, 0)
++#define BOOT_TARGET_DEVICES_MMC(func)	func(MMC, mmc, 0)
+ #else
+-#define BOOT_TARGET_DEVICES_EMMC(func)
++#define BOOT_TARGET_DEVICES_MMC(func)
+ #endif
+ 
+ #define BOOTENV_DEV_QSPI(devtypeu, devtypel, instance) \
+@@ -44,34 +44,34 @@
+ 			"source ${scriptaddr}; setenv mtd_present; " \
+ 			"fi\0 "
+ 
+-#define BOOTENV_DEV_EMMC(devtypeu, devtypel, instance) \
+-	"bootcmd_mmc=echo Trying to boot from eMMC/SD...;"\
+-			"setenv devnum 0; setenv mmcbootpart 1; setenv scriptname boot.scr.uimg;"\
+-			"if mmc rescan; then " \
+-			"load mmc 0:${mmcbootpart} ${scriptaddr} ${scriptname}; source ${scriptaddr}; " \
+-			"fi\0 "
+-
+ #define BOOTENV_DEV_NAME_QSPI(devtypeu, devtypel, instance) \
+ 	"qspi "
+ 
+-#define BOOTENV_DEV_NAME_EMMC(devtypeu, devtypel, instance) \
+-	"mmc "
+-
+ #define BOOT_TARGET_DEVICES(func) \
+-	BOOT_TARGET_DEVICES_EMMC(func)\
+ 	BOOT_TARGET_DEVICES_QSPI(func)\
++	BOOT_TARGET_DEVICES_MMC(func)\
+ 	BOOT_TARGET_DEVICES_DHCP(func)
+ 
++#define BOOTENV_DESIGN_OVERLAYS \
++	"design_overlays=" \
++	"if test -n ${no_of_overlays}; then " \
++		"setenv inc 1; " \
++		"setenv idx 0; " \
++		"fdt resize ${dtbo_size}; " \
++		"while test $idx -ne ${no_of_overlays}; do " \
++			"setenv dtbo_name dtbo_image${idx}; " \
++			"setenv fdt_cmd \"fdt apply $\"$dtbo_name; " \
++			"run fdt_cmd; " \
++			"setexpr idx $inc + $idx; " \
++		"done; " \
++	"fi;\0 " \
++
+ #include <config_distro_bootcmd.h>
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"bootm_size=0x10000000\0" \
+-	"kernel_addr_r=0x1004000000\0" \
+-	"fdt_addr_r=0x1008000000\0" \
+-	"scriptaddr=0x1008100000\0" \
+-	"pxefile_addr_r=0x1008200000\0" \
+-	"ramdisk_addr_r=0x1008300000\0" \
+-	"boot_script_dhcp=boot.scr.uimg\0" \
+-	BOOT_TARGET_DEVICES(BOOTENV_DEV)
++	"scriptaddr=0x8e000000\0" \
++	BOOTENV_DESIGN_OVERLAYS \
++	BOOTENV \
+ 
+ #endif /* __CONFIG_H */
+diff --git a/include/dt-bindings/clock/microchip-mpfs-clock.h b/include/dt-bindings/clock/microchip-mpfs-clock.h
+index 55fe64693f..c7ed0a8db7 100644
+--- a/include/dt-bindings/clock/microchip-mpfs-clock.h
++++ b/include/dt-bindings/clock/microchip-mpfs-clock.h
+@@ -42,4 +42,7 @@
+ #define CLK_ATHENA	31
+ #define CLK_CFM		32
+ 
++#define CLK_RTCREF	33
++#define CLK_MSSPLL	34
++
+ #endif	/* _DT_BINDINGS_CLK_MICROCHIP_MPFS_H_ */
+-- 
+2.34.1
+

@@ -6,8 +6,8 @@ This directory contains the TySOM-M-MPFS250T Yocto Project layer. In order to bu
 2. [Building Linux OS](#building_linux)
 3. [Running Linux OS on the TySOM-M-MPFS250T](#running_linux)
 
-## 1. Prepare repository <a name="prepare_repo"/>
-a) "repo" tool installation
+## 1. Prepare Repository <a name="prepare_repo"/>
+### a) "repo" tool installation
 - Go to the directory where you keep utilities and make sure it's in your PATH
 ```bash
  $ cd ~/bin/
@@ -24,46 +24,32 @@ a) "repo" tool installation
 ```bash
  $ repo --help
 ```
+### b) Prepare Yocto environment
+- For the first time, it is required to download all necessary repositories. To do this, it is provided dedicated yocto script:
+```bash
+./prepare_yocto.sh
+```
+- If you have already downloaded all repositories before, just source script below, before starting to build the linux image. 
 
-b) Download PolarFire SoC repository
-- change directory to the yocto/2022.09 directory in Aldec TySOM-M-MPFS250T repository
-- initialize repo, synchronize it and rebase
 ```bash
-$ repo init -u https://github.com/polarfire-soc/meta-polarfire-soc-yocto-bsp.git -b 2022.09 -m tools/manifests/riscv-yocto.xml
-$ repo sync
-$ repo rebase
+source ./meta-polarfire-soc-yocto-bsp/polarfire-soc_yocto_setup.sh
 ```
-- [OPTIONAL] For older OS, prepare build tools in proper version (e.g. tar 3.x and gcc 10.x)
-```bash
-$ cd ./openembedded-core/scripts
-$ ./install-buildtools --with-extended-buildtools --url http://downloads.yoctoproject.org/releases/yocto/yocto-3.0.2/
-$ cd ../..
-```
-
-c) Environment setting
-- [OPTIONAL] If you have downloaded the optional tools for older OS in point b), then source it:
-```bash
-$ source ./openembedded-core/buildtools/environment-setup-x86_64-pokysdk-linux
-```
-- Source PolarFire Yocto project setup script
-```bash
-$ source ./meta-polarfire-soc-yocto-bsp/polarfire-soc_yocto_setup.sh
-```
-
-d) Add meta_TySOM-M-MPFS250T_yocto_bsp layer
-- Go to build directory and add the layer using the following command:
-```bash
-$ bitbake-layers add-layer ../meta_TySOM-M-MPFS250T_yocto_bsp
-```
-
 ## 2. Building Linux OS <a name="building_linux"/>
-In order to build Linux, the environment should be set (Refer to section 1.c Environment setting). After 1.c you should be in the build directory. For the Bitbake Linux files:
+After steps from 1 b), you should be able to start building Linux image. To run basic version type:
 ```bash
 $ MACHINE=tysom-m-mpfs250t bitbake mpfs-dev-cli
+```
+To build Linux with PCIe support (required for design 3) type:
+```bash
+$ MACHINE=tysom-m-mpfs250t-pcie bitbake mpfs-dev-cli
 ```
 After successful build, the Yocto Project Image and Binaries will be available in:
 ```bash
 build/tmp-glibc/deploy/images/tysom-m-mpfs250t
+```
+or in the case of the PCIe variant in:
+```bash
+build/tmp-glibc/deploy/images/tysom-m-mpfs250t-pcie
 ```
 
 ## 3. Running Linux OS on the TySOM-M-MPFS250T <a name="running_linux"/>
@@ -71,7 +57,7 @@ To be able to boot Linux OS on the TySOM-M-MPFS250T, the board must be programme
 
 a) Preparing SD Card  (Host PC with Linux OS):
 - insert SD Card into SD card reader and connect it to your workstation
-- Use the dmesg command to get the label of the SD card and use it in the following command, replacing **sdX**:
+- Use the dmesg command to get the label of the SD card and use it in the following command, replacing **sdX**. Please note that if you are creating an image in PCIe mode, the file name will be: **mpfs-dev-cli-tysom-m-mpfs250t-pcie.wic.gz**:
 ```bash
 zcat ./tmp-glibc/deploy/images/tysom-m-mpfs250t/mpfs-dev-cli-tysom-m-mpfs250t.wic.gz | sudo dd of=/dev/sdX bs=4M iflag=fullblock oflag=direct conv=fsync status=progress
 ```
