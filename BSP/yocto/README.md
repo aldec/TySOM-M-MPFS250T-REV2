@@ -43,13 +43,23 @@ To build Linux with PCIe support (required for design 3) type:
 ```bash
 $ MACHINE=tysom-m-mpfs250t-pcie bitbake mpfs-dev-cli
 ```
+To build Linux in AMP mode type:
+```bash
+$ MACHINE=tysom-m-mpfs250t-amp bitbake mpfs-dev-cli
+```
+
 After successful build, the Yocto Project Image and Binaries will be available in:
 ```bash
 build/tmp-glibc/deploy/images/tysom-m-mpfs250t
 ```
-or in the case of the PCIe variant in:
+In the case of the PCIe variant in:
 ```bash
 build/tmp-glibc/deploy/images/tysom-m-mpfs250t-pcie
+```
+
+In the case of the AMP variant in:
+```bash
+build/tmp-glibc/deploy/images/tysom-m-mpfs250t-amp
 ```
 
 ## 3. Running Linux OS on the TySOM-M-MPFS250T <a name="running_linux"/>
@@ -57,7 +67,7 @@ To be able to boot Linux OS on the TySOM-M-MPFS250T, the board must be programme
 
 a) Preparing SD Card  (Host PC with Linux OS):
 - insert SD Card into SD card reader and connect it to your workstation
-- Use the dmesg command to get the label of the SD card and use it in the following command, replacing **sdX**. Please note that if you are creating an image in PCIe mode, the file name will be: **mpfs-dev-cli-tysom-m-mpfs250t-pcie.wic.gz**:
+- Use the dmesg command to get the label of the SD card and use it in the following command, replacing **sdX**. Please note that if you are creating an image in PCIe mode or AMP mode, the file name and path will be different (**tysom-m-mpfs250t-pcie** or **tysom-m-mpfs250t-amp**):
 ```bash
 zcat ./tmp-glibc/deploy/images/tysom-m-mpfs250t/mpfs-dev-cli-tysom-m-mpfs250t.wic.gz | sudo dd of=/dev/sdX bs=4M iflag=fullblock oflag=direct conv=fsync status=progress
 ```

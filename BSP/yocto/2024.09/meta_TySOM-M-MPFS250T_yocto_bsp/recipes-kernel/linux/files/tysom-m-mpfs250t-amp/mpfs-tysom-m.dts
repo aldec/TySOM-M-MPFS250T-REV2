@@ -15,8 +15,8 @@
 #define MTIMER_FREQ		1000000
 
 / {
-	model = "Aldec TySOM-M-MPFS250T-REV2";
-	compatible = "aldec,tysom-m-mpfs250t-rev2", "microchip,mpfs";
+	model = "Aldec TySOM-M-MPFS250T";
+	compatible = "aldec,tysom-m-mpfs250t", "microchip,mpfs";
 
 	soc {
 		dma-ranges = <0 0 0 0 0x40 0>;
@@ -44,7 +44,7 @@
 
 	ddrc_cache_lo: memory@80000000 {
 		device_type = "memory";
-		reg = <0x0 0x80000000 0x0 0x30000000>;
+		reg = <0x0 0x80000000 0x0 0x2db00000>;
 	};
 
 	ddrc_cache_hi: memory@1000000000 {
@@ -60,20 +60,6 @@
 			linux,default-trigger = "heartbeat";
 		};
 	};
-	
-	reserved-memory {
-	#address-cells = <2>;
-	#size-cells = <2>;
-	ranges;
-
-	linux,cma@1000000000 {
-		compatible = "shared-dma-pool";
-		reusable;
-		reg = <0x10 0x0 0x0 0x40000000>; // 1 GiB at 0x1000000000
-		alignment = <0x0 0x1000>;        // 4 KiB
-		linux,cma-default;
-	};
-	};
 };
 
 &i2c0 {
@@ -87,9 +73,19 @@
 		reg = <0x45>;
 		shunt-resistor = <2000>;
 	};
+};	
+	
+&cpu4 {
+	status = "disabled";
 };
 
 &gpio1 {
+	interrupts = <27>, <28>, <29>, <30>,
+		     <31>, <32>, <33>, <47>,
+		     <35>, <36>, <37>, <38>,
+		     <39>, <40>, <41>, <42>,
+		     <43>, <44>, <45>, <46>,
+		     <47>, <48>, <49>, <50>;
 	status = "okay";
 };
 
@@ -135,7 +131,7 @@
 };
 
 &mmuart3 {
-	status = "okay";
+	status = "disabled";
 };
 
 &mmuart4 {
@@ -171,9 +167,4 @@
 &usb {
 	status = "okay";
 	dr_mode = "host";
-};
-
-
-&pcie {
-	status = "okay";		
 };
