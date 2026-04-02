@@ -39,9 +39,9 @@ new_project -location {./TySOM_M_MPFS250T} -name {TySOM_M_MPFS250T} -project_des
 set_device_simple -family {PolarFireSoC} -die {MPFS250T_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V} -adv_options {RESERVEMIGRATIONPINS:1} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:EXT} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:EXT} 
 
 download_core -vlnv {Actel:SgCore:PF_OSC:1.0.102} -location {www.microchip-ip.com/repositories/SgCore}
-download_core -vlnv {Actel:SgCore:PF_CCC:2.2.214} -location {www.microchip-ip.com/repositories/SgCore}
+download_core -vlnv {Actel:SgCore:PF_CCC:2.2.220} -location {www.microchip-ip.com/repositories/SgCore}
 download_core -vlnv {Actel:DirectCore:CORERESET_PF:2.3.100} -location {www.microchip-ip.com/repositories/DirectCore}
-download_core -vlnv {Microsemi:SgCore:PFSOC_INIT_MONITOR:1.0.304} -location {www.microchip-ip.com/repositories/SgCore}
+download_core -vlnv {Microsemi:SgCore:PFSOC_INIT_MONITOR:1.0.307} -location {www.microchip-ip.com/repositories/SgCore}
 download_core -vlnv {Microsemi:SolutionCore:Display_Controller:3.1.2} -location {www.microchip-ip.com/repositories/DirectCore} 
 
 source ./script_support/System_recursive.tcl
