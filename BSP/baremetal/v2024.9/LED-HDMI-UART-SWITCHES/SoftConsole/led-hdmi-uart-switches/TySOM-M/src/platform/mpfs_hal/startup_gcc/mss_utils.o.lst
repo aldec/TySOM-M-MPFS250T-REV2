@@ -1,0 +1,344 @@
+   1              	# 1 "../src/platform/mpfs_hal/startup_gcc/mss_utils.S"
+   1              	/*******************************************************************************
+   1              	...
+   0              	
+   0              	
+   2              	 * Copyright 2022 Microchip FPGA Embedded Systems Solutions.
+   3              	 *
+   4              	 * SPDX-License-Identifier: MIT
+   5              	 *
+   6              	 * MPFS HAL Embedded Software
+   7              	 *
+   8              	 */
+   9              	
+  10              	/***************************************************************************
+  11              	 * @file mss_utils.S
+  12              	 * @author Microchip-FPGA Embedded Systems Solutions
+  13              	 * @brief utilities used by mpfs-hal startup code
+  14              	 *
+  15              	 */
+  16              	  .section .text.init,"ax", %progbits
+  17 0000 01001300 	  .align 3
+  17      0000
+  18              	
+  19              	/***********************************************************************************
+  20              	 *
+  21              	 * pdma_transfer
+  22              	 * Only used by the mpfs hal. App code uses the provided driver.
+  23              	 *
+  24              	 *   a0 = dest
+  25              	 *   a1 = src
+  26              	 *   a2 = length
+  27              	 *   a3 = PDMA Base Address - 0x3000000 + (0x01000 * PDMA_CHANNEL)
+  28              	 */
+  29              	    .globl  pdma_transfer
+  31              	pdma_transfer:
+  32 0006 2A83     	    mv  t1,a0
+  33 0008 B682     	    mv t0, a3           // Base address
+  34 000a 0543     	    li t1, 1
+  35 000c 23A06200 	    sw t1, 0(t0)        // claim
+  36 0010 0143     	    li t1, 0
+  37 0012 23A26200 	    sw t1, 4(t0)        // read[31:28]/write[27:24] size 0=>1byte, 1 =>2 bytes etx
+  38 0016 3283     	    mv t1, a2           // SIZE
+  39 0018 23B46200 	    sd t1, 8(t0)        // bytes
+  40 001c 2A83     	    mv t1, a0           // dest address
+  41 001e 23B86200 	    sd t1, 16(t0)       // dest
+  42 0022 2E83     	    mv t1, a1           // source address
+  43 0024 23BC6200 	    sd t1, 24(t0)       // src
+  44 0028 1B03F00F 	    li t1, 0xff000000
+  44      13138301 
+  45 0030 23A26200 	    sw t1, 4(t0)        // full speed copy
+  46 0034 0D43     	    li t1, 3
+  47 0036 23A06200 	    sw t1, 0(t0)        // start transfer
+  48 003a 0F00F00F 	    fence
+  49 003e 8280     	    ret
+  50              	
+  51              	/***********************************************************************************
+  52              	 *
+  53              	 * pdma_transfer_complete
+  54              	 * Loops until transfer complete
+  55              	 * Only used by the mpfs hal. App code uses the provided driver.
+  56              	 *
+  57              	 *    a0 = PDMA Base Address - 0x3000000 + (0x01000 * PDMA_CHANNEL)
+  58              	 */
+  59              	    //
+  60              	    .globl  pdma_transfer_complete
+  62              	pdma_transfer_complete:
+  63 0040 AA82     	    mv t0, a0           // Base address
+  64              	1: // wait for completion
+  65 0042 03A30200 	    lw t1, 0(t0)
+  66 0046 13732300 	    andi t1, t1, 2
+  67 004a E31C03FE 	    bnez t1, 1b
+  68              	    // release DMA
+  69 004e 23A00200 	    sw zero, 0(t0)
+  70 0052 8280     	    ret
+  71              	
+  72              	
+  73              	 /***********************************************************************************
+  74              	 *
+  75              	 * memfill() - fills memory, alternate to lib function when not available
+  76              	 */
+  77              	    // memfill helper function:
+  78              	    //  a0 = dest
+  79              	    //  a1 = value to fill
+  80              	    //  a2 = length
+  81              	    .globl  memfill
+  83              	memfill:
+  84 0054 2A83     	    mv  t1,a0
+  85 0056 AE83     	    mv  t2,a1
+  86 0058 11C6     	    beqz    a2,2f
+  87              	1:
+  88 005a 23007300 	    sb  t2,0(t1)
+  89 005e 7D16     	    addi    a2,a2,-1
+  90 0060 0503     	    addi    t1,t1,1
+  91 0062 65FE     	    bnez    a2,1b
+  92              	2:
+  93 0064 8280     	    ret
+  94              	
+  95              	/***********************************************************************************
+  96              	 *
+  97              	 * The following config_copy() symbol overrides the weak symbol in the HAL and does
+  98              	 * a safe copy of HW config data
+  99              	 */
+ 100              	    // config_copy helper function:
+ 101              	    //  a0 = dest
+ 102              	    //  a1 = src
+ 103              	    //  a2 = length
+ 104              	    .globl  config_copy
+ 106              	config_copy:
+ 107 0066 2A83     	    mv  t1,a0
+ 108 0068 09CA     	    beqz    a2,2f
+ 109              	1:
+ 110 006a 83830500 	    lb  t2,0(a1)
+ 111 006e 23007300 	    sb  t2,0(t1)
+ 112 0072 7D16     	    addi    a2,a2,-1
+ 113 0074 0503     	    addi    t1,t1,1
+ 114 0076 8505     	    addi    a1,a1,1
+ 115 0078 6DFA     	    bnez    a2,1b
+ 116              	2:
+ 117 007a 8280     	    ret
+ 118              	
+ 119              	 /***********************************************************************************
+ 120              	 *
+ 121              	 * config_16_copy () Copies a word at a time, used when copying to contigous registers
+ 122              	 */
+ 123              	    // config_16_copy helper function:
+ 124              	    //  a0 = dest
+ 125              	    //  a1 = src
+ 126              	    //  a2 = length
+ 127              	    .globl  config_16_copy
+ 129              	config_16_copy:
+ 130 007c 2A83     	    mv  t1,a0
+ 131 007e 09CA     	    beqz    a2,2f
+ 132              	1:
+ 133 0080 83930500 	    lh  t2,0(a1)
+ 134 0084 23107300 	    sh  t2,0(t1)
+ 135 0088 7916     	    addi    a2,a2,-2
+ 136 008a 0903     	    addi    t1,t1,2
+ 137 008c 8905     	    addi    a1,a1,2
+ 138 008e 6DFA     	    bnez    a2,1b
+ 139              	2:
+ 140 0090 8280     	    ret
+ 141              	
+ 142              	/***********************************************************************************
+ 143              	 *
+ 144              	 * config_32_copy () Copies a word at a time, used when copying to contigous registers
+ 145              	 */
+ 146              	    // config_copy helper function:
+ 147              	    //  a0 = dest
+ 148              	    //  a1 = src
+ 149              	    //  a2 = length
+ 150              	    .globl  config_32_copy
+ 152              	config_32_copy:
+ 153 0092 2A83     	    mv  t1,a0
+ 154 0094 09CA     	    beqz    a2,2f
+ 155              	1:
+ 156 0096 83A30500 	    lw  t2,0(a1)
+ 157 009a 23207300 	    sw  t2,0(t1)
+ 158 009e 7116     	    addi    a2,a2,-4
+ 159 00a0 1103     	    addi    t1,t1,4
+ 160 00a2 9105     	    addi    a1,a1,4
+ 161 00a4 6DFA     	    bnez    a2,1b
+ 162              	2:
+ 163 00a6 8280     	    ret
+ 164              	
+ 165              	 /***********************************************************************************
+ 166              	 *
+ 167              	 * config_64_copy - copying using 64 bit loads, addresses must be on 64 bit boundary
+ 168              	 */
+ 169              	    // config_64_copy helper function:
+ 170              	    //  a0 = dest
+ 171              	    //  a1 = src
+ 172              	    //  a2 = length
+ 173              	    .globl  config_64_copy
+ 175              	config_64_copy:
+ 176 00a8 2A83     	    mv  t1,a0
+ 177 00aa 09CA     	    beqz    a2,2f
+ 178              	1:
+ 179 00ac 83B30500 	    ld  t2,0(a1)
+ 180 00b0 23307300 	    sd  t2,0(t1)
+ 181 00b4 6116     	    addi    a2,a2,-8
+ 182 00b6 2103     	    addi    t1,t1,8
+ 183 00b8 A105     	    addi    a1,a1,8
+ 184 00ba 6DFA     	    bnez    a2,1b
+ 185              	2:
+ 186 00bc 8280     	    ret
+ 187              	
+ 188              	 /***********************************************************************************
+ 189              	 *
+ 190              	 * fill_cache_new_seg_address and flush
+ 191              	 */
+ 192              	    .equ    L2_CCACHE_ADDR, 0x02010000
+ 193              	    .equ    FLUSH64_OFFSET, 0x200
+ 194              	    //
+ 195              	    // We want to flush anything that may be cached
+ 196              	    // with previous seg settings
+ 197              	    //
+ 198              	    // The cache block is 64-bytes wide, and there are 4 banks * 512 sets * 16
+ 199              	    // ways.
+ 200              	    // We just write to the DDR cache backed address passed by the caller
+ 201              	    // Once start and end address range covers the size of the cache, the
+ 202              	    // previous contents of cache will be overwritten.
+ 203              	    //
+ 204              	    // fill_cache_new_seg_address
+ 205              	    //  a0 = dest
+ 206              	    //  a1 = dest end address
+ 207              	    .globl  fill_cache_new_seg_address
+ 209              	fill_cache_new_seg_address:
+ 210 00be 2A83     	    mv  t1,a0
+ 211 00c0 AE83     	    mv  t2,a1
+ 212 00c2 2A8E     	    mv  t3,a0
+ 213              	
+ 214              	.preload_cache_with_known_addrs:
+ 215 00c4 23300300 	    sd  x0, 0(t1)
+ 216 00c8 833E0300 	    ld  t4, 0(t1)
+ 217 00cc 13030304 	    addi    t1, t1, 64
+ 218 00d0 E34A73FE 	    blt t1, t2, .preload_cache_with_known_addrs
+ 219              	
+ 220              	    //
+ 221              	    // Now that the cache is filled with known addresses, we can simply flush
+ 222              	    // each known address to end up with an empty cache.
+ 223              	    // There is no requirement to clear the cache, but we will as a belt and
+ 224              	    // braces excercise before we continue with the boot process
+ 225              	    //
+ 226 00d4 37030102 	    li  t1, L2_CCACHE_ADDR
+ 227              	.flush_known_addrs_from_cache:
+ 228 00d8 2330C321 	    sd  t3, FLUSH64_OFFSET(t1)      // write address to 0x02010200 (FLUSH64)
+ 229 00dc 130E0E04 	    addi    t3, t3, 64
+ 230 00e0 E34C7EFE 	    blt t3, t2, .flush_known_addrs_from_cache
+ 231              	
+ 232              	.early_exit:
+ 233 00e4 82800000 	    ret
+DEFINED SYMBOLS
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:31     .text.init:0000000000000006 pdma_transfer
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:32     .text.init:0000000000000006 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:33     .text.init:0000000000000008 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:34     .text.init:000000000000000a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:35     .text.init:000000000000000c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:36     .text.init:0000000000000010 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:37     .text.init:0000000000000012 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:38     .text.init:0000000000000016 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:39     .text.init:0000000000000018 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:40     .text.init:000000000000001c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:41     .text.init:000000000000001e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:42     .text.init:0000000000000022 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:43     .text.init:0000000000000024 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:44     .text.init:0000000000000028 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:45     .text.init:0000000000000030 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:46     .text.init:0000000000000034 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:47     .text.init:0000000000000036 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:48     .text.init:000000000000003a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:49     .text.init:000000000000003e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:62     .text.init:0000000000000040 pdma_transfer_complete
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:63     .text.init:0000000000000040 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:65     .text.init:0000000000000042 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:66     .text.init:0000000000000046 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:67     .text.init:000000000000004a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:69     .text.init:000000000000004e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:70     .text.init:0000000000000052 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:83     .text.init:0000000000000054 memfill
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:84     .text.init:0000000000000054 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:85     .text.init:0000000000000056 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:86     .text.init:0000000000000058 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:88     .text.init:000000000000005a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:89     .text.init:000000000000005e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:90     .text.init:0000000000000060 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:91     .text.init:0000000000000062 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:93     .text.init:0000000000000064 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:106    .text.init:0000000000000066 config_copy
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:107    .text.init:0000000000000066 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:108    .text.init:0000000000000068 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:110    .text.init:000000000000006a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:111    .text.init:000000000000006e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:112    .text.init:0000000000000072 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:113    .text.init:0000000000000074 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:114    .text.init:0000000000000076 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:115    .text.init:0000000000000078 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:117    .text.init:000000000000007a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:129    .text.init:000000000000007c config_16_copy
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:130    .text.init:000000000000007c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:131    .text.init:000000000000007e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:133    .text.init:0000000000000080 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:134    .text.init:0000000000000084 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:135    .text.init:0000000000000088 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:136    .text.init:000000000000008a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:137    .text.init:000000000000008c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:138    .text.init:000000000000008e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:140    .text.init:0000000000000090 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:152    .text.init:0000000000000092 config_32_copy
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:153    .text.init:0000000000000092 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:154    .text.init:0000000000000094 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:156    .text.init:0000000000000096 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:157    .text.init:000000000000009a .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:158    .text.init:000000000000009e .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:159    .text.init:00000000000000a0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:160    .text.init:00000000000000a2 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:161    .text.init:00000000000000a4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:163    .text.init:00000000000000a6 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:175    .text.init:00000000000000a8 config_64_copy
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:176    .text.init:00000000000000a8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:177    .text.init:00000000000000aa .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:179    .text.init:00000000000000ac .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:180    .text.init:00000000000000b0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:181    .text.init:00000000000000b4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:182    .text.init:00000000000000b6 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:183    .text.init:00000000000000b8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:184    .text.init:00000000000000ba .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:186    .text.init:00000000000000bc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:192    *ABS*:0000000002010000 L2_CCACHE_ADDR
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:193    *ABS*:0000000000000200 FLUSH64_OFFSET
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:209    .text.init:00000000000000be fill_cache_new_seg_address
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:210    .text.init:00000000000000be .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:211    .text.init:00000000000000c0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:212    .text.init:00000000000000c2 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:214    .text.init:00000000000000c4 .preload_cache_with_known_addrs
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:215    .text.init:00000000000000c4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:216    .text.init:00000000000000c8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:217    .text.init:00000000000000cc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:218    .text.init:00000000000000d0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:226    .text.init:00000000000000d4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:227    .text.init:00000000000000d8 .flush_known_addrs_from_cache
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:228    .text.init:00000000000000d8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:229    .text.init:00000000000000dc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:230    .text.init:00000000000000e0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:232    .text.init:00000000000000e4 .early_exit
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:233    .text.init:00000000000000e4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:233    .text.init:00000000000000e6 .L0 
+                       .text.init:0000000000000000 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:233    .text.init:00000000000000e6 .L0 
+                       .debug_str:0000000000000000 .L0 
+                       .debug_str:0000000000000031 .L0 
+                       .debug_str:000000000000006d .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:64     .text.init:0000000000000042 .L11
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:92     .text.init:0000000000000064 .L21
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:87     .text.init:000000000000005a .L12
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:116    .text.init:000000000000007a .L22
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:109    .text.init:000000000000006a .L13
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:139    .text.init:0000000000000090 .L23
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:132    .text.init:0000000000000080 .L14
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:162    .text.init:00000000000000a6 .L24
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:155    .text.init:0000000000000096 .L15
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:185    .text.init:00000000000000bc .L25
+../src/platform/mpfs_hal/startup_gcc/mss_utils.S:178    .text.init:00000000000000ac .L16
+
+NO UNDEFINED SYMBOLS

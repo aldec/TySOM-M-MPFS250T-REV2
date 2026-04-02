@@ -1,0 +1,2679 @@
+   1              	# 1 "../src/platform/mpfs_hal/startup_gcc/mss_entry.S"
+   1              	/*******************************************************************************
+   1              	...
+   0              	
+   0              	
+   2              	 * Copyright 2019-2023 Microchip FPGA Embedded Systems Solutions.
+   3              	 *
+   4              	 * SPDX-License-Identifier: MIT
+   5              	 *
+   6              	 * MPFS HAL Embedded Software
+   7              	 *
+   8              	 */
+   9              	
+  10              	/*******************************************************************************
+  11              	 * @file entry.S
+  12              	 * @author Microchip-FPGA Embedded Systems Solutions
+  13              	 * @brief entry functions.
+  14              	 *
+  15              	 */
+  16              	
+  17              	#include "../common/bits.h"
+   1              	/*
+   2              	    Copyright (c) 2013, The Regents of the University of California (Regents).
+   3              	    All Rights Reserved.
+   4              	
+   5              	    Redistribution and use in source and binary forms, with or without
+   6              	    modification, are permitted provided that the following conditions are met:
+   7              	    1. Redistributions of source code must retain the above copyright
+   8              	       notice, this list of conditions and the following disclaimer.
+   9              	    2. Redistributions in binary form must reproduce the above copyright
+  10              	       notice, this list of conditions and the following disclaimer in the
+  11              	       documentation and/or other materials provided with the distribution.
+  12              	    3. Neither the name of the Regents nor the
+  13              	       names of its contributors may be used to endorse or promote products
+  14              	       derived from this software without specific prior written permission.
+  15              	
+  16              	    IN NO EVENT SHALL REGENTS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+  17              	    SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  18              	    OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF REGENTS HAS
+  19              	    BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  20              	
+  21              	    REGENTS SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  22              	    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  23              	    PURPOSE. THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED
+  24              	    HEREUNDER IS PROVIDED "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE
+  25              	    MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  26              	*/
+  27              	
+  28              	/***********************************************************************************
+  29              	 * Record of Microchip changes
+  30              	 */
+  31              	#ifndef RISCV_BITS_H
+  32              	#define RISCV_BITS_H
+  33              	
+  34              	#ifdef __cplusplus
+  35              	extern "C" {
+  36              	#endif
+  37              	
+  38              	#define likely(x) __builtin_expect((x), 1)
+  39              	#define unlikely(x) __builtin_expect((x), 0)
+  40              	
+  41              	#ifndef ROUNDUP
+  42              	#    define ROUNDUP(a, b) ((((a)-1)/(b)+1)*(b))
+  43              	#endif
+  44              	
+  45              	#ifndef ROUNDDOWN
+  46              	#    define ROUNDDOWN(a, b) ((a)/(b)*(b))
+  47              	#endif
+  48              	
+  49              	#define MAX(a, b) ((a) > (b) ? (a) : (b))
+  50              	#define MIN(a, b) ((a) < (b) ? (a) : (b))
+  51              	#define CLAMP(a, lo, hi) MIN(MAX(a, lo), hi)
+  52              	
+  53              	#define EXTRACT_FIELD(val, which) (((val) & (which)) / ((which) & ~((which)-1)))
+  54              	#define INSERT_FIELD(val, which, fieldval) (((val) & ~(which)) | ((fieldval) * ((which) & ~((which)
+  55              	
+  56              	#define STR(x) XSTR(x)
+  57              	#define XSTR(x) #x
+  58              	
+  59              	#if __riscv_xlen == 64
+  60              	# define SLL32    sllw
+  61              	# define STORE    sd
+  62              	# define LOAD     ld
+  63              	# define LWU      lwu
+  64              	# define LOG_REGBYTES 3
+  65              	#else
+  66              	# define SLL32    sll
+  67              	# define STORE    sw
+  68              	# define LOAD     lw
+  69              	# define LWU      lw
+  70              	# define LOG_REGBYTES 2
+  71              	#endif
+  72              	#define REGBYTES (1 << LOG_REGBYTES)
+  73              	
+  18              	#include "../common/encoding.h"
+   1              	/*
+   2              	    Copyright (c) 2013, The Regents of the University of California (Regents).
+   3              	    All Rights Reserved.
+   4              	
+   5              	    Redistribution and use in source and binary forms, with or without
+   6              	    modification, are permitted provided that the following conditions are met:
+   7              	    1. Redistributions of source code must retain the above copyright
+   8              	       notice, this list of conditions and the following disclaimer.
+   9              	    2. Redistributions in binary form must reproduce the above copyright
+  10              	       notice, this list of conditions and the following disclaimer in the
+  11              	       documentation and/or other materials provided with the distribution.
+  12              	    3. Neither the name of the Regents nor the
+  13              	       names of its contributors may be used to endorse or promote products
+  14              	       derived from this software without specific prior written permission.
+  15              	
+  16              	    IN NO EVENT SHALL REGENTS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+  17              	    SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  18              	    OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF REGENTS HAS
+  19              	    BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  20              	
+  21              	    REGENTS SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  22              	    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  23              	    PURPOSE. THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED
+  24              	    HEREUNDER IS PROVIDED "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE
+  25              	    MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  26              	*/
+  27              	
+  28              	/***********************************************************************************
+  29              	 * Record of Microchip changes
+  30              	 */
+  31              	
+  32              	
+  33              	#ifndef RISCV_CSR_ENCODING_H
+  34              	#define RISCV_CSR_ENCODING_H
+  35              	
+  36              	#define MSTATUS_UIE         0x00000001
+  37              	#define MSTATUS_SIE         0x00000002
+  38              	#define MSTATUS_HIE         0x00000004
+  39              	#define MSTATUS_MIE         0x00000008
+  40              	#define MSTATUS_UPIE        0x00000010
+  41              	#define MSTATUS_SPIE        0x00000020
+  42              	#define MSTATUS_HPIE        0x00000040
+  43              	#define MSTATUS_MPIE        0x00000080
+  44              	#define MSTATUS_SPP         0x00000100
+  45              	#define MSTATUS_HPP         0x00000600
+  46              	#define MSTATUS_MPP         0x00001800
+  47              	#define MSTATUS_FS          0x00006000
+  48              	#define MSTATUS_XS          0x00018000
+  49              	#define MSTATUS_MPRV        0x00020000
+  50              	#define MSTATUS_SUM         0x00040000
+  51              	#define MSTATUS_MXR         0x00080000
+  52              	#define MSTATUS_TVM         0x00100000
+  53              	#define MSTATUS_TW          0x00200000
+  54              	#define MSTATUS_TSR         0x00400000
+  55              	#define MSTATUS32_SD        0x80000000
+  56              	#define MSTATUS64_SD        0x8000000000000000
+  57              	
+  58              	#define MCAUSE32_CAUSE       0x7FFFFFFF
+  59              	#define MCAUSE64_CAUSE       0x7FFFFFFFFFFFFFFF
+  60              	#define MCAUSE32_INT         0x80000000
+  61              	#define MCAUSE64_INT         0x8000000000000000
+  62              	
+  63              	#define SSTATUS_UIE         0x00000001
+  64              	#define SSTATUS_SIE         0x00000002
+  65              	#define SSTATUS_UPIE        0x00000010
+  66              	#define SSTATUS_SPIE        0x00000020
+  67              	#define SSTATUS_SPP         0x00000100
+  68              	#define SSTATUS_FS          0x00006000
+  69              	#define SSTATUS_XS          0x00018000
+  70              	#define SSTATUS_SUM         0x00040000
+  71              	#define SSTATUS_MXR         0x00080000
+  72              	#define SSTATUS32_SD        0x80000000
+  73              	#define SSTATUS64_SD        0x8000000000000000
+  74              	
+  75              	#define DCSR_XDEBUGVER      (3U<<30)
+  76              	#define DCSR_NDRESET        (1<<29)
+  77              	#define DCSR_FULLRESET      (1<<28)
+  78              	#define DCSR_EBREAKM        (1<<15)
+  79              	#define DCSR_EBREAKH        (1<<14)
+  80              	#define DCSR_EBREAKS        (1<<13)
+  81              	#define DCSR_EBREAKU        (1<<12)
+  82              	#define DCSR_STOPCYCLE      (1<<10)
+  83              	#define DCSR_STOPTIME       (1<<9)
+  84              	#define DCSR_CAUSE          (7<<6)
+  85              	#define DCSR_DEBUGINT       (1<<5)
+  86              	#define DCSR_HALT           (1<<3)
+  87              	#define DCSR_STEP           (1<<2)
+  88              	#define DCSR_PRV            (3<<0)
+  89              	
+  90              	#define DCSR_CAUSE_NONE     0
+  91              	#define DCSR_CAUSE_SWBP     1
+  92              	#define DCSR_CAUSE_HWBP     2
+  93              	#define DCSR_CAUSE_DEBUGINT 3
+  94              	#define DCSR_CAUSE_STEP     4
+  95              	#define DCSR_CAUSE_HALT     5
+  96              	
+  97              	#define MCONTROL_TYPE(xlen)    (0xfULL<<((xlen)-4))
+  98              	#define MCONTROL_DMODE(xlen)   (1ULL<<((xlen)-5))
+  99              	#define MCONTROL_MASKMAX(xlen) (0x3fULL<<((xlen)-11))
+ 100              	
+ 101              	#define MCONTROL_SELECT     (1U<<19)
+ 102              	#define MCONTROL_TIMING     (1U<<18)
+ 103              	#define MCONTROL_ACTION     (0x3fU<<12)
+ 104              	#define MCONTROL_CHAIN      (1U<<11)
+ 105              	#define MCONTROL_MATCH      (0xfU<<7)
+ 106              	#define MCONTROL_M          (1U<<6)
+ 107              	#define MCONTROL_H          (1U<<5)
+ 108              	#define MCONTROL_S          (1U<<4)
+ 109              	#define MCONTROL_U          (1U<<3)
+ 110              	#define MCONTROL_EXECUTE    (1U<<2)
+ 111              	#define MCONTROL_STORE      (1U<<1)
+ 112              	#define MCONTROL_LOAD       (1U<<0)
+ 113              	
+ 114              	#define MCONTROL_TYPE_NONE      0
+ 115              	#define MCONTROL_TYPE_MATCH     2
+ 116              	
+ 117              	#define MCONTROL_ACTION_DEBUG_EXCEPTION   0
+ 118              	#define MCONTROL_ACTION_DEBUG_MODE        1
+ 119              	#define MCONTROL_ACTION_TRACE_START       2
+ 120              	#define MCONTROL_ACTION_TRACE_STOP        3
+ 121              	#define MCONTROL_ACTION_TRACE_EMIT        4
+ 122              	
+ 123              	#define MCONTROL_MATCH_EQUAL     0
+ 124              	#define MCONTROL_MATCH_NAPOT     1
+ 125              	#define MCONTROL_MATCH_GE        2
+ 126              	#define MCONTROL_MATCH_LT        3
+ 127              	#define MCONTROL_MATCH_MASK_LOW  4
+ 128              	#define MCONTROL_MATCH_MASK_HIGH 5
+ 129              	
+ 130              	#define MIP_SSIP            (1U << IRQ_S_SOFT)
+ 131              	#define MIP_HSIP            (1U << IRQ_H_SOFT)
+ 132              	#define MIP_MSIP            (1U << IRQ_M_SOFT)
+ 133              	#define MIP_STIP            (1U << IRQ_S_TIMER)
+ 134              	#define MIP_HTIP            (1U << IRQ_H_TIMER)
+ 135              	#define MIP_MTIP            (1U << IRQ_M_TIMER)
+ 136              	#define MIP_SEIP            (1U << IRQ_S_EXT)
+ 137              	#define MIP_HEIP            (1U << IRQ_H_EXT)
+ 138              	#define MIP_MEIP            (1U << IRQ_M_EXT)
+ 139              	
+ 140              	#define SIP_SSIP MIP_SSIP
+ 141              	#define SIP_STIP MIP_STIP
+ 142              	
+ 143              	#define PRV_U 0
+ 144              	#define PRV_S 1
+ 145              	#define PRV_H 2
+ 146              	#define PRV_M 3
+ 147              	
+ 148              	#define SPTBR32_MODE 0x80000000
+ 149              	#define SPTBR32_ASID 0x7FC00000
+ 150              	#define SPTBR32_PPN  0x003FFFFF
+ 151              	#define SPTBR64_MODE 0xF000000000000000
+ 152              	#define SPTBR64_ASID 0x0FFFF00000000000
+ 153              	#define SPTBR64_PPN  0x00000FFFFFFFFFFF
+ 154              	
+ 155              	#define SPTBR_MODE_OFF  0
+ 156              	#define SPTBR_MODE_SV32 1
+ 157              	#define SPTBR_MODE_SV39 8
+ 158              	#define SPTBR_MODE_SV48 9
+ 159              	#define SPTBR_MODE_SV57 10
+ 160              	#define SPTBR_MODE_SV64 11
+ 161              	
+ 162              	#define PMP_R     0x01
+ 163              	#define PMP_W     0x02
+ 164              	#define PMP_X     0x04
+ 165              	#define PMP_A     0x18
+ 166              	#define PMP_L     0x80
+ 167              	#define PMP_SHIFT 2
+ 168              	
+ 169              	#define PMP_TOR   0x08
+ 170              	#define PMP_NA4   0x10
+ 171              	#define PMP_NAPOT 0x18
+ 172              	
+ 173              	#define IRQ_S_SOFT   1
+ 174              	#define IRQ_H_SOFT   2
+ 175              	#define IRQ_M_SOFT   3
+ 176              	#define IRQ_S_TIMER  5
+ 177              	#define IRQ_H_TIMER  6
+ 178              	#define IRQ_M_TIMER  7
+ 179              	#define IRQ_S_EXT    9
+ 180              	#define IRQ_H_EXT    10
+ 181              	#define IRQ_M_EXT    11
+ 182              	#define IRQ_COP      12
+ 183              	#define IRQ_HOST     13
+ 184              	
+ 185              	#define DEFAULT_RSTVEC     0x00001000
+ 186              	#define CLINT_BASE         0x02000000
+ 187              	#define CLINT_SIZE         0x000c0000
+ 188              	#define EXT_IO_BASE        0x40000000
+ 189              	#define DRAM_BASE          0x80000000
+ 190              	
+ 191              	// page table entry (PTE) fields
+ 192              	#define PTE_V     0x001 // Valid
+ 193              	#define PTE_R     0x002 // Read
+ 194              	#define PTE_W     0x004 // Write
+ 195              	#define PTE_X     0x008 // Execute
+ 196              	#define PTE_U     0x010 // User
+ 197              	#define PTE_G     0x020 // Global
+ 198              	#define PTE_A     0x040 // Accessed
+ 199              	#define PTE_D     0x080 // Dirty
+ 200              	#define PTE_SOFT  0x300 // Reserved for Software
+ 201              	
+ 202              	#define PTE_PPN_SHIFT 10
+ 203              	
+ 204              	#define PTE_TABLE(PTE) (((PTE) & (PTE_V | PTE_R | PTE_W | PTE_X)) == PTE_V)
+ 205              	
+ 206              	#ifdef __riscv
+ 207              	
+ 208              	#if __riscv_xlen == 64
+ 209              	# define MSTATUS_SD             MSTATUS64_SD
+ 210              	# define SSTATUS_SD             SSTATUS64_SD
+ 211              	# define RISCV_PGLEVEL_BITS     9
+ 212              	# define SPTBR_MODE             SPTBR64_MODE
+ 213              	# define MCAUSE_INT             MCAUSE64_INT                //ML added- should we be using later en
+ 214              	# define MCAUSE_CAUSE           MCAUSE64_CAUSE              //ML added- should we be using later en
+ 215              	#else
+ 216              	# define MSTATUS_SD MSTATUS32_SD
+ 217              	# define SSTATUS_SD SSTATUS32_SD
+ 218              	# define RISCV_PGLEVEL_BITS 10
+ 219              	# define SPTBR_MODE SPTBR32_MODE
+ 220              	# define MCAUSE_INT             MCAUSE32_INT                //ML added- should we be using later en
+ 221              	# define MCAUSE_CAUSE           MCAUSE32_CAUSE              //ML added- should we be using later en
+ 222              	#endif
+ 223              	#define RISCV_PGSHIFT 12
+ 224              	#define RISCV_PGSIZE (1 << RISCV_PGSHIFT)
+ 225              	
+ 226              	#ifndef __ASSEMBLER__
+ 227              	
+ 228              	#ifdef __GNUC__
+ 229              	
+ 230              	#define read_reg(reg) ({ unsigned long __tmp; \
+ 231              	  asm volatile ("mv %0, " #reg : "=r"(__tmp)); \
+ 232              	  __tmp; })
+ 233              	
+ 234              	#define read_csr(reg) __extension__({ unsigned long __tmp; \
+ 235              	  asm volatile ("csrr %0, " #reg : "=r"(__tmp)); \
+ 236              	  __tmp; })
+ 237              	
+ 238              	#define write_csr(reg, val) __extension__({ \
+ 239              	  asm volatile ("csrw " #reg ", %0" :: "rK"(val)); })
+ 240              	
+ 241              	#define swap_csr(reg, val) ({ unsigned long __tmp; \
+ 242              	  asm volatile ("csrrw %0, " #reg ", %1" : "=r"(__tmp) : "rK"(val)); \
+ 243              	  __tmp; })
+ 244              	
+ 245              	#define set_csr(reg, bit) __extension__({ unsigned long __tmp; \
+ 246              	  asm volatile ("csrrs %0, " #reg ", %1" : "=r"(__tmp) : "rK"(bit)); \
+ 247              	  __tmp; })
+ 248              	
+ 249              	#define clear_csr(reg, bit) __extension__({ unsigned long __tmp; \
+ 250              	  asm volatile ("csrrc %0, " #reg ", %1" : "=r"(__tmp) : "rK"(bit)); \
+ 251              	  __tmp; })
+ 252              	
+ 253              	#if 0
+ 254              	#define csr_write(csr, val)                 \
+ 255              	({                              \
+ 256              	    unsigned long __v = (unsigned long)(val);       \
+ 257              	    asm volatile ("csrw " __ASM_STR(csr) ", %0" \
+ 258              	                  : : "rK" (__v)            \
+ 259              	                  : "memory");          \
+ 260              	})
+ 261              	
+ 262              	#define csr_write(csr, val)                 \
+ 263              	({                              \
+ 264              	    unsigned long __v = (unsigned long)(val);       \
+ 265              	    __asm__ __volatile__ ("csrw " __ASM_STR(csr) ", %0" \
+ 266              	                  : : "rK" (__v)            \
+ 267              	                  : "memory");          \
+ 268              	})
+ 269              	#endif
+ 270              	
+ 271              	#define rdtime() read_csr(time)
+ 272              	#define rdcycle() read_csr(cycle)
+ 273              	#define rdinstret() read_csr(instret)
+ 274              	
+ 275              	#endif
+ 276              	
+ 277              	#endif
+ 278              	
+ 279              	#endif
+ 280              	
+ 281              	#endif
+ 282              	/* Automatically generated by parse-opcodes.  */
+ 283              	#ifndef RISCV_ENCODING_H
+ 284              	#define RISCV_ENCODING_H
+ 285              	#define MATCH_BEQ 0x63
+ 286              	#define MASK_BEQ  0x707f
+ 287              	#define MATCH_BNE 0x1063
+ 288              	#define MASK_BNE  0x707f
+ 289              	#define MATCH_BLT 0x4063
+ 290              	#define MASK_BLT  0x707f
+ 291              	#define MATCH_BGE 0x5063
+ 292              	#define MASK_BGE  0x707f
+ 293              	#define MATCH_BLTU 0x6063
+ 294              	#define MASK_BLTU  0x707f
+ 295              	#define MATCH_BGEU 0x7063
+ 296              	#define MASK_BGEU  0x707f
+ 297              	#define MATCH_JALR 0x67
+ 298              	#define MASK_JALR  0x707f
+ 299              	#define MATCH_JAL 0x6f
+ 300              	#define MASK_JAL  0x7f
+ 301              	#define MATCH_LUI 0x37
+ 302              	#define MASK_LUI  0x7f
+ 303              	#define MATCH_AUIPC 0x17
+ 304              	#define MASK_AUIPC  0x7f
+ 305              	#define MATCH_ADDI 0x13
+ 306              	#define MASK_ADDI  0x707f
+ 307              	#define MATCH_SLLI 0x1013
+ 308              	#define MASK_SLLI  0xfc00707f
+ 309              	#define MATCH_SLTI 0x2013
+ 310              	#define MASK_SLTI  0x707f
+ 311              	#define MATCH_SLTIU 0x3013
+ 312              	#define MASK_SLTIU  0x707f
+ 313              	#define MATCH_XORI 0x4013
+ 314              	#define MASK_XORI  0x707f
+ 315              	#define MATCH_SRLI 0x5013
+ 316              	#define MASK_SRLI  0xfc00707f
+ 317              	#define MATCH_SRAI 0x40005013
+ 318              	#define MASK_SRAI  0xfc00707f
+ 319              	#define MATCH_ORI 0x6013
+ 320              	#define MASK_ORI  0x707f
+ 321              	#define MATCH_ANDI 0x7013
+ 322              	#define MASK_ANDI  0x707f
+ 323              	#define MATCH_ADD 0x33
+ 324              	#define MASK_ADD  0xfe00707f
+ 325              	#define MATCH_SUB 0x40000033
+ 326              	#define MASK_SUB  0xfe00707f
+ 327              	#define MATCH_SLL 0x1033
+ 328              	#define MASK_SLL  0xfe00707f
+ 329              	#define MATCH_SLT 0x2033
+ 330              	#define MASK_SLT  0xfe00707f
+ 331              	#define MATCH_SLTU 0x3033
+ 332              	#define MASK_SLTU  0xfe00707f
+ 333              	#define MATCH_XOR 0x4033
+ 334              	#define MASK_XOR  0xfe00707f
+ 335              	#define MATCH_SRL 0x5033
+ 336              	#define MASK_SRL  0xfe00707f
+ 337              	#define MATCH_SRA 0x40005033
+ 338              	#define MASK_SRA  0xfe00707f
+ 339              	#define MATCH_OR 0x6033
+ 340              	#define MASK_OR  0xfe00707f
+ 341              	#define MATCH_AND 0x7033
+ 342              	#define MASK_AND  0xfe00707f
+ 343              	#define MATCH_ADDIW 0x1b
+ 344              	#define MASK_ADDIW  0x707f
+ 345              	#define MATCH_SLLIW 0x101b
+ 346              	#define MASK_SLLIW  0xfe00707f
+ 347              	#define MATCH_SRLIW 0x501b
+ 348              	#define MASK_SRLIW  0xfe00707f
+ 349              	#define MATCH_SRAIW 0x4000501b
+ 350              	#define MASK_SRAIW  0xfe00707f
+ 351              	#define MATCH_ADDW 0x3b
+ 352              	#define MASK_ADDW  0xfe00707f
+ 353              	#define MATCH_SUBW 0x4000003b
+ 354              	#define MASK_SUBW  0xfe00707f
+ 355              	#define MATCH_SLLW 0x103b
+ 356              	#define MASK_SLLW  0xfe00707f
+ 357              	#define MATCH_SRLW 0x503b
+ 358              	#define MASK_SRLW  0xfe00707f
+ 359              	#define MATCH_SRAW 0x4000503b
+ 360              	#define MASK_SRAW  0xfe00707f
+ 361              	#define MATCH_LB 0x3
+ 362              	#define MASK_LB  0x707f
+ 363              	#define MATCH_LH 0x1003
+ 364              	#define MASK_LH  0x707f
+ 365              	#define MATCH_LW 0x2003
+ 366              	#define MASK_LW  0x707f
+ 367              	#define MATCH_LD 0x3003
+ 368              	#define MASK_LD  0x707f
+ 369              	#define MATCH_LBU 0x4003
+ 370              	#define MASK_LBU  0x707f
+ 371              	#define MATCH_LHU 0x5003
+ 372              	#define MASK_LHU  0x707f
+ 373              	#define MATCH_LWU 0x6003
+ 374              	#define MASK_LWU  0x707f
+ 375              	#define MATCH_SB 0x23
+ 376              	#define MASK_SB  0x707f
+ 377              	#define MATCH_SH 0x1023
+ 378              	#define MASK_SH  0x707f
+ 379              	#define MATCH_SW 0x2023
+ 380              	#define MASK_SW  0x707f
+ 381              	#define MATCH_SD 0x3023
+ 382              	#define MASK_SD  0x707f
+ 383              	#define MATCH_FENCE 0xf
+ 384              	#define MASK_FENCE  0x707f
+ 385              	#define MATCH_FENCE_I 0x100f
+ 386              	#define MASK_FENCE_I  0x707f
+ 387              	#define MATCH_MUL 0x2000033
+ 388              	#define MASK_MUL  0xfe00707f
+ 389              	#define MATCH_MULH 0x2001033
+ 390              	#define MASK_MULH  0xfe00707f
+ 391              	#define MATCH_MULHSU 0x2002033
+ 392              	#define MASK_MULHSU  0xfe00707f
+ 393              	#define MATCH_MULHU 0x2003033
+ 394              	#define MASK_MULHU  0xfe00707f
+ 395              	#define MATCH_DIV 0x2004033
+ 396              	#define MASK_DIV  0xfe00707f
+ 397              	#define MATCH_DIVU 0x2005033
+ 398              	#define MASK_DIVU  0xfe00707f
+ 399              	#define MATCH_REM 0x2006033
+ 400              	#define MASK_REM  0xfe00707f
+ 401              	#define MATCH_REMU 0x2007033
+ 402              	#define MASK_REMU  0xfe00707f
+ 403              	#define MATCH_MULW 0x200003b
+ 404              	#define MASK_MULW  0xfe00707f
+ 405              	#define MATCH_DIVW 0x200403b
+ 406              	#define MASK_DIVW  0xfe00707f
+ 407              	#define MATCH_DIVUW 0x200503b
+ 408              	#define MASK_DIVUW  0xfe00707f
+ 409              	#define MATCH_REMW 0x200603b
+ 410              	#define MASK_REMW  0xfe00707f
+ 411              	#define MATCH_REMUW 0x200703b
+ 412              	#define MASK_REMUW  0xfe00707f
+ 413              	#define MATCH_AMOADD_W 0x202f
+ 414              	#define MASK_AMOADD_W  0xf800707f
+ 415              	#define MATCH_AMOXOR_W 0x2000202f
+ 416              	#define MASK_AMOXOR_W  0xf800707f
+ 417              	#define MATCH_AMOOR_W 0x4000202f
+ 418              	#define MASK_AMOOR_W  0xf800707f
+ 419              	#define MATCH_AMOAND_W 0x6000202f
+ 420              	#define MASK_AMOAND_W  0xf800707f
+ 421              	#define MATCH_AMOMIN_W 0x8000202f
+ 422              	#define MASK_AMOMIN_W  0xf800707f
+ 423              	#define MATCH_AMOMAX_W 0xa000202f
+ 424              	#define MASK_AMOMAX_W  0xf800707f
+ 425              	#define MATCH_AMOMINU_W 0xc000202f
+ 426              	#define MASK_AMOMINU_W  0xf800707f
+ 427              	#define MATCH_AMOMAXU_W 0xe000202f
+ 428              	#define MASK_AMOMAXU_W  0xf800707f
+ 429              	#define MATCH_AMOSWAP_W 0x800202f
+ 430              	#define MASK_AMOSWAP_W  0xf800707f
+ 431              	#define MATCH_LR_W 0x1000202f
+ 432              	#define MASK_LR_W  0xf9f0707f
+ 433              	#define MATCH_SC_W 0x1800202f
+ 434              	#define MASK_SC_W  0xf800707f
+ 435              	#define MATCH_AMOADD_D 0x302f
+ 436              	#define MASK_AMOADD_D  0xf800707f
+ 437              	#define MATCH_AMOXOR_D 0x2000302f
+ 438              	#define MASK_AMOXOR_D  0xf800707f
+ 439              	#define MATCH_AMOOR_D 0x4000302f
+ 440              	#define MASK_AMOOR_D  0xf800707f
+ 441              	#define MATCH_AMOAND_D 0x6000302f
+ 442              	#define MASK_AMOAND_D  0xf800707f
+ 443              	#define MATCH_AMOMIN_D 0x8000302f
+ 444              	#define MASK_AMOMIN_D  0xf800707f
+ 445              	#define MATCH_AMOMAX_D 0xa000302f
+ 446              	#define MASK_AMOMAX_D  0xf800707f
+ 447              	#define MATCH_AMOMINU_D 0xc000302f
+ 448              	#define MASK_AMOMINU_D  0xf800707f
+ 449              	#define MATCH_AMOMAXU_D 0xe000302f
+ 450              	#define MASK_AMOMAXU_D  0xf800707f
+ 451              	#define MATCH_AMOSWAP_D 0x800302f
+ 452              	#define MASK_AMOSWAP_D  0xf800707f
+ 453              	#define MATCH_LR_D 0x1000302f
+ 454              	#define MASK_LR_D  0xf9f0707f
+ 455              	#define MATCH_SC_D 0x1800302f
+ 456              	#define MASK_SC_D  0xf800707f
+ 457              	#define MATCH_ECALL 0x73
+ 458              	#define MASK_ECALL  0xffffffff
+ 459              	#define MATCH_EBREAK 0x100073
+ 460              	#define MASK_EBREAK  0xffffffff
+ 461              	#define MATCH_URET 0x200073
+ 462              	#define MASK_URET  0xffffffff
+ 463              	#define MATCH_SRET 0x10200073
+ 464              	#define MASK_SRET  0xffffffff
+ 465              	#define MATCH_HRET 0x20200073
+ 466              	#define MASK_HRET  0xffffffff
+ 467              	#define MATCH_MRET 0x30200073
+ 468              	#define MASK_MRET  0xffffffff
+ 469              	#define MATCH_DRET 0x7b200073
+ 470              	#define MASK_DRET  0xffffffff
+ 471              	#define MATCH_SFENCE_VMA 0x12000073
+ 472              	#define MASK_SFENCE_VMA  0xfe007fff
+ 473              	#define MATCH_WFI 0x10500073
+ 474              	#define MASK_WFI  0xffffffff
+ 475              	#define MATCH_CSRRW 0x1073
+ 476              	#define MASK_CSRRW  0x707f
+ 477              	#define MATCH_CSRRS 0x2073
+ 478              	#define MASK_CSRRS  0x707f
+ 479              	#define MATCH_CSRRC 0x3073
+ 480              	#define MASK_CSRRC  0x707f
+ 481              	#define MATCH_CSRRWI 0x5073
+ 482              	#define MASK_CSRRWI  0x707f
+ 483              	#define MATCH_CSRRSI 0x6073
+ 484              	#define MASK_CSRRSI  0x707f
+ 485              	#define MATCH_CSRRCI 0x7073
+ 486              	#define MASK_CSRRCI  0x707f
+ 487              	#define MATCH_FADD_S 0x53
+ 488              	#define MASK_FADD_S  0xfe00007f
+ 489              	#define MATCH_FSUB_S 0x8000053
+ 490              	#define MASK_FSUB_S  0xfe00007f
+ 491              	#define MATCH_FMUL_S 0x10000053
+ 492              	#define MASK_FMUL_S  0xfe00007f
+ 493              	#define MATCH_FDIV_S 0x18000053
+ 494              	#define MASK_FDIV_S  0xfe00007f
+ 495              	#define MATCH_FSGNJ_S 0x20000053
+ 496              	#define MASK_FSGNJ_S  0xfe00707f
+ 497              	#define MATCH_FSGNJN_S 0x20001053
+ 498              	#define MASK_FSGNJN_S  0xfe00707f
+ 499              	#define MATCH_FSGNJX_S 0x20002053
+ 500              	#define MASK_FSGNJX_S  0xfe00707f
+ 501              	#define MATCH_FMIN_S 0x28000053
+ 502              	#define MASK_FMIN_S  0xfe00707f
+ 503              	#define MATCH_FMAX_S 0x28001053
+ 504              	#define MASK_FMAX_S  0xfe00707f
+ 505              	#define MATCH_FSQRT_S 0x58000053
+ 506              	#define MASK_FSQRT_S  0xfff0007f
+ 507              	#define MATCH_FADD_D 0x2000053
+ 508              	#define MASK_FADD_D  0xfe00007f
+ 509              	#define MATCH_FSUB_D 0xa000053
+ 510              	#define MASK_FSUB_D  0xfe00007f
+ 511              	#define MATCH_FMUL_D 0x12000053
+ 512              	#define MASK_FMUL_D  0xfe00007f
+ 513              	#define MATCH_FDIV_D 0x1a000053
+ 514              	#define MASK_FDIV_D  0xfe00007f
+ 515              	#define MATCH_FSGNJ_D 0x22000053
+ 516              	#define MASK_FSGNJ_D  0xfe00707f
+ 517              	#define MATCH_FSGNJN_D 0x22001053
+ 518              	#define MASK_FSGNJN_D  0xfe00707f
+ 519              	#define MATCH_FSGNJX_D 0x22002053
+ 520              	#define MASK_FSGNJX_D  0xfe00707f
+ 521              	#define MATCH_FMIN_D 0x2a000053
+ 522              	#define MASK_FMIN_D  0xfe00707f
+ 523              	#define MATCH_FMAX_D 0x2a001053
+ 524              	#define MASK_FMAX_D  0xfe00707f
+ 525              	#define MATCH_FCVT_S_D 0x40100053
+ 526              	#define MASK_FCVT_S_D  0xfff0007f
+ 527              	#define MATCH_FCVT_D_S 0x42000053
+ 528              	#define MASK_FCVT_D_S  0xfff0007f
+ 529              	#define MATCH_FSQRT_D 0x5a000053
+ 530              	#define MASK_FSQRT_D  0xfff0007f
+ 531              	#define MATCH_FADD_Q 0x6000053
+ 532              	#define MASK_FADD_Q  0xfe00007f
+ 533              	#define MATCH_FSUB_Q 0xe000053
+ 534              	#define MASK_FSUB_Q  0xfe00007f
+ 535              	#define MATCH_FMUL_Q 0x16000053
+ 536              	#define MASK_FMUL_Q  0xfe00007f
+ 537              	#define MATCH_FDIV_Q 0x1e000053
+ 538              	#define MASK_FDIV_Q  0xfe00007f
+ 539              	#define MATCH_FSGNJ_Q 0x26000053
+ 540              	#define MASK_FSGNJ_Q  0xfe00707f
+ 541              	#define MATCH_FSGNJN_Q 0x26001053
+ 542              	#define MASK_FSGNJN_Q  0xfe00707f
+ 543              	#define MATCH_FSGNJX_Q 0x26002053
+ 544              	#define MASK_FSGNJX_Q  0xfe00707f
+ 545              	#define MATCH_FMIN_Q 0x2e000053
+ 546              	#define MASK_FMIN_Q  0xfe00707f
+ 547              	#define MATCH_FMAX_Q 0x2e001053
+ 548              	#define MASK_FMAX_Q  0xfe00707f
+ 549              	#define MATCH_FCVT_S_Q 0x40300053
+ 550              	#define MASK_FCVT_S_Q  0xfff0007f
+ 551              	#define MATCH_FCVT_Q_S 0x46000053
+ 552              	#define MASK_FCVT_Q_S  0xfff0007f
+ 553              	#define MATCH_FCVT_D_Q 0x42300053
+ 554              	#define MASK_FCVT_D_Q  0xfff0007f
+ 555              	#define MATCH_FCVT_Q_D 0x46100053
+ 556              	#define MASK_FCVT_Q_D  0xfff0007f
+ 557              	#define MATCH_FSQRT_Q 0x5e000053
+ 558              	#define MASK_FSQRT_Q  0xfff0007f
+ 559              	#define MATCH_FLE_S 0xa0000053
+ 560              	#define MASK_FLE_S  0xfe00707f
+ 561              	#define MATCH_FLT_S 0xa0001053
+ 562              	#define MASK_FLT_S  0xfe00707f
+ 563              	#define MATCH_FEQ_S 0xa0002053
+ 564              	#define MASK_FEQ_S  0xfe00707f
+ 565              	#define MATCH_FLE_D 0xa2000053
+ 566              	#define MASK_FLE_D  0xfe00707f
+ 567              	#define MATCH_FLT_D 0xa2001053
+ 568              	#define MASK_FLT_D  0xfe00707f
+ 569              	#define MATCH_FEQ_D 0xa2002053
+ 570              	#define MASK_FEQ_D  0xfe00707f
+ 571              	#define MATCH_FLE_Q 0xa6000053
+ 572              	#define MASK_FLE_Q  0xfe00707f
+ 573              	#define MATCH_FLT_Q 0xa6001053
+ 574              	#define MASK_FLT_Q  0xfe00707f
+ 575              	#define MATCH_FEQ_Q 0xa6002053
+ 576              	#define MASK_FEQ_Q  0xfe00707f
+ 577              	#define MATCH_FCVT_W_S 0xc0000053
+ 578              	#define MASK_FCVT_W_S  0xfff0007f
+ 579              	#define MATCH_FCVT_WU_S 0xc0100053
+ 580              	#define MASK_FCVT_WU_S  0xfff0007f
+ 581              	#define MATCH_FCVT_L_S 0xc0200053
+ 582              	#define MASK_FCVT_L_S  0xfff0007f
+ 583              	#define MATCH_FCVT_LU_S 0xc0300053
+ 584              	#define MASK_FCVT_LU_S  0xfff0007f
+ 585              	#define MATCH_FMV_X_S 0xe0000053
+ 586              	#define MASK_FMV_X_S  0xfff0707f
+ 587              	#define MATCH_FCLASS_S 0xe0001053
+ 588              	#define MASK_FCLASS_S  0xfff0707f
+ 589              	#define MATCH_FCVT_W_D 0xc2000053
+ 590              	#define MASK_FCVT_W_D  0xfff0007f
+ 591              	#define MATCH_FCVT_WU_D 0xc2100053
+ 592              	#define MASK_FCVT_WU_D  0xfff0007f
+ 593              	#define MATCH_FCVT_L_D 0xc2200053
+ 594              	#define MASK_FCVT_L_D  0xfff0007f
+ 595              	#define MATCH_FCVT_LU_D 0xc2300053
+ 596              	#define MASK_FCVT_LU_D  0xfff0007f
+ 597              	#define MATCH_FMV_X_D 0xe2000053
+ 598              	#define MASK_FMV_X_D  0xfff0707f
+ 599              	#define MATCH_FCLASS_D 0xe2001053
+ 600              	#define MASK_FCLASS_D  0xfff0707f
+ 601              	#define MATCH_FCVT_W_Q 0xc6000053
+ 602              	#define MASK_FCVT_W_Q  0xfff0007f
+ 603              	#define MATCH_FCVT_WU_Q 0xc6100053
+ 604              	#define MASK_FCVT_WU_Q  0xfff0007f
+ 605              	#define MATCH_FCVT_L_Q 0xc6200053
+ 606              	#define MASK_FCVT_L_Q  0xfff0007f
+ 607              	#define MATCH_FCVT_LU_Q 0xc6300053
+ 608              	#define MASK_FCVT_LU_Q  0xfff0007f
+ 609              	#define MATCH_FMV_X_Q 0xe6000053
+ 610              	#define MASK_FMV_X_Q  0xfff0707f
+ 611              	#define MATCH_FCLASS_Q 0xe6001053
+ 612              	#define MASK_FCLASS_Q  0xfff0707f
+ 613              	#define MATCH_FCVT_S_W 0xd0000053
+ 614              	#define MASK_FCVT_S_W  0xfff0007f
+ 615              	#define MATCH_FCVT_S_WU 0xd0100053
+ 616              	#define MASK_FCVT_S_WU  0xfff0007f
+ 617              	#define MATCH_FCVT_S_L 0xd0200053
+ 618              	#define MASK_FCVT_S_L  0xfff0007f
+ 619              	#define MATCH_FCVT_S_LU 0xd0300053
+ 620              	#define MASK_FCVT_S_LU  0xfff0007f
+ 621              	#define MATCH_FMV_S_X 0xf0000053
+ 622              	#define MASK_FMV_S_X  0xfff0707f
+ 623              	#define MATCH_FCVT_D_W 0xd2000053
+ 624              	#define MASK_FCVT_D_W  0xfff0007f
+ 625              	#define MATCH_FCVT_D_WU 0xd2100053
+ 626              	#define MASK_FCVT_D_WU  0xfff0007f
+ 627              	#define MATCH_FCVT_D_L 0xd2200053
+ 628              	#define MASK_FCVT_D_L  0xfff0007f
+ 629              	#define MATCH_FCVT_D_LU 0xd2300053
+ 630              	#define MASK_FCVT_D_LU  0xfff0007f
+ 631              	#define MATCH_FMV_D_X 0xf2000053
+ 632              	#define MASK_FMV_D_X  0xfff0707f
+ 633              	#define MATCH_FCVT_Q_W 0xd6000053
+ 634              	#define MASK_FCVT_Q_W  0xfff0007f
+ 635              	#define MATCH_FCVT_Q_WU 0xd6100053
+ 636              	#define MASK_FCVT_Q_WU  0xfff0007f
+ 637              	#define MATCH_FCVT_Q_L 0xd6200053
+ 638              	#define MASK_FCVT_Q_L  0xfff0007f
+ 639              	#define MATCH_FCVT_Q_LU 0xd6300053
+ 640              	#define MASK_FCVT_Q_LU  0xfff0007f
+ 641              	#define MATCH_FMV_Q_X 0xf6000053
+ 642              	#define MASK_FMV_Q_X  0xfff0707f
+ 643              	#define MATCH_FLW 0x2007
+ 644              	#define MASK_FLW  0x707f
+ 645              	#define MATCH_FLD 0x3007
+ 646              	#define MASK_FLD  0x707f
+ 647              	#define MATCH_FLQ 0x4007
+ 648              	#define MASK_FLQ  0x707f
+ 649              	#define MATCH_FSW 0x2027
+ 650              	#define MASK_FSW  0x707f
+ 651              	#define MATCH_FSD 0x3027
+ 652              	#define MASK_FSD  0x707f
+ 653              	#define MATCH_FSQ 0x4027
+ 654              	#define MASK_FSQ  0x707f
+ 655              	#define MATCH_FMADD_S 0x43
+ 656              	#define MASK_FMADD_S  0x600007f
+ 657              	#define MATCH_FMSUB_S 0x47
+ 658              	#define MASK_FMSUB_S  0x600007f
+ 659              	#define MATCH_FNMSUB_S 0x4b
+ 660              	#define MASK_FNMSUB_S  0x600007f
+ 661              	#define MATCH_FNMADD_S 0x4f
+ 662              	#define MASK_FNMADD_S  0x600007f
+ 663              	#define MATCH_FMADD_D 0x2000043
+ 664              	#define MASK_FMADD_D  0x600007f
+ 665              	#define MATCH_FMSUB_D 0x2000047
+ 666              	#define MASK_FMSUB_D  0x600007f
+ 667              	#define MATCH_FNMSUB_D 0x200004b
+ 668              	#define MASK_FNMSUB_D  0x600007f
+ 669              	#define MATCH_FNMADD_D 0x200004f
+ 670              	#define MASK_FNMADD_D  0x600007f
+ 671              	#define MATCH_FMADD_Q 0x6000043
+ 672              	#define MASK_FMADD_Q  0x600007f
+ 673              	#define MATCH_FMSUB_Q 0x6000047
+ 674              	#define MASK_FMSUB_Q  0x600007f
+ 675              	#define MATCH_FNMSUB_Q 0x600004b
+ 676              	#define MASK_FNMSUB_Q  0x600007f
+ 677              	#define MATCH_FNMADD_Q 0x600004f
+ 678              	#define MASK_FNMADD_Q  0x600007f
+ 679              	#define MATCH_C_NOP 0x1
+ 680              	#define MASK_C_NOP  0xffff
+ 681              	#define MATCH_C_ADDI16SP 0x6101
+ 682              	#define MASK_C_ADDI16SP  0xef83
+ 683              	#define MATCH_C_JR 0x8002
+ 684              	#define MASK_C_JR  0xf07f
+ 685              	#define MATCH_C_JALR 0x9002
+ 686              	#define MASK_C_JALR  0xf07f
+ 687              	#define MATCH_C_EBREAK 0x9002
+ 688              	#define MASK_C_EBREAK  0xffff
+ 689              	#define MATCH_C_LD 0x6000
+ 690              	#define MASK_C_LD  0xe003
+ 691              	#define MATCH_C_SD 0xe000
+ 692              	#define MASK_C_SD  0xe003
+ 693              	#define MATCH_C_ADDIW 0x2001
+ 694              	#define MASK_C_ADDIW  0xe003
+ 695              	#define MATCH_C_LDSP 0x6002
+ 696              	#define MASK_C_LDSP  0xe003
+ 697              	#define MATCH_C_SDSP 0xe002
+ 698              	#define MASK_C_SDSP  0xe003
+ 699              	#define MATCH_C_ADDI4SPN 0x0
+ 700              	#define MASK_C_ADDI4SPN  0xe003
+ 701              	#define MATCH_C_FLD 0x2000
+ 702              	#define MASK_C_FLD  0xe003
+ 703              	#define MATCH_C_LW 0x4000
+ 704              	#define MASK_C_LW  0xe003
+ 705              	#define MATCH_C_FLW 0x6000
+ 706              	#define MASK_C_FLW  0xe003
+ 707              	#define MATCH_C_FSD 0xa000
+ 708              	#define MASK_C_FSD  0xe003
+ 709              	#define MATCH_C_SW 0xc000
+ 710              	#define MASK_C_SW  0xe003
+ 711              	#define MATCH_C_FSW 0xe000
+ 712              	#define MASK_C_FSW  0xe003
+ 713              	#define MATCH_C_ADDI 0x1
+ 714              	#define MASK_C_ADDI  0xe003
+ 715              	#define MATCH_C_JAL 0x2001
+ 716              	#define MASK_C_JAL  0xe003
+ 717              	#define MATCH_C_LI 0x4001
+ 718              	#define MASK_C_LI  0xe003
+ 719              	#define MATCH_C_LUI 0x6001
+ 720              	#define MASK_C_LUI  0xe003
+ 721              	#define MATCH_C_SRLI 0x8001
+ 722              	#define MASK_C_SRLI  0xec03
+ 723              	#define MATCH_C_SRAI 0x8401
+ 724              	#define MASK_C_SRAI  0xec03
+ 725              	#define MATCH_C_ANDI 0x8801
+ 726              	#define MASK_C_ANDI  0xec03
+ 727              	#define MATCH_C_SUB 0x8c01
+ 728              	#define MASK_C_SUB  0xfc63
+ 729              	#define MATCH_C_XOR 0x8c21
+ 730              	#define MASK_C_XOR  0xfc63
+ 731              	#define MATCH_C_OR 0x8c41
+ 732              	#define MASK_C_OR  0xfc63
+ 733              	#define MATCH_C_AND 0x8c61
+ 734              	#define MASK_C_AND  0xfc63
+ 735              	#define MATCH_C_SUBW 0x9c01
+ 736              	#define MASK_C_SUBW  0xfc63
+ 737              	#define MATCH_C_ADDW 0x9c21
+ 738              	#define MASK_C_ADDW  0xfc63
+ 739              	#define MATCH_C_J 0xa001
+ 740              	#define MASK_C_J  0xe003
+ 741              	#define MATCH_C_BEQZ 0xc001
+ 742              	#define MASK_C_BEQZ  0xe003
+ 743              	#define MATCH_C_BNEZ 0xe001
+ 744              	#define MASK_C_BNEZ  0xe003
+ 745              	#define MATCH_C_SLLI 0x2
+ 746              	#define MASK_C_SLLI  0xe003
+ 747              	#define MATCH_C_FLDSP 0x2002
+ 748              	#define MASK_C_FLDSP  0xe003
+ 749              	#define MATCH_C_LWSP 0x4002
+ 750              	#define MASK_C_LWSP  0xe003
+ 751              	#define MATCH_C_FLWSP 0x6002
+ 752              	#define MASK_C_FLWSP  0xe003
+ 753              	#define MATCH_C_MV 0x8002
+ 754              	#define MASK_C_MV  0xf003
+ 755              	#define MATCH_C_ADD 0x9002
+ 756              	#define MASK_C_ADD  0xf003
+ 757              	#define MATCH_C_FSDSP 0xa002
+ 758              	#define MASK_C_FSDSP  0xe003
+ 759              	#define MATCH_C_SWSP 0xc002
+ 760              	#define MASK_C_SWSP  0xe003
+ 761              	#define MATCH_C_FSWSP 0xe002
+ 762              	#define MASK_C_FSWSP  0xe003
+ 763              	#define MATCH_CUSTOM0 0xb
+ 764              	#define MASK_CUSTOM0  0x707f
+ 765              	#define MATCH_CUSTOM0_RS1 0x200b
+ 766              	#define MASK_CUSTOM0_RS1  0x707f
+ 767              	#define MATCH_CUSTOM0_RS1_RS2 0x300b
+ 768              	#define MASK_CUSTOM0_RS1_RS2  0x707f
+ 769              	#define MATCH_CUSTOM0_RD 0x400b
+ 770              	#define MASK_CUSTOM0_RD  0x707f
+ 771              	#define MATCH_CUSTOM0_RD_RS1 0x600b
+ 772              	#define MASK_CUSTOM0_RD_RS1  0x707f
+ 773              	#define MATCH_CUSTOM0_RD_RS1_RS2 0x700b
+ 774              	#define MASK_CUSTOM0_RD_RS1_RS2  0x707f
+ 775              	#define MATCH_CUSTOM1 0x2b
+ 776              	#define MASK_CUSTOM1  0x707f
+ 777              	#define MATCH_CUSTOM1_RS1 0x202b
+ 778              	#define MASK_CUSTOM1_RS1  0x707f
+ 779              	#define MATCH_CUSTOM1_RS1_RS2 0x302b
+ 780              	#define MASK_CUSTOM1_RS1_RS2  0x707f
+ 781              	#define MATCH_CUSTOM1_RD 0x402b
+ 782              	#define MASK_CUSTOM1_RD  0x707f
+ 783              	#define MATCH_CUSTOM1_RD_RS1 0x602b
+ 784              	#define MASK_CUSTOM1_RD_RS1  0x707f
+ 785              	#define MATCH_CUSTOM1_RD_RS1_RS2 0x702b
+ 786              	#define MASK_CUSTOM1_RD_RS1_RS2  0x707f
+ 787              	#define MATCH_CUSTOM2 0x5b
+ 788              	#define MASK_CUSTOM2  0x707f
+ 789              	#define MATCH_CUSTOM2_RS1 0x205b
+ 790              	#define MASK_CUSTOM2_RS1  0x707f
+ 791              	#define MATCH_CUSTOM2_RS1_RS2 0x305b
+ 792              	#define MASK_CUSTOM2_RS1_RS2  0x707f
+ 793              	#define MATCH_CUSTOM2_RD 0x405b
+ 794              	#define MASK_CUSTOM2_RD  0x707f
+ 795              	#define MATCH_CUSTOM2_RD_RS1 0x605b
+ 796              	#define MASK_CUSTOM2_RD_RS1  0x707f
+ 797              	#define MATCH_CUSTOM2_RD_RS1_RS2 0x705b
+ 798              	#define MASK_CUSTOM2_RD_RS1_RS2  0x707f
+ 799              	#define MATCH_CUSTOM3 0x7b
+ 800              	#define MASK_CUSTOM3  0x707f
+ 801              	#define MATCH_CUSTOM3_RS1 0x207b
+ 802              	#define MASK_CUSTOM3_RS1  0x707f
+ 803              	#define MATCH_CUSTOM3_RS1_RS2 0x307b
+ 804              	#define MASK_CUSTOM3_RS1_RS2  0x707f
+ 805              	#define MATCH_CUSTOM3_RD 0x407b
+ 806              	#define MASK_CUSTOM3_RD  0x707f
+ 807              	#define MATCH_CUSTOM3_RD_RS1 0x607b
+ 808              	#define MASK_CUSTOM3_RD_RS1  0x707f
+ 809              	#define MATCH_CUSTOM3_RD_RS1_RS2 0x707b
+ 810              	#define MASK_CUSTOM3_RD_RS1_RS2  0x707f
+ 811              	#define CSR_FFLAGS 0x1
+ 812              	#define CSR_FRM 0x2
+ 813              	#define CSR_FCSR 0x3
+ 814              	#define CSR_CYCLE 0xc00
+ 815              	#define CSR_TIME 0xc01
+ 816              	#define CSR_INSTRET 0xc02
+ 817              	#define CSR_HPMCOUNTER3 0xc03
+ 818              	#define CSR_HPMCOUNTER4 0xc04
+ 819              	#define CSR_HPMCOUNTER5 0xc05
+ 820              	#define CSR_HPMCOUNTER6 0xc06
+ 821              	#define CSR_HPMCOUNTER7 0xc07
+ 822              	#define CSR_HPMCOUNTER8 0xc08
+ 823              	#define CSR_HPMCOUNTER9 0xc09
+ 824              	#define CSR_HPMCOUNTER10 0xc0a
+ 825              	#define CSR_HPMCOUNTER11 0xc0b
+ 826              	#define CSR_HPMCOUNTER12 0xc0c
+ 827              	#define CSR_HPMCOUNTER13 0xc0d
+ 828              	#define CSR_HPMCOUNTER14 0xc0e
+ 829              	#define CSR_HPMCOUNTER15 0xc0f
+ 830              	#define CSR_HPMCOUNTER16 0xc10
+ 831              	#define CSR_HPMCOUNTER17 0xc11
+ 832              	#define CSR_HPMCOUNTER18 0xc12
+ 833              	#define CSR_HPMCOUNTER19 0xc13
+ 834              	#define CSR_HPMCOUNTER20 0xc14
+ 835              	#define CSR_HPMCOUNTER21 0xc15
+ 836              	#define CSR_HPMCOUNTER22 0xc16
+ 837              	#define CSR_HPMCOUNTER23 0xc17
+ 838              	#define CSR_HPMCOUNTER24 0xc18
+ 839              	#define CSR_HPMCOUNTER25 0xc19
+ 840              	#define CSR_HPMCOUNTER26 0xc1a
+ 841              	#define CSR_HPMCOUNTER27 0xc1b
+ 842              	#define CSR_HPMCOUNTER28 0xc1c
+ 843              	#define CSR_HPMCOUNTER29 0xc1d
+ 844              	#define CSR_HPMCOUNTER30 0xc1e
+ 845              	#define CSR_HPMCOUNTER31 0xc1f
+ 846              	#define CSR_SSTATUS 0x100
+ 847              	#define CSR_SIE 0x104
+ 848              	#define CSR_STVEC 0x105
+ 849              	#define CSR_SCOUNTEREN 0x106
+ 850              	#define CSR_SSCRATCH 0x140
+ 851              	#define CSR_SEPC 0x141
+ 852              	#define CSR_SCAUSE 0x142
+ 853              	#define CSR_SBADADDR 0x143
+ 854              	#define CSR_SIP 0x144
+ 855              	#define CSR_SPTBR 0x180
+ 856              	#define CSR_MSTATUS 0x300
+ 857              	#define CSR_MISA 0x301
+ 858              	#define CSR_MEDELEG 0x302
+ 859              	#define CSR_MIDELEG 0x303
+ 860              	#define CSR_MIE 0x304
+ 861              	#define CSR_MTVEC 0x305
+ 862              	#define CSR_MCOUNTEREN 0x306
+ 863              	#define CSR_MSCRATCH 0x340
+ 864              	#define CSR_MEPC 0x341
+ 865              	#define CSR_MCAUSE 0x342
+ 866              	#define CSR_MBADADDR 0x343
+ 867              	#define CSR_MIP 0x344
+ 868              	#define CSR_PMPCFG0 0x3a0
+ 869              	#define CSR_PMPCFG1 0x3a1
+ 870              	#define CSR_PMPCFG2 0x3a2
+ 871              	#define CSR_PMPCFG3 0x3a3
+ 872              	#define CSR_PMPADDR0 0x3b0
+ 873              	#define CSR_PMPADDR1 0x3b1
+ 874              	#define CSR_PMPADDR2 0x3b2
+ 875              	#define CSR_PMPADDR3 0x3b3
+ 876              	#define CSR_PMPADDR4 0x3b4
+ 877              	#define CSR_PMPADDR5 0x3b5
+ 878              	#define CSR_PMPADDR6 0x3b6
+ 879              	#define CSR_PMPADDR7 0x3b7
+ 880              	#define CSR_PMPADDR8 0x3b8
+ 881              	#define CSR_PMPADDR9 0x3b9
+ 882              	#define CSR_PMPADDR10 0x3ba
+ 883              	#define CSR_PMPADDR11 0x3bb
+ 884              	#define CSR_PMPADDR12 0x3bc
+ 885              	#define CSR_PMPADDR13 0x3bd
+ 886              	#define CSR_PMPADDR14 0x3be
+ 887              	#define CSR_PMPADDR15 0x3bf
+ 888              	#define CSR_TSELECT 0x7a0
+ 889              	#define CSR_TDATA1 0x7a1
+ 890              	#define CSR_TDATA2 0x7a2
+ 891              	#define CSR_TDATA3 0x7a3
+ 892              	#define CSR_DCSR 0x7b0
+ 893              	#define CSR_DPC 0x7b1
+ 894              	#define CSR_DSCRATCH 0x7b2
+ 895              	#define CSR_MCYCLE 0xb00
+ 896              	#define CSR_MINSTRET 0xb02
+ 897              	#define CSR_MHPMCOUNTER3 0xb03
+ 898              	#define CSR_MHPMCOUNTER4 0xb04
+ 899              	#define CSR_MHPMCOUNTER5 0xb05
+ 900              	#define CSR_MHPMCOUNTER6 0xb06
+ 901              	#define CSR_MHPMCOUNTER7 0xb07
+ 902              	#define CSR_MHPMCOUNTER8 0xb08
+ 903              	#define CSR_MHPMCOUNTER9 0xb09
+ 904              	#define CSR_MHPMCOUNTER10 0xb0a
+ 905              	#define CSR_MHPMCOUNTER11 0xb0b
+ 906              	#define CSR_MHPMCOUNTER12 0xb0c
+ 907              	#define CSR_MHPMCOUNTER13 0xb0d
+ 908              	#define CSR_MHPMCOUNTER14 0xb0e
+ 909              	#define CSR_MHPMCOUNTER15 0xb0f
+ 910              	#define CSR_MHPMCOUNTER16 0xb10
+ 911              	#define CSR_MHPMCOUNTER17 0xb11
+ 912              	#define CSR_MHPMCOUNTER18 0xb12
+ 913              	#define CSR_MHPMCOUNTER19 0xb13
+ 914              	#define CSR_MHPMCOUNTER20 0xb14
+ 915              	#define CSR_MHPMCOUNTER21 0xb15
+ 916              	#define CSR_MHPMCOUNTER22 0xb16
+ 917              	#define CSR_MHPMCOUNTER23 0xb17
+ 918              	#define CSR_MHPMCOUNTER24 0xb18
+ 919              	#define CSR_MHPMCOUNTER25 0xb19
+ 920              	#define CSR_MHPMCOUNTER26 0xb1a
+ 921              	#define CSR_MHPMCOUNTER27 0xb1b
+ 922              	#define CSR_MHPMCOUNTER28 0xb1c
+ 923              	#define CSR_MHPMCOUNTER29 0xb1d
+ 924              	#define CSR_MHPMCOUNTER30 0xb1e
+ 925              	#define CSR_MHPMCOUNTER31 0xb1f
+ 926              	#define CSR_MHPMEVENT3 0x323
+ 927              	#define CSR_MHPMEVENT4 0x324
+ 928              	#define CSR_MHPMEVENT5 0x325
+ 929              	#define CSR_MHPMEVENT6 0x326
+ 930              	#define CSR_MHPMEVENT7 0x327
+ 931              	#define CSR_MHPMEVENT8 0x328
+ 932              	#define CSR_MHPMEVENT9 0x329
+ 933              	#define CSR_MHPMEVENT10 0x32a
+ 934              	#define CSR_MHPMEVENT11 0x32b
+ 935              	#define CSR_MHPMEVENT12 0x32c
+ 936              	#define CSR_MHPMEVENT13 0x32d
+ 937              	#define CSR_MHPMEVENT14 0x32e
+ 938              	#define CSR_MHPMEVENT15 0x32f
+ 939              	#define CSR_MHPMEVENT16 0x330
+ 940              	#define CSR_MHPMEVENT17 0x331
+ 941              	#define CSR_MHPMEVENT18 0x332
+ 942              	#define CSR_MHPMEVENT19 0x333
+ 943              	#define CSR_MHPMEVENT20 0x334
+ 944              	#define CSR_MHPMEVENT21 0x335
+ 945              	#define CSR_MHPMEVENT22 0x336
+ 946              	#define CSR_MHPMEVENT23 0x337
+ 947              	#define CSR_MHPMEVENT24 0x338
+ 948              	#define CSR_MHPMEVENT25 0x339
+ 949              	#define CSR_MHPMEVENT26 0x33a
+ 950              	#define CSR_MHPMEVENT27 0x33b
+ 951              	#define CSR_MHPMEVENT28 0x33c
+ 952              	#define CSR_MHPMEVENT29 0x33d
+ 953              	#define CSR_MHPMEVENT30 0x33e
+ 954              	#define CSR_MHPMEVENT31 0x33f
+ 955              	#define CSR_MVENDORID 0xf11
+ 956              	#define CSR_MARCHID 0xf12
+ 957              	#define CSR_MIMPID 0xf13
+ 958              	#define CSR_MHARTID 0xf14
+ 959              	#define CSR_CYCLEH 0xc80
+ 960              	#define CSR_TIMEH 0xc81
+ 961              	#define CSR_INSTRETH 0xc82
+ 962              	#define CSR_HPMCOUNTER3H 0xc83
+ 963              	#define CSR_HPMCOUNTER4H 0xc84
+ 964              	#define CSR_HPMCOUNTER5H 0xc85
+ 965              	#define CSR_HPMCOUNTER6H 0xc86
+ 966              	#define CSR_HPMCOUNTER7H 0xc87
+ 967              	#define CSR_HPMCOUNTER8H 0xc88
+ 968              	#define CSR_HPMCOUNTER9H 0xc89
+ 969              	#define CSR_HPMCOUNTER10H 0xc8a
+ 970              	#define CSR_HPMCOUNTER11H 0xc8b
+ 971              	#define CSR_HPMCOUNTER12H 0xc8c
+ 972              	#define CSR_HPMCOUNTER13H 0xc8d
+ 973              	#define CSR_HPMCOUNTER14H 0xc8e
+ 974              	#define CSR_HPMCOUNTER15H 0xc8f
+ 975              	#define CSR_HPMCOUNTER16H 0xc90
+ 976              	#define CSR_HPMCOUNTER17H 0xc91
+ 977              	#define CSR_HPMCOUNTER18H 0xc92
+ 978              	#define CSR_HPMCOUNTER19H 0xc93
+ 979              	#define CSR_HPMCOUNTER20H 0xc94
+ 980              	#define CSR_HPMCOUNTER21H 0xc95
+ 981              	#define CSR_HPMCOUNTER22H 0xc96
+ 982              	#define CSR_HPMCOUNTER23H 0xc97
+ 983              	#define CSR_HPMCOUNTER24H 0xc98
+ 984              	#define CSR_HPMCOUNTER25H 0xc99
+ 985              	#define CSR_HPMCOUNTER26H 0xc9a
+ 986              	#define CSR_HPMCOUNTER27H 0xc9b
+ 987              	#define CSR_HPMCOUNTER28H 0xc9c
+ 988              	#define CSR_HPMCOUNTER29H 0xc9d
+ 989              	#define CSR_HPMCOUNTER30H 0xc9e
+ 990              	#define CSR_HPMCOUNTER31H 0xc9f
+ 991              	#define CSR_MCYCLEH 0xb80
+ 992              	#define CSR_MINSTRETH 0xb82
+ 993              	#define CSR_MHPMCOUNTER3H 0xb83
+ 994              	#define CSR_MHPMCOUNTER4H 0xb84
+ 995              	#define CSR_MHPMCOUNTER5H 0xb85
+ 996              	#define CSR_MHPMCOUNTER6H 0xb86
+ 997              	#define CSR_MHPMCOUNTER7H 0xb87
+ 998              	#define CSR_MHPMCOUNTER8H 0xb88
+ 999              	#define CSR_MHPMCOUNTER9H 0xb89
+ 1000              	#define CSR_MHPMCOUNTER10H 0xb8a
+ 1001              	#define CSR_MHPMCOUNTER11H 0xb8b
+ 1002              	#define CSR_MHPMCOUNTER12H 0xb8c
+ 1003              	#define CSR_MHPMCOUNTER13H 0xb8d
+ 1004              	#define CSR_MHPMCOUNTER14H 0xb8e
+ 1005              	#define CSR_MHPMCOUNTER15H 0xb8f
+ 1006              	#define CSR_MHPMCOUNTER16H 0xb90
+ 1007              	#define CSR_MHPMCOUNTER17H 0xb91
+ 1008              	#define CSR_MHPMCOUNTER18H 0xb92
+ 1009              	#define CSR_MHPMCOUNTER19H 0xb93
+ 1010              	#define CSR_MHPMCOUNTER20H 0xb94
+ 1011              	#define CSR_MHPMCOUNTER21H 0xb95
+ 1012              	#define CSR_MHPMCOUNTER22H 0xb96
+ 1013              	#define CSR_MHPMCOUNTER23H 0xb97
+ 1014              	#define CSR_MHPMCOUNTER24H 0xb98
+ 1015              	#define CSR_MHPMCOUNTER25H 0xb99
+ 1016              	#define CSR_MHPMCOUNTER26H 0xb9a
+ 1017              	#define CSR_MHPMCOUNTER27H 0xb9b
+ 1018              	#define CSR_MHPMCOUNTER28H 0xb9c
+ 1019              	#define CSR_MHPMCOUNTER29H 0xb9d
+ 1020              	#define CSR_MHPMCOUNTER30H 0xb9e
+ 1021              	#define CSR_MHPMCOUNTER31H 0xb9f
+ 1022              	#define CAUSE_MISALIGNED_FETCH 0x0
+ 1023              	#define CAUSE_FETCH_ACCESS 0x1
+ 1024              	#define CAUSE_ILLEGAL_INSTRUCTION 0x2
+ 1025              	#define CAUSE_BREAKPOINT 0x3
+ 1026              	#define CAUSE_MISALIGNED_LOAD 0x4
+ 1027              	#define CAUSE_LOAD_ACCESS 0x5
+ 1028              	#define CAUSE_MISALIGNED_STORE 0x6
+ 1029              	#define CAUSE_STORE_ACCESS 0x7
+ 1030              	#define CAUSE_USER_ECALL 0x8
+ 1031              	#define CAUSE_SUPERVISOR_ECALL 0x9
+ 1032              	#define CAUSE_HYPERVISOR_ECALL 0xa
+ 1033              	#define CAUSE_MACHINE_ECALL 0xb
+ 1034              	#define CAUSE_FETCH_PAGE_FAULT 0xc
+ 1035              	#define CAUSE_LOAD_PAGE_FAULT 0xd
+ 1036              	#define CAUSE_STORE_PAGE_FAULT 0xf
+ 1037              	#endif
+  19              	#include "../common/mss_mtrap.h"
+   1              	/*
+   2              	    Copyright (c) 2013, The Regents of the University of California (Regents).
+   3              	    All Rights Reserved.
+   4              	
+   5              	    Redistribution and use in source and binary forms, with or without
+   6              	    modification, are permitted provided that the following conditions are met:
+   7              	    1. Redistributions of source code must retain the above copyright
+   8              	       notice, this list of conditions and the following disclaimer.
+   9              	    2. Redistributions in binary form must reproduce the above copyright
+  10              	       notice, this list of conditions and the following disclaimer in the
+  11              	       documentation and/or other materials provided with the distribution.
+  12              	    3. Neither the name of the Regents nor the
+  13              	       names of its contributors may be used to endorse or promote products
+  14              	       derived from this software without specific prior written permission.
+  15              	
+  16              	    IN NO EVENT SHALL REGENTS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+  17              	    SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  18              	    OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF REGENTS HAS
+  19              	    BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  20              	
+  21              	    REGENTS SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  22              	    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  23              	    PURPOSE. THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED
+  24              	    HEREUNDER IS PROVIDED "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE
+  25              	    MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  26              	*/
+  27              	
+  28              	/***********************************************************************************
+  29              	 * Record of Microchip changes
+  30              	 */
+  31              	#ifndef RISCV_MTRAP_H
+  32              	#define RISCV_MTRAP_H
+  33              	
+  34              	#ifdef __cplusplus
+  35              	extern "C" {
+  36              	#endif
+  37              	
+  38              	#ifndef __ASSEMBLER__
+  39              	#define read_const_csr(reg) ({ unsigned long __tmp; \
+  40              	  asm ("csrr %0, " #reg : "=r"(__tmp)); \
+  41              	  __tmp; })
+  42              	#endif
+  43              	
+  44              	#define IPI_SOFT          0x01
+  45              	#define IPI_FENCE_I       0x02
+  46              	#define IPI_SFENCE_VMA    0x04
+  47              	
+  48              	#define IRQ_M_BEU         0x80
+  49              	#define IRQ_M_LOCAL_MIN   16
+  50              	#define IRQ_M_LOCAL_MAX   63
+  51              	
+  52              	#define MACHINE_STACK_SIZE  (RISCV_PGSIZE)    /* this is 4k for HLS and 4k for the stack*/
+  53              	#define MENTRY_HLS_OFFSET   (INTEGER_CONTEXT_SIZE + SOFT_FLOAT_CONTEXT_SIZE)
+  54              	#define MENTRY_FRAME_SIZE   (MENTRY_HLS_OFFSET + HLS_SIZE)
+  55              	#define MENTRY_IPI_OFFSET   (MENTRY_HLS_OFFSET)
+  56              	#define MENTRY_IPI_PENDING_OFFSET (MENTRY_HLS_OFFSET + REGBYTES)
+  57              	
+  58              	#ifdef __riscv_flen
+  59              	# define SOFT_FLOAT_CONTEXT_SIZE (0)
+  60              	#else
+  61              	# define SOFT_FLOAT_CONTEXT_SIZE (8 * 32)
+  62              	#endif
+  63              	
+  64              	#define HLS_SIZE          (64)
+  65              	#define INTEGER_CONTEXT_SIZE (32 * REGBYTES)
+  66              	
+  20              	#include "system_startup_defs.h"
+   1              	/*******************************************************************************
+   2              	 * Copyright 2019-2022 Microchip FPGA Embedded Systems Solutions.
+   3              	 *
+   4              	 * SPDX-License-Identifier: MIT
+   5              	 *
+   6              	 * MPFS HAL Embedded Software
+   7              	 *
+   8              	*/
+   9              	
+  10              	/******************************************************************************
+  11              	 * @file system_startup_defs.h
+  12              	 * @author Microchip-FPGA Embedded Systems Solutions
+  13              	 * @brief Defines for the system_startup_defs.c
+  14              	 */
+  15              	
+  16              	#ifndef SYSTEM_STARTUP_DEFS_H
+  17              	#define SYSTEM_STARTUP_DEFS_H
+  18              	
+  19              	#ifdef __cplusplus
+  20              	extern "C" {
+  21              	#endif
+  22              	
+  23              	/*------------------------------------------------------------------------------
+  24              	 * Markers used to indicate startup status of hart
+  25              	 */
+  26              	#define HLS_MAIN_HART_STARTED               0x12344321U
+  27              	#define HLS_MAIN_HART_FIN_INIT              0x55555555U
+  28              	#define HLS_OTHER_HART_IN_WFI               0x12345678U
+  29              	#define HLS_OTHER_HART_PASSED_WFI           0x87654321U
+  30              	
+  31              	/*------------------------------------------------------------------------------
+  32              	 * Define the size of the HLS used
+  33              	 * In our HAL, we are using Hart Local storage for debug data storage only
+  34              	 * as well as flags for wfi instruction management.
+  35              	 * The TLS will take memory from top of the stack if allocated
+  36              	 *
+  37              	 */
+  38              	#if !defined (HLS_DEBUG_AREA_SIZE)
+  39              	#define HLS_DEBUG_AREA_SIZE     64
+  40              	#endif
+  21              	#include "mpfs_hal_config/mss_sw_config.h"
+   1              	/*******************************************************************************
+   2              	 * Copyright 2019-2022 Microchip FPGA Embedded Systems Solutions.
+   3              	 *
+   4              	 * SPDX-License-Identifier: MIT
+   5              	 *
+   6              	 * MPFS HAL Embedded Software
+   7              	 *
+   8              	 */
+   9              	
+  10              	/*******************************************************************************
+  11              	 *
+  12              	 * Platform definitions
+  13              	 * Version based on requirements of MPFS MSS
+  14              	 *
+  15              	 */
+  16              	 /*========================================================================*//**
+  17              	  @mainpage Sample file detailing how mss_sw_config.h should be constructed for
+  18              	    the MPFS MSS
+  19              	
+  20              	    @section intro_sec Introduction
+  21              	    The mss_sw_config.h has the default software configuration settings for the
+  22              	    MPFS HAL and will be located at
+  23              	    <Project-Name>/src/platform/platform_config_reference folder of the bare
+  24              	    metal SoftConsole project. The platform_config_reference is provided as a
+  25              	    default reference configuration.
+  26              	    When you want to configure the MPFS HAL with required configuration for
+  27              	    your project, the mss_sw_config.h must be edited and be placed in the
+  28              	    following project directory:
+  29              	    <Project-Name>/src/boards/<your-board>/platform_config/mpfs_hal_config/
+  30              	
+  31              	    @section
+  32              	
+  33              	*//*==========================================================================*/
+  34              	
+  35              	
+  36              	#ifndef MSS_SW_CONFIG_H_
+  37              	#define MSS_SW_CONFIG_H_
+  38              	
+  39              	/*
+  40              	 * MPFS_HAL_FIRST_HART and MPFS_HAL_LAST_HART defines are used to specify which
+  41              	 * harts to actually start. The value and the actual hart it represents are
+  42              	 * listed below:
+  43              	 * value  hart
+  44              	 *    0  E51
+  45              	 *    1  U54_1
+  46              	 *    2  U54_2
+  47              	 *    3  U54_3
+  48              	 *    4  U54_4
+  49              	 * Set MPFS_HAL_FIRST_HART to a value greater than 0 if you do not want your
+  50              	 * application to start and execute code on the harts represented by smaller
+  51              	 * value numbers.
+  52              	 * Set MPFS_HAL_LAST_HART to a value smaller than 4 if you do not wish to use
+  53              	 * all U54_x harts.
+  54              	 * Harts that are not started will remain in an infinite WFI loop unless used
+  55              	 * through some other method.
+  56              	 * The value of MPFS_HAL_FIRST_HART must always be less than MPFS_HAL_LAST_HART.
+  57              	 * The value of MPFS_HAL_LAST_HART must never be greater than 4.
+  58              	 * A typical use-case where you set MPFS_HAL_FIRST_HART = 1 and
+  59              	 * MPFS_HAL_LAST_HART = 1 is when
+  60              	 * your application is running on U54_1 and a bootloader running on E51 loads
+  61              	 * your application to the target memory and kicks-off U54_1 to run it.
+  62              	 */
+  63              	#ifndef MPFS_HAL_FIRST_HART
+  64              	#define MPFS_HAL_FIRST_HART  0
+  65              	#endif
+  66              	
+  67              	#ifndef MPFS_HAL_LAST_HART
+  68              	#define MPFS_HAL_LAST_HART   4
+  69              	#endif
+  70              	
+  71              	/*
+  72              	 * IMAGE_LOADED_BY_BOOTLOADER
+  73              	 * We set IMAGE_LOADED_BY_BOOTLOADER = 0 if the application image runs from
+  74              	 * non-volatile memory after reset. (No previous stage bootloader is used.)
+  75              	 * Set IMAGE_LOADED_BY_BOOTLOADER = 1 if the application image is loaded by a
+  76              	 * previous stage bootloader.
+  77              	 *
+  78              	 * MPFS_HAL_HW_CONFIG is defined if we are a boot-loader. This is a
+  79              	 * conditional compile switch is used to determine if MPFS HAL will perform the
+  80              	 * hardware configurations or not.
+  81              	 * Defined      => This program acts as a First stage bootloader and performs
+  82              	 *                 hardware configurations.
+  83              	 * Not defined  => This program assumes that the hardware configurations are
+  84              	 *                 already performed (Typically by a previous boot stage)
+  85              	 *
+  86              	 * List of items initialised when MPFS_HAL_HW_CONFIG is enabled
+  87              	 * - load virtual rom (see load_virtual_rom(void) in system_startup.c)
+  88              	 * - l2 cache config
+  89              	 * - Bus error unit config
+  90              	 * - MPU config
+  91              	 * - pmp config
+  92              	 * - I/O, clock and clock mux's, DDR and SGMII
+  93              	 * - will start other harts, see text describing MPFS_HAL_FIRST_HART,
+  94              	 *   MPFS_HAL_LAST_HART above
+  95              	 *
+  96              	 */
+  97              	#define IMAGE_LOADED_BY_BOOTLOADER 0
+  98              	#if (IMAGE_LOADED_BY_BOOTLOADER == 0)
+  99              	#define MPFS_HAL_HW_CONFIG
+ 100              	#endif
+ 101              	
+ 102              	
+ 103              	/*
+ 104              	 * If you are using common memory for sharing across harts,
+ 105              	 * uncomment #define MPFS_HAL_SHARED_MEM_ENABLED
+ 106              	 * make sure common memory is allocated in the linker script
+ 107              	 * See app_hart_common mem section in the example platform
+ 108              	 * linker scripts.
+ 109              	 */
+ 110              	
+ 111              	#define MPFS_HAL_SHARED_MEM_ENABLED
+ 112              	
+ 113              	
+ 114              	/* define the required tick rate in Milliseconds */
+ 115              	/* if this program is running on one hart only, only that particular hart value
+ 116              	 * will be used */
+ 117              	#define HART0_TICK_RATE_MS  100UL
+ 118              	#define HART1_TICK_RATE_MS  5UL
+ 119              	#define HART2_TICK_RATE_MS  5UL
+ 120              	#define HART3_TICK_RATE_MS  5UL
+ 121              	#define HART4_TICK_RATE_MS  5UL
+ 122              	
+ 123              	/*
+ 124              	 * Define the size of the Hart Local Storage (HLS).
+ 125              	 * In the MPFS HAL, we are using HLS for debug data storage during the initial
+ 126              	 * boot phase.
+ 127              	 * This includes the flags which indicate the hart state regarding boot state.
+ 128              	 * The HLS will take memory from top of each stack allocated at boot time.
+ 129              	 *
+ 130              	 */
+ 131              	#define HLS_DEBUG_AREA_SIZE     64
+ 132              	
+ 133              	/*
+ 134              	 * Bus Error Unit (BEU) configurations
+ 135              	 * BEU_ENABLE => Configures the events that the BEU can report. bit value
+ 136              	 *               1= enabled, 0 = disabled.
+ 137              	 * BEU_PLIC_INT => Configures which accrued events should generate an
+ 138              	 *                 interrupt to the PLIC.
+ 139              	 * BEU_LOCAL_INT => Configures which accrued events should generate a
+ 140              	 *                 local interrupt to the hart on which the event accrued.
+ 141              	 */
+ 142              	#define BEU_ENABLE                  0x0ULL
+ 143              	#define BEU_PLIC_INT                0x0ULL
+ 144              	#define BEU_LOCAL_INT               0x0ULL
+ 145              	
+ 146              	/*
+ 147              	 * Clear memory on startup
+ 148              	 * 0 => do not clear DTIM and L2
+ 149              	 * 1 => Clears memory
+ 150              	 * Note: If you are the zero stage bootloader, set this to one.
+ 151              	 */
+ 152              	#ifndef MPFS_HAL_CLEAR_MEMORY
+ 153              	#define MPFS_HAL_CLEAR_MEMORY  1
+ 154              	#endif
+ 155              	
+ 156              	/*
+ 157              	 * We sometimes want to know which board we are compiling
+ 158              	 * enable define for particular board you are using if you are using this switch
+ 159              	 * in your application code
+ 160              	 */
+ 161              	//#define DDR_BASE_BOARD
+ 162              	
+ 163              	/*
+ 164              	 * Comment out the lines to disable the corresponding hardware support not required
+ 165              	 * in your application.
+ 166              	 * This is not necessary from an operational point of view as operation dictated
+ 167              	 * by MSS configurator settings, and items are enabled/disabled by this method.
+ 168              	 * The reason you may want to use below is to save code space.
+ 169              	 */
+ 170              	#define SGMII_SUPPORT
+ 171              	#define DDR_SUPPORT
+ 172              	#define MSSIO_SUPPORT
+ 173              	
+  22              	
+  23              	#define NUM_CACHEWAYS_AT_RESET 1
+  24              	
+  25              	  .option norvc
+  26              	  .section .text.init,"ax", %progbits
+  27              	  .globl reset_vector
+  28              	  .globl _start
+  29              	
+  30              	reset_vector:
+  31              	_start:
+  32              	#if (IMAGE_LOADED_BY_BOOTLOADER == 0)
+  33              	    /*
+  34              	     * clear the Return Address Stack
+  35              	     */
+  36 0000 97000000 	    call .clear_ras
+  36      E7800000 
+  37              	    /* Setup trap handler */
+  38 0008 17070000 	    la a4, trap_vector
+  38      13070700 
+  39 0010 73105730 	    csrw mtvec, a4          # initalise machine trap vector address
+  40              	    /* Make sure that mtvec is updated before continuing */
+  41              	    1:
+  42 0014 F3275030 	    csrr    a5, mtvec
+  43 0018 E31EF7FE 	    bne a4, a5, 1b
+  44              	    /* Disable and clear all interrupts */
+  45 001c 13068000 	    li a2,  MSTATUS_MIE
+  46 0020 73300630 	    csrc mstatus, a2        # clear interrupt enable bit
+  47 0024 73104030 	    csrw mie, zero
+  48 0028 73104034 	    csrw mip, zero
+  49              	    # Init delegation registers, mideleg, medeleg, if a U54
+  50              	    # These are not initialised by the hardware and come up in a random state
+  51 002c 732540F1 	    csrr a0, mhartid
+  52 0030 63060500 	    beqz a0, .skip_e51
+  53 0034 73503030 	    csrw mideleg, 0
+  54 0038 73502030 	    csrw medeleg, 0
+  55              	.skip_e51:
+  56              	    # mscratch must be init to zero- we are not using scratch memory
+  57 003c 73100034 	    csrw mscratch, zero
+  58 0040 73102034 	    csrw mcause, zero
+  59 0044 73101034 	    csrw mepc, zero
+  60              	    /*
+  61              	     * clear PMP enables
+  62              	     */
+  63 0048 7310003A 	    csrw pmpcfg0, zero
+  64 004c 7310203A 	    csrw pmpcfg2, zero
+  65              	    /*
+  66              	     * clear regs
+  67              	     */
+  68 0050 93000000 	    li  x1, 0
+  69 0054 13010000 	    li  x2, 0
+  70 0058 93010000 	    li  x3, 0
+  71 005c 13020000 	    li  x4, 0
+  72 0060 93020000 	    li  x5, 0
+  73 0064 13030000 	    li  x6, 0
+  74 0068 93030000 	    li  x7, 0
+  75 006c 13040000 	    li  x8, 0
+  76 0070 93040000 	    li  x9, 0
+  77 0074 13050000 	    li  x10,0
+  78 0078 93050000 	    li  x11,0
+  79 007c 13060000 	    li  x12,0
+  80 0080 93060000 	    li  x13,0
+  81 0084 13070000 	    li  x14,0
+  82 0088 93070000 	    li  x15,0
+  83 008c 13080000 	    li  x16,0
+  84 0090 93080000 	    li  x17,0
+  85 0094 13090000 	    li  x18,0
+  86 0098 93090000 	    li  x19,0
+  87 009c 130A0000 	    li  x20,0
+  88 00a0 930A0000 	    li  x21,0
+  89 00a4 130B0000 	    li  x22,0
+  90 00a8 930B0000 	    li  x23,0
+  91 00ac 130C0000 	    li  x24,0
+  92 00b0 930C0000 	    li  x25,0
+  93 00b4 130D0000 	    li  x26,0
+  94 00b8 930D0000 	    li  x27,0
+  95 00bc 130E0000 	    li  x28,0
+  96 00c0 930E0000 	    li  x29,0
+  97 00c4 130F0000 	    li  x30,0
+  98 00c8 930F0000 	    li  x31,0
+  99              	
+ 100              	    # enable FPU and accelerator if present, setting ignored on E51
+ 101 00cc B7E20100 	    li t0, MSTATUS_FS | MSTATUS_XS
+ 102 00d0 73A00230 	    csrs mstatus, t0
+ 103              	
+ 104              	    # Init floating point control register to zero
+ 105              	    # skip if e51
+ 106 00d4 732540F1 	    csrr a0, mhartid
+ 107 00d8 63040500 	    beqz a0, .no_float
+ 108              	#ifdef __riscv_flen
+ 109 00dc 73103000 	    fscsr x0
+ 110              	#endif
+ 111              	.no_float:
+ 112              	
+ 113              	     # make sure XLEN agrees with compilation choice, if not will loop here
+ 114              	.LxlenCheck:
+ 115 00e0 F3221030 	    csrr t0, misa
+ 116              	#if __riscv_xlen == 64
+ 117 00e4 63C40200 	    bltz t0, .LxlenPass
+ 118              	#else
+ 119              	    bgez t0, .LxlenPass
+ 120              	#endif
+ 121 00e8 6FF09FFF 	    j .LxlenCheck
+ 122              	.LxlenPass:
+ 123              	
+ 124              	    # initialize global pointer, global data
+ 125              	    # The __global_pointer is allocated in the linker script. It points to a
+ 126              	    # location 2k after sdata start as the offsets used in the gp are +/- 2k
+ 127              	    # See https://www.sifive.com/blog/2017/08/28/all-aboard-part-3-linker-relaxation-in-riscv-toolc
+ 128              	    # see: http://www.rowleydownload.co.uk/arm/documentation/gnu/as/RISC_002dV_002dDirectives.html
+ 129              	    .option push
+ 130              	    .option norelax
+ 131 00ec 97010000 	    la gp, __global_pointer$
+ 131      93810100 
+ 132              	    .option pop
+ 133              	
+ 134              	    # get core id
+ 135 00f4 732540F1 	    csrr a0, mhartid
+ 136 00f8 93050000 	    li a1,  0
+ 137 00fc 6302B502 	    beq a0, a1, .hart0
+ 138 0100 93051000 	    li a1,  1
+ 139 0104 6308B502 	    beq a0, a1, .hart1
+ 140 0108 93052000 	    li a1,  2
+ 141 010c 630EB502 	    beq a0, a1, .hart2
+ 142 0110 93053000 	    li a1,  3
+ 143 0114 6304B504 	    beq a0, a1, .hart3
+ 144 0118 93054000 	    li a1,  4
+ 145 011c 630AB504 	    beq a0, a1, .hart4
+ 146              	
+ 147              	.hart0:
+ 148 0120 17070000 	    la a4, __stack_bottom_h0$  # keep bottom of stack in a5 so we can init later
+ 148      13070700 
+ 149 0128 17010000 	    la sp, __stack_top_h0$
+ 149      13010100 
+ 150 0130 6F000005 	    j .continue
+ 151              	.hart1:
+ 152 0134 17070000 	    la a4, __stack_bottom_h1$  # keep bottom of stack in a5 so we can init later
+ 152      13070700 
+ 153 013c 17010000 	    la sp, __stack_top_h1$
+ 153      13010100 
+ 154 0144 6F00C003 	    j .continue
+ 155              	.hart2:
+ 156 0148 17070000 	    la a4, __stack_bottom_h2$  # keep bottom of stack in a5 so we can init later
+ 156      13070700 
+ 157 0150 17010000 	    la sp, __stack_top_h2$
+ 157      13010100 
+ 158 0158 6F008002 	    j .continue
+ 159              	.hart3:
+ 160 015c 17070000 	    la a4, __stack_bottom_h3$  # keep bottom of stack in a5 so we can init later
+ 160      13070700 
+ 161 0164 17010000 	    la sp, __stack_top_h3$
+ 161      13010100 
+ 162 016c 6F004001 	    j .continue
+ 163              	.hart4:
+ 164 0170 17070000 	    la a4, __stack_bottom_h4$  # keep bottom of stack in a5 so we can init later
+ 164      13070700 
+ 165 0178 17010000 	    la sp, __stack_top_h4$
+ 165      13010100 
+ 166              	
+ 167              	.continue:
+ 168              	    # clear HLS and stack
+ 169 0180 93070100 	    mv  a5, sp
+ 170              	.init_stack:
+ 171              	    #csrw mepc, zero
+ 172 0184 23300700 	    STORE x0, 0(a4)
+ 173 0188 13078700 	    add a4, a4, __SIZEOF_POINTER__
+ 174 018c E34CF7FE 	    blt a4, a5, .init_stack
+ 175              	    # Allocate some space at top of stack for the HLS
+ 176 0190 130101FC 	    addi sp, sp, -HLS_DEBUG_AREA_SIZE
+ 177              	    # HLS grows up from new top of stack
+ 178 0194 13020100 	    mv tp, sp
+ 179              	    # get core id
+ 180 0198 732540F1 	    csrr a0, mhartid
+ 181 019c 93050000 	    li a1, MPFS_HAL_FIRST_HART
+ 182 01a0 6316B50A 	    bne a0, a1, .LOtherHartstoWFI
+ 183              	    #
+ 184              	    # clear DTIM - this is required to stop memory errors on initial access by
+ 185              	    # cache
+ 186              	    # Also, stops x propagation in simulation, when cache/stack reads unused
+ 187              	    # area
+ 188              	    #
+ 189 01a4 13061000 	    li a2, MPFS_HAL_CLEAR_MEMORY
+ 190 01a8 630AC000 	    beq x0, a2, .skip_mem_clear
+ 191 01ac 97000000 	    call    .clear_dtim
+ 191      E7800000 
+ 192 01b4 97000000 	    call    .clear_l2lim
+ 192      E7800000 
+ 193              	.skip_mem_clear:
+ 194 01bc 13051000 	    li  a0, NUM_CACHEWAYS_AT_RESET    # flush default way in case it has already
+ 195              	                                      # been used by system controller loader
+ 196              	                                      # (bootmode2 or 3)
+ 197 01c0 97000000 	    call    .flush_early_caching
+ 197      E7800000 
+ 198 01c8 97000000 	    call    config_l2_cache
+ 198      E7800000 
+ 199 01d0 97000000 	    call    end_l2_scratchpad_address  # end address returned in a0
+ 199      E7800000 
+ 200 01d8 97000000 	    call    .clear_scratchpad
+ 200      E7800000 
+ 201              	    # place pattern in the common heap
+ 202 01e0 17070000 	    la  a4, __heap_start
+ 202      13070700 
+ 203 01e8 97070000 	    la  a5, __heap_end
+ 203      93870700 
+ 204              	.init_heap:
+ 205 01f0 23300700 	    STORE x0, 0(a4)
+ 206 01f4 13078700 	    add a4, a4, __SIZEOF_POINTER__
+ 207 01f8 E34CF7FE 	    blt a4, a5, .init_heap
+ 208              	    /*
+ 209              	     * Clear bus error unit accrued register on start-up
+ 210              	     * This is cleared by the first hart only
+ 211              	     */
+ 212 01fc 37077001 	    la a4,0x01700020UL
+ 212      1B070702 
+ 213 0204 23000700 	    sb   x0, 0(a4)
+ 214 0208 37177001 	    la a4,0x01701020UL
+ 214      1B070702 
+ 215 0210 23000700 	    sb   x0, 0(a4)
+ 216 0214 37277001 	    la a4,0x01702020UL
+ 216      1B070702 
+ 217 021c 23000700 	    sb   x0, 0(a4)
+ 218 0220 37377001 	    la a4,0x01703020UL
+ 218      1B070702 
+ 219 0228 23000700 	    sb   x0, 0(a4)
+ 220 022c 37477001 	    la a4,0x01704020UL
+ 220      1B070702 
+ 221 0234 23000700 	    sb   x0, 0(a4)
+ 222              	    # now core MPFS_HAL_FIRST_HART jumps to main_first_hart
+ 223              	.main_hart:
+ 224              	    # pass HLS address
+ 225 0238 13050200 	    mv  a0, tp
+ 226 023c 6FF05FDC 	    j main_first_hart
+ 227              	.LoopForeverMain:
+ 228              	    #in case of return, loop forever. nop's added so can be seen in debugger
+ 229 0240 13000000 	    nop
+ 230 0244 13000000 	    nop
+ 231 0248 6FF09FFF 	    j .LoopForeverMain
+ 232              	
+ 233              	.LOtherHartstoWFI:
+ 234 024c 13068000 	    li a2,  MSTATUS_MIE
+ 235 0250 73300630 	    csrc mstatus, a2       # clear interrupt enable bit
+ 236 0254 73104030 	    csrw mie, zero
+ 237 0258 73104034 	    csrw mip, zero
+ 238 025c 13068000 	    li a2, MIP_MSIP
+ 239 0260 73104630 	    csrw mie, a2           # Set MSIE bit to receive IPI. This needs to be
+ 240              	                           # enabled- otherwise stays in wfi.
+ 241              	                           # Other interrupts appera to bring out of wfi,even if
+ 242              	                           # not enabled.
+ 243              	    #
+ 244              	    # Wait here until main hart is up and running
+ 245              	    #
+ 246 0264 B7463412 	    li a3, HLS_MAIN_HART_STARTED
+ 246      9B861632 
+ 247 026c 97050000 	    la a1, (__stack_top_h0$ - HLS_DEBUG_AREA_SIZE)
+ 247      93850500 
+ 248              	.wait_main_hart:
+ 249 0274 03E60500 	    LWU a2, 0(a1)
+ 250 0278 E39EC6FE 	    bne a3, a2, .wait_main_hart
+ 251              	    # Flag we are here to the main hart
+ 252 027c B7553412 	    li a1, HLS_OTHER_HART_IN_WFI
+ 252      9B858567 
+ 253 0284 2320B200 	    sw a1, 0(tp)
+ 254              	    /* flush the instruction cache */
+ 255 0288 0F100000 	    fence.i
+ 256              	.LwaitOtherHart:
+ 257              	    # We assume wfi instruction will be run before main hart attampts to take
+ 258              	    # out of wfi
+ 259 028c 73005010 	    wfi
+ 260              	    # Only start if MIP_MSIP is set - the wfi will ensure this, but adding
+ 261              	    # breakpoints in the debugger (halt)
+ 262              	    # will wakeup wfi, so the following code will make sure we remain here until
+ 263              	    # we get a software interrupt
+ 264 0290 73264034 	    csrr a2, mip
+ 265 0294 13768600 	    andi a2, a2, MIP_MSIP
+ 266 0298 E30A06FE 	    beqz a2, .LwaitOtherHart
+ 267              	    /* Disable and clear all interrupts- should be only a sw interrupt */
+ 268 029c 13068000 	    li a2,  MSTATUS_MIE
+ 269 02a0 73300630 	    csrc mstatus, a2        # clear interrupt enable bit
+ 270 02a4 73104030 	    csrw mie, zero
+ 271 02a8 73104034 	    csrw mip, zero
+ 272              	    # set marker as to where we are
+ 273 02ac B7250200 	    li a1, HLS_OTHER_HART_PASSED_WFI
+ 273      9B8555D9 
+ 273      9395E500 
+ 273      93851532 
+ 274 02bc 2320B200 	    sw a1, 0(tp)
+ 275              	    # pass HLS address
+ 276 02c0 13050200 	    mv  a0, tp
+ 277 02c4 6FF0DFD3 	    j main_other_hart
+ 278              	.LoopForeverOther:
+ 279              	    #in case of return, loop forever. nop's added so can be seen in debugger
+ 280 02c8 13000000 	    nop
+ 281 02cc 13000000 	    nop
+ 282 02d0 6FF09FFF 	    j .LoopForeverOther
+ 283              	
+ 284              	#else   /* IMAGE_LOADED_BY_BOOTLOADER == 1 */
+ 285              	/*******************************************************************************
+ 286              	 *The program has been loaded by a bootloader
+ 287              	 * a0 - contains the hart ID
+ 288              	 * a1 - contains pointer to bootloader -Hart Local Storage, for this hart.
+ 289              	 */
+ 290              	_start_non_bootloader_amp_image:
+ 291              	    /* Setup trap handler */
+ 292              	    la a4, trap_vector
+ 293              	    csrw mtvec, a4          # initalise machine trap vector address
+ 294              	    /* Make sure that mtvec is updated before continuing */
+ 295              	    1:
+ 296              	    csrr    a5, mtvec
+ 297              	    bne a4, a5, 1b
+ 298              	    /* assume ints in init state */
+ 299              	    /* assume PMP's set as required */
+ 300              	    # enable FPU and accelerator if present, setting ignored on E51
+ 301              	    li t0, MSTATUS_FS | MSTATUS_XS
+ 302              	    csrs mstatus, t0
+ 303              	
+ 304              	    # Init floating point control register to zero
+ 305              	    # skip if e51
+ 306              	    csrr a0, mhartid
+ 307              	    beqz a0, .no_float
+ 308              	#ifdef __riscv_flen
+ 309              	    fscsr x0
+ 310              	#endif
+ 311              	.no_float:
+ 312              	
+ 313              	     # make sure XLEN agrees with compilation choice, if not will loop here
+ 314              	.LxlenCheck:
+ 315              	    csrr t0, misa
+ 316              	#if __riscv_xlen == 64
+ 317              	    bltz t0, .LxlenPass
+ 318              	#else
+ 319              	    bgez t0, .LxlenPass
+ 320              	#endif
+ 321              	    j .LxlenCheck
+ 322              	.LxlenPass:
+ 323              	
+ 324              	    # initialize global pointer, global data
+ 325              	    # The __global_pointer is allocated in the linker script. It points to a
+ 326              	    # location 2k after sdata start as the offsets used in the gp are +/- 2k
+ 327              	    # See https://www.sifive.com/blog/2017/08/28/all-aboard-part-3-linker-relaxation-in-riscv-toolc
+ 328              	    # see: http://www.rowleydownload.co.uk/arm/documentation/gnu/as/RISC_002dV_002dDirectives.html
+ 329              	    .option push
+ 330              	    .option norelax
+ 331              	    la gp, __global_pointer$
+ 332              	    .option pop
+ 333              	
+ 334              	    # get core id
+ 335              	    csrr a0, mhartid
+ 336              	    li a1,  0
+ 337              	    beq a0, a1, .hart0
+ 338              	    li a1,  1
+ 339              	    beq a0, a1, .hart1
+ 340              	    li a1,  2
+ 341              	    beq a0, a1, .hart2
+ 342              	    li a1,  3
+ 343              	    beq a0, a1, .hart3
+ 344              	    li a1,  4
+ 345              	    beq a0, a1, .hart4
+ 346              	
+ 347              	.hart0:
+ 348              	    la a4, __stack_bottom_h0$  # keep bottom of stack in a5 so we can init later
+ 349              	    la sp, __stack_top_h0$
+ 350              	    j .continue
+ 351              	.hart1:
+ 352              	    la a4, __stack_bottom_h1$  # keep bottom of stack in a5 so we can init later
+ 353              	    la sp, __stack_top_h1$
+ 354              	    j .continue
+ 355              	.hart2:
+ 356              	    la a4, __stack_bottom_h2$  # keep bottom of stack in a5 so we can init later
+ 357              	    la sp, __stack_top_h2$
+ 358              	    j .continue
+ 359              	.hart3:
+ 360              	    la a4, __stack_bottom_h3$  # keep bottom of stack in a5 so we can init later
+ 361              	    la sp, __stack_top_h3$
+ 362              	    j .continue
+ 363              	.hart4:
+ 364              	    la a4, __stack_bottom_h4$  # keep bottom of stack in a5 so we can init later
+ 365              	    la sp, __stack_top_h4$
+ 366              	
+ 367              	.continue:
+ 368              	    # clear HLS and stack
+ 369              	    mv  a5, sp
+ 370              	.init_stack:
+ 371              	    #csrw mepc, zero
+ 372              	    STORE x0, 0(a4)
+ 373              	    add a4, a4, __SIZEOF_POINTER__
+ 374              	    blt a4, a5, .init_stack
+ 375              	    # Allocate some space at top of stack for the HLS
+ 376              	    addi sp, sp, -HLS_DEBUG_AREA_SIZE
+ 377              	    # HLS grows up from new top of stack
+ 378              	    mv tp, sp
+ 379              	    # get core id
+ 380              	    csrr a0, mhartid
+ 381              	    li a1, MPFS_HAL_FIRST_HART
+ 382              	    bne a0, a1, .LOtherHartstoWFI
+ 383              	    # clear the common heap
+ 384              	    la  a4, __heap_start
+ 385              	    la  a5, __heap_end
+ 386              	.init_heap:
+ 387              	    #csrw mepc, zero
+ 388              	    STORE x0, 0(a4)
+ 389              	    add a4, a4, __SIZEOF_POINTER__
+ 390              	    blt a4, a5, .init_heap
+ 391              	    # now core MPFS_HAL_FIRST_HART jumps to main_first_hart
+ 392              	.main_hart:
+ 393              	    # pass HLS address
+ 394              	    mv  a0, tp
+ 395              	    j main_first_hart_app
+ 396              	.LoopForeverMain:
+ 397              	    #in case of return, loop forever. nop's added so can be seen in debugger
+ 398              	    nop
+ 399              	    nop
+ 400              	    j .LoopForeverMain
+ 401              	
+ 402              	.LOtherHartstoWFI:
+ 403              	    li a2,  MSTATUS_MIE
+ 404              	    csrc mstatus, a2       # clear interrupt enable bit
+ 405              	    csrw mie, zero
+ 406              	    csrw mip, zero
+ 407              	    li a2, MIP_MSIP
+ 408              	    csrw mie, a2           # Set MSIE bit to receive IPI. This needs to be
+ 409              	                           # enabled- otherwise stays in wfi.
+ 410              	                           # Other interrupts appera to bring out of wfi,even if
+ 411              	                           # not enabled.
+ 412              	    #
+ 413              	    # Wait here until main hart is up and running
+ 414              	    #
+ 415              	    # get core id
+ 416              	    la a2, MPFS_HAL_FIRST_HART
+ 417              	    li a3,  0
+ 418              	    beq a3, a2, .main_hart0
+ 419              	    li a3,  1
+ 420              	    beq a3, a2, .main_hart1
+ 421              	    li a3,  2
+ 422              	    beq a3, a2, .main_hart2
+ 423              	    li a3,  3
+ 424              	    beq a3, a2, .main_hart3
+ 425              	    li a3,  4
+ 426              	    beq a3, a2, .main_hart4
+ 427              	
+ 428              	.main_hart0:
+ 429              	    la a4, (__stack_top_h0$ - HLS_DEBUG_AREA_SIZE)
+ 430              	    j  1f
+ 431              	.main_hart1:
+ 432              	    la a4, (__stack_top_h1$ - HLS_DEBUG_AREA_SIZE)
+ 433              	    j  1f
+ 434              	.main_hart2:
+ 435              	    la a4, (__stack_top_h2$ - HLS_DEBUG_AREA_SIZE)
+ 436              	    j  1f
+ 437              	.main_hart3:
+ 438              	    la a4, (__stack_top_h3$ - HLS_DEBUG_AREA_SIZE)
+ 439              	    j  1f
+ 440              	.main_hart4:
+ 441              	    la a4, (__stack_top_h4$ - HLS_DEBUG_AREA_SIZE)
+ 442              	1:
+ 443              	    li a3, HLS_MAIN_HART_STARTED
+ 444              	.wait_main_hart:
+ 445              	    LWU a2, 0(a4)
+ 446              	    bne a3, a2, .wait_main_hart
+ 447              	    # Flag we are here to the main hart
+ 448              	    li a1, HLS_OTHER_HART_IN_WFI
+ 449              	    sw a1, 0(tp)
+ 450              	    /* flush the instruction cache */
+ 451              	    fence.i
+ 452              	.LwaitOtherHart:
+ 453              	    # We assume wfi instruction will be run before main hart attampts to take
+ 454              	    # out of wfi
+ 455              	    wfi
+ 456              	    # Only start if MIP_MSIP is set - the wfi will ensure this, but adding
+ 457              	    # breakpoints in the debugger (halt)
+ 458              	    # will wakeup wfi, so the following code will make sure we remain here until
+ 459              	    # we get a software interrupt
+ 460              	    csrr a2, mip
+ 461              	    andi a2, a2, MIP_MSIP
+ 462              	    beqz a2, .LwaitOtherHart
+ 463              	    /* Disable and clear all interrupts- should be only a sw interrupt */
+ 464              	    li a2,  MSTATUS_MIE
+ 465              	    csrc mstatus, a2        # clear interrupt enable bit
+ 466              	    csrw mie, zero
+ 467              	    csrw mip, zero
+ 468              	    # set marker as to where we are
+ 469              	    li a1, HLS_OTHER_HART_PASSED_WFI
+ 470              	    sw a1, 0(tp)
+ 471              	    # pass HLS address
+ 472              	    mv  a0, tp
+ 473              	    j main_other_hart
+ 474              	.LoopForeverOther:
+ 475              	    #in case of return, loop forever. nop's added so can be seen in debugger
+ 476              	    nop
+ 477              	    nop
+ 478              	    j .LoopForeverOther
+ 479              	
+ 480              	#endif /* IMAGE_LOADED_BY_BOOTLOADER == 0 */
+ 481              	
+ 482              	/******************************************************************************/
+ 483              	/******************************interrupt handeling below here******************/
+ 484              	/******************************************************************************/
+ 485              	
+ 486              	trap_vector:
+ 487              	#if defined USING_FREERTOS
+ 488              	    addi    sp, sp, -REGBYTES /* Save t0 for now */
+ 489              	    STORE   t0, 0x0(sp)
+ 490              	    csrr  t0, mcause
+ 491              	    bge   t0,x0,.Le51_other  /* Not an interrupt... */
+ 492              	    slli  t0,t0,1
+ 493              	    srli  t0,t0,1
+ 494              	    addi  t0,t0,-7
+ 495              	    bne   t0,x0,.Le51_other /* Not Timer interrupt... */
+ 496              	    /* Interrupt is timer interrupt so let FreeRTOS handle it */
+ 497              	    LOAD    t0, 0x0(sp)     # Restore t0 for proper context save by FreeRTOS
+ 498              	    addi    sp, sp, REGBYTES
+ 499              	    j       TIMER_CMP_INT
+ 500              	    mret
+ 501              	
+ 502              	.Le51_other:                # Re-enter mainline here if not timer interrupt
+ 503              	    LOAD    t0, 0x0(sp)       # Restore t0 for proper context save by HAL
+ 504              	    addi    sp, sp, REGBYTES
+ 505              	#endif
+ 506              	    # The mscratch register is an XLEN-bit read/write register dedicated for use by machine mode.
+ 507              	    # Typically, it is used to hold a pointer to a machine-mode hart-local context space and swappe
+ 508              	    # with a user register upon entry to an M-mode trap handler.
+ 509              	    # In this implementation, we are noty using HLS
+ 510              	    # csrrw sp, mscratch, sp                    #copy sp to mscratch, and mscrath to sp
+ 511              	
+ 512 02d4 130101F0 	    addi sp, sp, -INTEGER_CONTEXT_SIZE     # moves sp down stack to make I
+ 513              	                                           # INTEGER_CONTEXT_SIZE area
+ 514              	    # Preserve the registers.
+ 515 02d8 23382100 	    STORE sp, 2*REGBYTES(sp)               # sp
+ 516 02dc 2338A104 	    STORE a0, 10*REGBYTES(sp)              # save a0,a1 in the created CONTEXT
+ 517 02e0 233CB104 	    STORE a1, 11*REGBYTES(sp)
+ 518 02e4 23341100 	    STORE ra, 1*REGBYTES(sp)
+ 519 02e8 233C3100 	    STORE gp, 3*REGBYTES(sp)
+ 520 02ec 23304102 	    STORE tp, 4*REGBYTES(sp)
+ 521 02f0 23345102 	    STORE t0, 5*REGBYTES(sp)
+ 522 02f4 23386102 	    STORE t1, 6*REGBYTES(sp)
+ 523 02f8 233C7102 	    STORE t2, 7*REGBYTES(sp)
+ 524 02fc 23308104 	    STORE s0, 8*REGBYTES(sp)
+ 525 0300 23349104 	    STORE s1, 9*REGBYTES(sp)
+ 526 0304 2330C106 	    STORE a2,12*REGBYTES(sp)
+ 527 0308 2334D106 	    STORE a3,13*REGBYTES(sp)
+ 528 030c 2338E106 	    STORE a4,14*REGBYTES(sp)
+ 529 0310 233CF106 	    STORE a5,15*REGBYTES(sp)
+ 530 0314 23300109 	    STORE a6,16*REGBYTES(sp)
+ 531 0318 23341109 	    STORE a7,17*REGBYTES(sp)
+ 532 031c 23382109 	    STORE s2,18*REGBYTES(sp)
+ 533 0320 233C3109 	    STORE s3,19*REGBYTES(sp)
+ 534 0324 2330410B 	    STORE s4,20*REGBYTES(sp)
+ 535 0328 2334510B 	    STORE s5,21*REGBYTES(sp)
+ 536 032c 2338610B 	    STORE s6,22*REGBYTES(sp)
+ 537 0330 233C710B 	    STORE s7,23*REGBYTES(sp)
+ 538 0334 2330810D 	    STORE s8,24*REGBYTES(sp)
+ 539 0338 2334910D 	    STORE s9,25*REGBYTES(sp)
+ 540 033c 2338A10D 	    STORE s10,26*REGBYTES(sp)
+ 541 0340 233CB10D 	    STORE s11,27*REGBYTES(sp)
+ 542 0344 2330C10F 	    STORE t3,28*REGBYTES(sp)
+ 543 0348 2334D10F 	    STORE t4,29*REGBYTES(sp)
+ 544 034c 2338E10F 	    STORE t5,30*REGBYTES(sp)
+ 545 0350 233CF10F 	    STORE t6,31*REGBYTES(sp)
+ 546              	    # Invoke the handler.
+ 547 0354 13050100 	    mv a0, sp                          # a0 <- regs
+ 548              	    # Please note: mtval is the newer name for register mbadaddr
+ 549              	    # If you get a compile failure here, use the newer name
+ 550              	    # At this point (2019), both are supported in latest compiler
+ 551              	    # older compiler versions only support mbadaddr, so going with this.
+ 552              	    # See: https://github.com/riscv/riscv-gcc/issues/133
+ 553 0358 F3253034 	    csrr a1, mbadaddr                 # useful for anaysis when things go wrong
+ 554 035c 73261034 	    csrr a2, mepc
+ 555 0360 EFF01FCA 	    jal trap_from_machine_mode
+ 556              	
+ 557              	restore_regs:
+ 558              	    # Restore all of the registers.
+ 559 0364 83308100 	    LOAD ra, 1*REGBYTES(sp)
+ 560 0368 83318101 	    LOAD gp, 3*REGBYTES(sp)
+ 561 036c 03320102 	    LOAD tp, 4*REGBYTES(sp)
+ 562 0370 83328102 	    LOAD t0, 5*REGBYTES(sp)
+ 563 0374 03330103 	    LOAD t1, 6*REGBYTES(sp)
+ 564 0378 83338103 	    LOAD t2, 7*REGBYTES(sp)
+ 565 037c 03340104 	    LOAD s0, 8*REGBYTES(sp)
+ 566 0380 83348104 	    LOAD s1, 9*REGBYTES(sp)
+ 567 0384 03350105 	    LOAD a0,10*REGBYTES(sp)
+ 568 0388 83358105 	    LOAD a1,11*REGBYTES(sp)
+ 569 038c 03360106 	    LOAD a2,12*REGBYTES(sp)
+ 570 0390 83368106 	    LOAD a3,13*REGBYTES(sp)
+ 571 0394 03370107 	    LOAD a4,14*REGBYTES(sp)
+ 572 0398 83378107 	    LOAD a5,15*REGBYTES(sp)
+ 573 039c 03380108 	    LOAD a6,16*REGBYTES(sp)
+ 574 03a0 83388108 	    LOAD a7,17*REGBYTES(sp)
+ 575 03a4 03390109 	    LOAD s2,18*REGBYTES(sp)
+ 576 03a8 83398109 	    LOAD s3,19*REGBYTES(sp)
+ 577 03ac 033A010A 	    LOAD s4,20*REGBYTES(sp)
+ 578 03b0 833A810A 	    LOAD s5,21*REGBYTES(sp)
+ 579 03b4 033B010B 	    LOAD s6,22*REGBYTES(sp)
+ 580 03b8 833B810B 	    LOAD s7,23*REGBYTES(sp)
+ 581 03bc 033C010C 	    LOAD s8,24*REGBYTES(sp)
+ 582 03c0 833C810C 	    LOAD s9,25*REGBYTES(sp)
+ 583 03c4 033D010D 	    LOAD s10,26*REGBYTES(sp)
+ 584 03c8 833D810D 	    LOAD s11,27*REGBYTES(sp)
+ 585 03cc 033E010E 	    LOAD t3,28*REGBYTES(sp)
+ 586 03d0 833E810E 	    LOAD t4,29*REGBYTES(sp)
+ 587 03d4 033F010F 	    LOAD t5,30*REGBYTES(sp)
+ 588 03d8 833F810F 	    LOAD t6,31*REGBYTES(sp)
+ 589 03dc 03310101 	    LOAD sp, 2*REGBYTES(sp)
+ 590 03e0 13010110 	    addi sp, sp, +INTEGER_CONTEXT_SIZE  # moves sp up stack to reclaim
+ 591              	                                        # INTEGER_CONTEXT_SIZE area
+ 592 03e4 73002030 	    mret
+ 593              	
+ 594              	 /*****************************************************************************/
+ 595              	 /******************************interrupt handeling above here*****************/
+ 596              	 /*****************************************************************************/
+ 597              	
+ 598              	.enable_sw_int:
+ 599 03e8 13068000 	    li a2, MIP_MSIP
+ 600 03ec 73104630 	    csrw mie, a2            # Set MSIE bit to receive IPI
+ 601 03f0 13068000 	    li a2,  MSTATUS_MIE
+ 602 03f4 73200630 	    csrs mstatus, a2        # enable interrupts
+ 603              	    /* flush the instruction cache */
+ 604 03f8 0F100000 	    fence.i
+ 605 03fc 67800000 	    ret
+ 606              	
+ 607              	 /***********************************************************************************
+ 608              	 *
+ 609              	 * The following init_memory() symbol overrides the weak symbol in the HAL and does
+ 610              	 * a safe copy of RW data and clears zero-init memory
+ 611              	 *
+ 612              	 */
+ 613              	    // zero_section helper function:
+ 614              	    //       a0 = exec_start_addr
+ 615              	    //       a1 = exec_end_addr
+ 616              	    //
+ 617              	    .globl  zero_section
+ 619              	zero_section:
+ 620 0400 6358B500 	    bge a0, a1, .zero_section_done
+ 621 0404 23300500 	    sd  zero, (a0)
+ 622 0408 13058500 	    addi    a0, a0, 8
+ 623 040c 6FF05FFF 	    j   zero_section
+ 624              	.zero_section_done:
+ 625 0410 67800000 	    ret
+ 626              	
+ 627              	    // zero_section helper function:
+ 628              	    //       a0 = exec_start_addr
+ 629              	    //       a1 = exec_end_addr
+ 630              	    //       a2 = start count
+ 631              	    //
+ 632              	    .globl  count_section
+ 634              	count_section:
+ 635 0414 630AB500 	    beq a0, a1, .count_section_done
+ 636 0418 2330C500 	    sd  a2, (a0)
+ 637 041c 13058500 	    addi    a0, a0, 8
+ 638 0420 13068600 	    addi    a2, a2, 8
+ 639 0424 6FF01FFF 	    j   count_section
+ 640              	.count_section_done:
+ 641 0428 67800000 	    ret
+ 642              	
+ 643              	    // copy_section helper function:
+ 644              	    //  a0 = load_addr
+ 645              	    //  a1 = exec_start_addr
+ 646              	    //  a2 = exec_end_addr
+ 647              	    .globl  copy_section
+ 649              	copy_section:
+ 650 042c 638EA500 	    beq a1, a0, .copy_section_done // if load_addr == exec_start_addr, goto copy_section_done
+ 651              	.check_if_copy_section_done:
+ 652 0430 638CC500 	    beq a1, a2, .copy_section_done // if offset != length, goto keep_copying
+ 653              	.keep_copying:
+ 654 0434 83360500 	    ld  a3, 0(a0)                  // val = *load_addr
+ 655 0438 23B0D500 	    sd  a3, 0(a1)                  // *exec_start_addr = val;
+ 656 043c 13058500 	    addi    a0, a0, 8              // load_addr = load_addr + 8
+ 657 0440 93858500 	    addi    a1, a1, 8              // exec_start_addr = exec_start_addr + 8
+ 658 0444 6FF0DFFE 	    j   .check_if_copy_section_done
+ 659              	.copy_section_done:
+ 660 0448 67800000 	    ret
+ 661              	
+ 662              	
+ 663              	/*******************************************************************************
+ 664              	 *
+ 665              	 * The following copy_switch_code() symbol overrides the weak symbol in the HAL and does
+ 666              	 * a safe copy of HW config data
+ 667              	 */
+ 668              	    .globl  copy_switch_code
+ 670              	copy_switch_code:
+ 671 044c 97070000 	    la      a5, __sc_start           // a5 = __sc_start
+ 671      93870700 
+ 672 0454 17070000 	    la      a4, __sc_load            // a4 = __sc_load
+ 672      13070700 
+ 673 045c 6382E702 	    beq a5,a4,.copy_switch_code_done // if a5 == a4, goto copy_switch_code_done
+ 674 0460 97060000 	    la      a3, __sc_end             // a3 = __sc_end
+ 674      93860600 
+ 675 0468 638CD700 	    beq a5,a3,.copy_switch_code_done // if a5 == a3, goto copy_switch_code_done
+ 676              	.copy_switch_code_loop:
+ 677 046c 03260700 	    lw  a2,0(a4)                     // a2 = *a4
+ 678 0470 23A0C700 	    sw  a2,0(a5)                     // *a5 = a2
+ 679 0474 93874700 	    addi    a5,a5,4                  // a5+=4
+ 680 0478 13074700 	    addi    a4,a4,4                  // a4+=4
+ 681              	
+ 682 047c E3E8D7FE 	    bltu    a5,a3,.copy_switch_code_loop // if a5 < a3, goto copy_switch_code_loop
+ 683              	.copy_switch_code_done:
+ 684 0480 67800000 	    ret
+ 685              	
+ 686              	/*******************************************************************************
+ 687              	 *
+ 688              	 */
+ 689              	#define START__OF_LIM 0x08000000
+ 690              	#define END__OF_LIM   0x08200000
+ 691              	#define START__OF_DTM 0x01000000
+ 692              	#define END__OF_DTM   0x01002000
+ 693              	#define START_OF_SCRATCH   0x0A000000
+ 694              	
+ 695              	.clear_scratchpad:
+ 696              	    // Clear the scratchpad
+ 697              	    //
+ 698              	    // a0 = end of scratchpad addr passed from caller
+ 699              	    //
+ 700              	    // Note: This must be called post calling config_l2_cache()
+ 701              	    //
+ 702 0484 3707000A 	    la  a4, START_OF_SCRATCH    # start of l2 scratchpad
+ 703 0488 93070500 	    mv  a5, a0                  # end of l2 scratchpad
+ 704              	    // common loop used to clear memory
+ 705 048c 6F008002 	    j   1f
+ 706              	.clear_l2lim:
+ 707              	    // Clear the LIM
+ 708              	    //
+ 709              	    // On reset, the first 15 ways are L2 and the last way is cache
+ 710              	    // We can initialize all, as cache write through to DDR is blocked
+ 711              	    // until DDR in initialized, so will have no effect other than clear ECC
+ 712              	    //
+ 713              	    // NOTE: we need to check if we are debugging from LIM,if so do not
+ 714              	    // initialize.
+ 715              	    //
+ 716 0490 17060000 	    la a2, _start
+ 716      13060600 
+ 717 0498 37070008 	    la  a4, 0x08000000          # start of LIM address
+ 718 049c 3376E600 	    and a2, a2, a4
+ 719 04a0 63100602 	    bnez a2, .done_clear
+ 720 04a4 B7072008 	    la  a5, 0x08200000          # end of LIM address
+ 721 04a8 6F00C000 	    j   1f
+ 722              	.clear_dtim:
+ 723              	    //
+ 724              	    // Clear the E51 DTIM to prevent any ECC memory errors on initial access
+ 725              	    //
+ 726 04ac 37070001 	    la  a4, 0x01000000          # DTIM start
+ 727 04b0 B7270001 	    la  a5, 0x01002000          # DTIM end
+ 728              	1:
+ 729              	    // common loop used by both .clear_l2lim and .clear_dtim
+ 730 04b4 23300700 	    sd   x0, 0(a4)
+ 731 04b8 13078700 	    add a4, a4, __SIZEOF_POINTER__
+ 732 04bc E34CF7FE 	    blt a4, a5, 1b
+ 733              	.done_clear:
+ 734 04c0 67800000 	    ret
+ 735              	
+ 736              	/*******************************************************************************
+ 737              	 *
+ 738              	 */
+ 739              	    .equ    L2_ZERO_DEVICE_ADDR, 0x0A000000
+ 740              	    .equ    L2_CCACHE_ADDR, 0x02010000
+ 741              	    .equ    FLUSH64_OFFSET, 0x200
+ 742              	
+ 743              	    //
+ 744              	    // We want to flush anything that may be inadvertently cached
+ 745              	    // by the actions of G5C at startup...
+ 746              	    //
+ 747              	    // The cache block is 64-bytes wide, and there are 4 banks * 512 sets * 16
+ 748              	    // ways.
+ 749              	    // From power on, only a single way is enabled as cache (the remaining
+ 750              	    // 15 are LIM), but this function is parameterisable (number of ways is
+ 751              	    // passed via a0)...
+ 752              	    //
+ 753              	    // First, load the cache with "known" addresses by walking up L2 scratch
+ 754              	    // with a 64-byte stride. We need to read (4 banks * 512 sets) to fill
+ 755              	    // a single way.
+ 756              	    //
+ 757              	.flush_early_caching:
+ 758              	                        // a0 = num_ways
+ 759 04c4 13151501 	    slli    a0, a0, 17  // a0' = a0 * (4 * 512 * 64)
+ 760 04c8 B707000A 	    li  a5, L2_ZERO_DEVICE_ADDR
+ 761 04cc 3305F500 	    add a0, a0, a5      // a0''  = a0' + (4 * 512 * 64 * a0)
+ 762              	                        //  = 0x0A000000 + (4 * 512 * 64 * num_ways)
+ 763 04d0 6302F502 	    beq a0, a5, .early_exit
+ 764              	
+ 765              	.preload_cache_with_known_addrs:
+ 766 04d4 83B60700 	    ld  a3, 0(a5)
+ 767 04d8 93870704 	    addi    a5, a5, 64
+ 768 04dc E39CA7FE 	    bne a5, a0, .preload_cache_with_known_addrs
+ 769              	
+ 770              	    //
+ 771              	    // Now that the cache is filled with known addresses, we can simply flush each
+ 772              	    // known address to end up with an empty cache...
+ 773              	    //
+ 774 04e0 B707000A 	    li  a5, L2_ZERO_DEVICE_ADDR
+ 775 04e4 B7060102 	    li  a3, L2_CCACHE_ADDR
+ 776              	.flush_known_addrs_from_cache:
+ 777 04e8 23B0F620 	    sd  a5, FLUSH64_OFFSET(a3)      // write address to 0x02010200 (FLUSH64)
+ 778 04ec 93870704 	    addi    a5, a5, 64
+ 779 04f0 E39CA7FE 	    bne a5, a0, .flush_known_addrs_from_cache
+ 780              	
+ 781              	.early_exit:
+ 782 04f4 67800000 	    ret
+ 783              	
+ 784              	/*
+ 785              	 * record_ecc_error_counts on reset
+ 786              	 * These are non-zero in the coreplex.
+ 787              	 * Can be checked later on to see if values have changed
+ 788              	 *      a0 = mECCDataFailCount save address
+ 789              	        a1 = mECCDataCorrectionCount save address
+ 790              	        a2 = mECCDirFixCount save address
+ 791              	 */
+ 792              	.record_ecc_error_counts:
+ 793              	    # Store initial ECC errors
+ 794              	    #define mECCDataFailCount               0x02010168U
+ 795 04f8 B7070102 	    la  a5, mECCDataFailCount
+ 795      9B878716 
+ 796 0500 13070500 	    mv  a4, a0// eg. Use stat of DTIM in not used for anything else  0x01000100
+ 797 0504 83A30700 	    lw  t2,0(a5)
+ 798 0508 23207700 	    sw  t2,0(a4)
+ 799              	    #define mECCDataCorrectionCount         0x02010148U
+ 800 050c B7070102 	    la  a5, mECCDataCorrectionCount
+ 800      9B878714 
+ 801 0514 13870500 	    mv  a4, a1// eg. Use stat of DTIM in not used for anything else 0x01000110
+ 802 0518 83A30700 	    lw  t2,0(a5)
+ 803 051c 23207700 	    sw  t2,0(a4)
+ 804              	    #define mECCDirFixCount                 0x02010108u
+ 805 0520 B7070102 	    la  a5, mECCDirFixCount
+ 805      9B878710 
+ 806 0528 13070600 	    mv  a4, a2// eg. Use stat of DTIM in not used for anything else 0x01000120
+ 807 052c 83A30700 	    lw  t2,0(a5)
+ 808 0530 23207700 	    sw  t2,0(a4)
+ 809 0534 67800000 	    ret
+ 810              	
+ 811              	/*
+ 812              	 * clear_ras , clear_ras_2_deep
+ 813              	 * Two deep function calls.
+ 814              	 * Used to clear the interal processor Return Address Stack
+ 815              	 * This is belt and braces, may not be required
+ 816              	 */
+ 817              	.clear_ras:
+ 818 0538 93870000 	    mv a5, x1
+ 819 053c 13000000 	    nop
+ 820 0540 97000000 	    call .clear_ras_2_deep
+ 820      E7800000 
+ 821 0548 13000000 	    nop
+ 822 054c 13000000 	    nop
+ 823 0550 13000000 	    nop
+ 824 0554 13000000 	    nop
+ 825 0558 13000000 	    nop
+ 826 055c 13000000 	    nop
+ 827 0560 93800700 	    mv  x1, a5
+ 828 0564 67800000 	    ret
+ 829              	
+ 830              	.clear_ras_2_deep:
+ 831 0568 13000000 	    nop
+ 832 056c 13000000 	    nop
+ 833 0570 13000000 	    nop
+ 834 0574 13000000 	    nop
+ 835 0578 13000000 	    nop
+ 836 057c 13000000 	    nop
+ 837 0580 67800000 	    ret
+DEFINED SYMBOLS
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:30     .text.init:0000000000000000 reset_vector
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:31     .text.init:0000000000000000 _start
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:817    .text.init:0000000000000538 .clear_ras
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:36     .text.init:0000000000000000 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:486    .text.init:00000000000002d4 trap_vector
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:38     .text.init:0000000000000008 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:39     .text.init:0000000000000010 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:42     .text.init:0000000000000014 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:43     .text.init:0000000000000018 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:45     .text.init:000000000000001c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:46     .text.init:0000000000000020 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:47     .text.init:0000000000000024 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:48     .text.init:0000000000000028 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:51     .text.init:000000000000002c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:55     .text.init:000000000000003c .skip_e51
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:52     .text.init:0000000000000030 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:53     .text.init:0000000000000034 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:54     .text.init:0000000000000038 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:57     .text.init:000000000000003c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:58     .text.init:0000000000000040 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:59     .text.init:0000000000000044 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:63     .text.init:0000000000000048 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:64     .text.init:000000000000004c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:68     .text.init:0000000000000050 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:69     .text.init:0000000000000054 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:70     .text.init:0000000000000058 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:71     .text.init:000000000000005c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:72     .text.init:0000000000000060 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:73     .text.init:0000000000000064 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:74     .text.init:0000000000000068 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:75     .text.init:000000000000006c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:76     .text.init:0000000000000070 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:77     .text.init:0000000000000074 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:78     .text.init:0000000000000078 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:79     .text.init:000000000000007c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:80     .text.init:0000000000000080 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:81     .text.init:0000000000000084 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:82     .text.init:0000000000000088 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:83     .text.init:000000000000008c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:84     .text.init:0000000000000090 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:85     .text.init:0000000000000094 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:86     .text.init:0000000000000098 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:87     .text.init:000000000000009c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:88     .text.init:00000000000000a0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:89     .text.init:00000000000000a4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:90     .text.init:00000000000000a8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:91     .text.init:00000000000000ac .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:92     .text.init:00000000000000b0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:93     .text.init:00000000000000b4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:94     .text.init:00000000000000b8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:95     .text.init:00000000000000bc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:96     .text.init:00000000000000c0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:97     .text.init:00000000000000c4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:98     .text.init:00000000000000c8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:101    .text.init:00000000000000cc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:102    .text.init:00000000000000d0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:106    .text.init:00000000000000d4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:111    .text.init:00000000000000e0 .no_float
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:107    .text.init:00000000000000d8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:109    .text.init:00000000000000dc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:115    .text.init:00000000000000e0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:117    .text.init:00000000000000e4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:121    .text.init:00000000000000e8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:131    .text.init:00000000000000ec .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:135    .text.init:00000000000000f4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:136    .text.init:00000000000000f8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:147    .text.init:0000000000000120 .hart0
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:137    .text.init:00000000000000fc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:138    .text.init:0000000000000100 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:151    .text.init:0000000000000134 .hart1
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:139    .text.init:0000000000000104 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:140    .text.init:0000000000000108 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:155    .text.init:0000000000000148 .hart2
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:141    .text.init:000000000000010c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:142    .text.init:0000000000000110 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:159    .text.init:000000000000015c .hart3
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:143    .text.init:0000000000000114 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:144    .text.init:0000000000000118 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:163    .text.init:0000000000000170 .hart4
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:145    .text.init:000000000000011c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:148    .text.init:0000000000000120 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:149    .text.init:0000000000000128 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:167    .text.init:0000000000000180 .continue
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:150    .text.init:0000000000000130 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:152    .text.init:0000000000000134 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:153    .text.init:000000000000013c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:154    .text.init:0000000000000144 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:156    .text.init:0000000000000148 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:157    .text.init:0000000000000150 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:158    .text.init:0000000000000158 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:160    .text.init:000000000000015c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:161    .text.init:0000000000000164 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:162    .text.init:000000000000016c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:164    .text.init:0000000000000170 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:165    .text.init:0000000000000178 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:169    .text.init:0000000000000180 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:170    .text.init:0000000000000184 .init_stack
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:172    .text.init:0000000000000184 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:173    .text.init:0000000000000188 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:174    .text.init:000000000000018c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:176    .text.init:0000000000000190 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:178    .text.init:0000000000000194 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:180    .text.init:0000000000000198 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:181    .text.init:000000000000019c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:182    .text.init:00000000000001a0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:189    .text.init:00000000000001a4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:193    .text.init:00000000000001bc .skip_mem_clear
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:190    .text.init:00000000000001a8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:722    .text.init:00000000000004ac .clear_dtim
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:191    .text.init:00000000000001ac .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:706    .text.init:0000000000000490 .clear_l2lim
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:192    .text.init:00000000000001b4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:194    .text.init:00000000000001bc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:757    .text.init:00000000000004c4 .flush_early_caching
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:197    .text.init:00000000000001c0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:198    .text.init:00000000000001c8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:199    .text.init:00000000000001d0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:695    .text.init:0000000000000484 .clear_scratchpad
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:200    .text.init:00000000000001d8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:202    .text.init:00000000000001e0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:203    .text.init:00000000000001e8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:204    .text.init:00000000000001f0 .init_heap
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:205    .text.init:00000000000001f0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:206    .text.init:00000000000001f4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:207    .text.init:00000000000001f8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:212    .text.init:00000000000001fc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:213    .text.init:0000000000000204 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:214    .text.init:0000000000000208 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:215    .text.init:0000000000000210 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:216    .text.init:0000000000000214 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:217    .text.init:000000000000021c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:218    .text.init:0000000000000220 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:219    .text.init:0000000000000228 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:220    .text.init:000000000000022c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:221    .text.init:0000000000000234 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:223    .text.init:0000000000000238 .main_hart
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:225    .text.init:0000000000000238 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:226    .text.init:000000000000023c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:229    .text.init:0000000000000240 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:230    .text.init:0000000000000244 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:231    .text.init:0000000000000248 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:234    .text.init:000000000000024c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:235    .text.init:0000000000000250 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:236    .text.init:0000000000000254 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:237    .text.init:0000000000000258 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:238    .text.init:000000000000025c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:239    .text.init:0000000000000260 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:246    .text.init:0000000000000264 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:247    .text.init:000000000000026c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:248    .text.init:0000000000000274 .wait_main_hart
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:249    .text.init:0000000000000274 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:250    .text.init:0000000000000278 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:252    .text.init:000000000000027c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:253    .text.init:0000000000000284 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:255    .text.init:0000000000000288 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:259    .text.init:000000000000028c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:264    .text.init:0000000000000290 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:265    .text.init:0000000000000294 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:266    .text.init:0000000000000298 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:268    .text.init:000000000000029c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:269    .text.init:00000000000002a0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:270    .text.init:00000000000002a4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:271    .text.init:00000000000002a8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:273    .text.init:00000000000002ac .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:274    .text.init:00000000000002bc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:276    .text.init:00000000000002c0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:277    .text.init:00000000000002c4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:280    .text.init:00000000000002c8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:281    .text.init:00000000000002cc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:282    .text.init:00000000000002d0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:512    .text.init:00000000000002d4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:515    .text.init:00000000000002d8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:516    .text.init:00000000000002dc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:517    .text.init:00000000000002e0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:518    .text.init:00000000000002e4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:519    .text.init:00000000000002e8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:520    .text.init:00000000000002ec .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:521    .text.init:00000000000002f0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:522    .text.init:00000000000002f4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:523    .text.init:00000000000002f8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:524    .text.init:00000000000002fc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:525    .text.init:0000000000000300 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:526    .text.init:0000000000000304 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:527    .text.init:0000000000000308 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:528    .text.init:000000000000030c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:529    .text.init:0000000000000310 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:530    .text.init:0000000000000314 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:531    .text.init:0000000000000318 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:532    .text.init:000000000000031c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:533    .text.init:0000000000000320 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:534    .text.init:0000000000000324 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:535    .text.init:0000000000000328 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:536    .text.init:000000000000032c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:537    .text.init:0000000000000330 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:538    .text.init:0000000000000334 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:539    .text.init:0000000000000338 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:540    .text.init:000000000000033c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:541    .text.init:0000000000000340 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:542    .text.init:0000000000000344 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:543    .text.init:0000000000000348 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:544    .text.init:000000000000034c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:545    .text.init:0000000000000350 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:547    .text.init:0000000000000354 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:553    .text.init:0000000000000358 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:554    .text.init:000000000000035c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:555    .text.init:0000000000000360 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:557    .text.init:0000000000000364 restore_regs
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:559    .text.init:0000000000000364 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:560    .text.init:0000000000000368 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:561    .text.init:000000000000036c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:562    .text.init:0000000000000370 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:563    .text.init:0000000000000374 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:564    .text.init:0000000000000378 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:565    .text.init:000000000000037c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:566    .text.init:0000000000000380 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:567    .text.init:0000000000000384 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:568    .text.init:0000000000000388 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:569    .text.init:000000000000038c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:570    .text.init:0000000000000390 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:571    .text.init:0000000000000394 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:572    .text.init:0000000000000398 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:573    .text.init:000000000000039c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:574    .text.init:00000000000003a0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:575    .text.init:00000000000003a4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:576    .text.init:00000000000003a8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:577    .text.init:00000000000003ac .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:578    .text.init:00000000000003b0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:579    .text.init:00000000000003b4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:580    .text.init:00000000000003b8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:581    .text.init:00000000000003bc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:582    .text.init:00000000000003c0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:583    .text.init:00000000000003c4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:584    .text.init:00000000000003c8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:585    .text.init:00000000000003cc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:586    .text.init:00000000000003d0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:587    .text.init:00000000000003d4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:588    .text.init:00000000000003d8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:589    .text.init:00000000000003dc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:590    .text.init:00000000000003e0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:592    .text.init:00000000000003e4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:598    .text.init:00000000000003e8 .enable_sw_int
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:599    .text.init:00000000000003e8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:600    .text.init:00000000000003ec .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:601    .text.init:00000000000003f0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:602    .text.init:00000000000003f4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:604    .text.init:00000000000003f8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:605    .text.init:00000000000003fc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:619    .text.init:0000000000000400 zero_section
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:624    .text.init:0000000000000410 .zero_section_done
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:620    .text.init:0000000000000400 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:621    .text.init:0000000000000404 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:622    .text.init:0000000000000408 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:623    .text.init:000000000000040c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:625    .text.init:0000000000000410 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:634    .text.init:0000000000000414 count_section
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:640    .text.init:0000000000000428 .count_section_done
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:635    .text.init:0000000000000414 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:636    .text.init:0000000000000418 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:637    .text.init:000000000000041c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:638    .text.init:0000000000000420 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:639    .text.init:0000000000000424 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:641    .text.init:0000000000000428 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:649    .text.init:000000000000042c copy_section
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:659    .text.init:0000000000000448 .copy_section_done
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:650    .text.init:000000000000042c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:651    .text.init:0000000000000430 .check_if_copy_section_done
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:652    .text.init:0000000000000430 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:653    .text.init:0000000000000434 .keep_copying
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:654    .text.init:0000000000000434 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:655    .text.init:0000000000000438 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:656    .text.init:000000000000043c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:657    .text.init:0000000000000440 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:658    .text.init:0000000000000444 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:660    .text.init:0000000000000448 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:670    .text.init:000000000000044c copy_switch_code
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:671    .text.init:000000000000044c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:672    .text.init:0000000000000454 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:683    .text.init:0000000000000480 .copy_switch_code_done
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:673    .text.init:000000000000045c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:674    .text.init:0000000000000460 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:675    .text.init:0000000000000468 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:676    .text.init:000000000000046c .copy_switch_code_loop
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:677    .text.init:000000000000046c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:678    .text.init:0000000000000470 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:679    .text.init:0000000000000474 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:680    .text.init:0000000000000478 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:682    .text.init:000000000000047c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:684    .text.init:0000000000000480 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:702    .text.init:0000000000000484 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:703    .text.init:0000000000000488 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:705    .text.init:000000000000048c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:716    .text.init:0000000000000490 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:717    .text.init:0000000000000498 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:718    .text.init:000000000000049c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:733    .text.init:00000000000004c0 .done_clear
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:719    .text.init:00000000000004a0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:720    .text.init:00000000000004a4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:721    .text.init:00000000000004a8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:726    .text.init:00000000000004ac .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:727    .text.init:00000000000004b0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:730    .text.init:00000000000004b4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:731    .text.init:00000000000004b8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:732    .text.init:00000000000004bc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:734    .text.init:00000000000004c0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:739    *ABS*:000000000a000000 L2_ZERO_DEVICE_ADDR
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:740    *ABS*:0000000002010000 L2_CCACHE_ADDR
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:741    *ABS*:0000000000000200 FLUSH64_OFFSET
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:759    .text.init:00000000000004c4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:760    .text.init:00000000000004c8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:761    .text.init:00000000000004cc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:781    .text.init:00000000000004f4 .early_exit
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:763    .text.init:00000000000004d0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:765    .text.init:00000000000004d4 .preload_cache_with_known_addrs
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:766    .text.init:00000000000004d4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:767    .text.init:00000000000004d8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:768    .text.init:00000000000004dc .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:774    .text.init:00000000000004e0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:775    .text.init:00000000000004e4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:776    .text.init:00000000000004e8 .flush_known_addrs_from_cache
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:777    .text.init:00000000000004e8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:778    .text.init:00000000000004ec .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:779    .text.init:00000000000004f0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:782    .text.init:00000000000004f4 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:792    .text.init:00000000000004f8 .record_ecc_error_counts
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:795    .text.init:00000000000004f8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:796    .text.init:0000000000000500 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:797    .text.init:0000000000000504 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:798    .text.init:0000000000000508 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:800    .text.init:000000000000050c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:801    .text.init:0000000000000514 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:802    .text.init:0000000000000518 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:803    .text.init:000000000000051c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:805    .text.init:0000000000000520 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:806    .text.init:0000000000000528 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:807    .text.init:000000000000052c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:808    .text.init:0000000000000530 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:809    .text.init:0000000000000534 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:818    .text.init:0000000000000538 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:819    .text.init:000000000000053c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:830    .text.init:0000000000000568 .clear_ras_2_deep
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:820    .text.init:0000000000000540 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:821    .text.init:0000000000000548 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:822    .text.init:000000000000054c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:823    .text.init:0000000000000550 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:824    .text.init:0000000000000554 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:825    .text.init:0000000000000558 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:826    .text.init:000000000000055c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:827    .text.init:0000000000000560 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:828    .text.init:0000000000000564 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:831    .text.init:0000000000000568 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:832    .text.init:000000000000056c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:833    .text.init:0000000000000570 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:834    .text.init:0000000000000574 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:835    .text.init:0000000000000578 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:836    .text.init:000000000000057c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:837    .text.init:0000000000000580 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:837    .text.init:0000000000000584 .L0 
+                       .text.init:0000000000000000 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:837    .text.init:0000000000000584 .L0 
+                       .debug_str:0000000000000000 .L0 
+                       .debug_str:0000000000000031 .L0 
+                       .debug_str:000000000000006d .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:38     .text.init:0000000000000008 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:131    .text.init:00000000000000ec .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:148    .text.init:0000000000000120 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:149    .text.init:0000000000000128 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:152    .text.init:0000000000000134 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:153    .text.init:000000000000013c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:156    .text.init:0000000000000148 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:157    .text.init:0000000000000150 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:160    .text.init:000000000000015c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:161    .text.init:0000000000000164 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:164    .text.init:0000000000000170 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:165    .text.init:0000000000000178 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:202    .text.init:00000000000001e0 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:203    .text.init:00000000000001e8 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:247    .text.init:000000000000026c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:671    .text.init:000000000000044c .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:672    .text.init:0000000000000454 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:674    .text.init:0000000000000460 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:716    .text.init:0000000000000490 .L0 
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:41     .text.init:0000000000000014 .L11
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:122    .text.init:00000000000000ec .LxlenPass
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:114    .text.init:00000000000000e0 .LxlenCheck
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:233    .text.init:000000000000024c .LOtherHartstoWFI
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:227    .text.init:0000000000000240 .LoopForeverMain
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:256    .text.init:000000000000028c .LwaitOtherHart
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:278    .text.init:00000000000002c8 .LoopForeverOther
+../src/platform/mpfs_hal/startup_gcc/mss_entry.S:728    .text.init:00000000000004b4 .L12
+
+UNDEFINED SYMBOLS
+__global_pointer$
+__stack_bottom_h0$
+__stack_top_h0$
+__stack_bottom_h1$
+__stack_top_h1$
+__stack_bottom_h2$
+__stack_top_h2$
+__stack_bottom_h3$
+__stack_top_h3$
+__stack_bottom_h4$
+__stack_top_h4$
+config_l2_cache
+end_l2_scratchpad_address
+__heap_start
+__heap_end
+main_first_hart
+main_other_hart
+trap_from_machine_mode
+__sc_start
+__sc_load
+__sc_end
